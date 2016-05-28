@@ -28,11 +28,13 @@ impl Notifier {
         let payload = notice.to_json();
         let bytes = payload.as_bytes();
 
+        debug!("**Airbrake: sending {}", payload);
+
         let response = client.post(uri)
             .header(ContentType::json())
             .body(Body::BufBody(bytes, bytes.len()))
             .send();
 
-        println!("{:?}", response);
+        debug!("**Airbrake: received response {:?}", response);
     }
 }

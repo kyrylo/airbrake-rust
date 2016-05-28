@@ -6,3 +6,4 @@ authors = ["Kyrylo Silin <silin@kyrylo.org>"]
 [dependencies]
 hyper = "0.9"
 rustc-serialize = "0.3"
+log = "0.3"

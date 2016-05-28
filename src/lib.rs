@@ -1,5 +1,7 @@
 extern crate hyper;
 extern crate rustc_serialize;
+#[macro_use]
+extern crate log;
 
 mod config;
 mod notifier;
