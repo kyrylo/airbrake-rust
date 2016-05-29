@@ -1,14 +1,25 @@
 use std::error::Error;
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 
 use rustc_serialize::json;
 use rustc_serialize::json::{ToJson, Json};
 
 #[derive(Debug, RustcEncodable)]
-pub struct Notice<'a> {
+pub struct Notice {
     errors: Vec<Json>,
-    context: HashMap<&'a str, HashMap<&'a str, &'a str>>,
+    context: Context,
+}
+
+#[derive(Debug, RustcEncodable)]
+struct Context {
+    notifier: NotifierPayload
+}
+
+#[derive(Debug, RustcEncodable)]
+struct NotifierPayload {
+    name: String,
+    version: String,
+    url: String,
 }
 
 #[derive(Debug)]
@@ -26,16 +37,8 @@ impl ToJson for AirbrakeError {
     }
 }
 
-impl<'a> Notice<'a> {
-    pub fn new<E: Error>(error: E) -> Notice<'a> {
-        let mut context = HashMap::new();
-        let mut notifier = HashMap::new();
-        notifier.insert("name", "airbrake-rust");
-        notifier.insert("version", "0.0.1");
-        notifier.insert("url", "https://github.com/airbrake/airbrake-rust");
-
-        context.insert("notifier", notifier);
-
+impl Notice {
+    pub fn new<E: Error>(error: E) -> Notice {
         Notice {
             errors: vec![
                 AirbrakeError {
@@ -43,7 +46,13 @@ impl<'a> Notice<'a> {
                     message: format!("{}", error),
                 }.to_json()
             ],
-            context: context,
+            context: Context {
+                notifier: NotifierPayload {
+                    name: "airbrake-rust".to_owned(),
+                    version: env!("CARGO_PKG_VERSION").to_owned(),
+                    url: "https://github.com/airbrake/airbrake-rust".to_owned(),
+                }
+            },
         }
     }
 
