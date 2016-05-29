@@ -4,6 +4,9 @@ use std::collections::BTreeMap;
 use rustc_serialize::json;
 use rustc_serialize::json::{ToJson, Json};
 
+const NOTIFIER_NAME: &'static str = "airbrake-rust";
+const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
+
 #[derive(Debug, RustcEncodable)]
 pub struct Notice {
     errors: Vec<Json>,
@@ -48,9 +51,9 @@ impl Notice {
             ],
             context: Context {
                 notifier: NotifierPayload {
-                    name: "airbrake-rust".to_owned(),
+                    name: NOTIFIER_NAME.to_owned(),
                     version: env!("CARGO_PKG_VERSION").to_owned(),
-                    url: "https://github.com/airbrake/airbrake-rust".to_owned(),
+                    url: NOTIFIER_URL.to_owned(),
                 }
             },
         }
