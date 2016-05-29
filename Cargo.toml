@@ -2,6 +2,16 @@
 name = "airbrake"
 version = "0.1.0"
 authors = ["Kyrylo Silin <silin@kyrylo.org>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/kyrylo/airbrake-rust"
+homepage = "https://github.com/kyrylo/airbrake-rust"
+documentation = "https://github.com/kyrylo/airbrake-rust"
+description = """
+Airbrake Rust is an Airbrake (https://airbrake.io) notifier library for the Rust
+Programming language. The library provides minimalist API that enables the
+ability to send Rust errors to the Airbrake dashboard.
+"""
 
 [dependencies]
 hyper = "0.9"
