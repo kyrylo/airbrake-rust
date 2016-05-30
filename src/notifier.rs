@@ -1,40 +1,30 @@
 use std::error::Error;
 
-use hyper::Url;
-use hyper::header::ContentType;
-use hyper::client::{Client, Body};
-
 use config::Config;
 use notice::Notice;
+use sync_sender::SyncSender;
+use async_sender::AsyncSender;
 
 pub struct Notifier {
-    config: Config,
+    sync_sender: SyncSender,
+    async_sender: AsyncSender,
 }
 
 impl Notifier {
     pub fn new(config: Config) -> Notifier {
-        Notifier { config: config }
+        Notifier {
+            sync_sender: SyncSender::new(&config),
+            async_sender: AsyncSender::new(&config),
+        }
+    }
+
+    pub fn notify<E: Error>(&self, error: E) {
+        let notice = Notice::new(error);
+        self.async_sender.send(notice);
     }
 
     pub fn notify_sync<E: Error>(&self, error: E) {
         let notice = Notice::new(error);
-        self.send_notice(notice);
-    }
-
-    fn send_notice(&self, notice: Notice) {
-        let client = Client::new();
-        let uri = Url::parse(&self.config.endpoint()).ok().expect("malformed URL");
-
-        let payload = notice.to_json();
-        let bytes = payload.as_bytes();
-
-        debug!("**Airbrake: sending {}", payload);
-
-        let response = client.post(uri)
-            .header(ContentType::json())
-            .body(Body::BufBody(bytes, bytes.len()))
-            .send();
-
-        debug!("**Airbrake: received response {:?}", response);
+        self.sync_sender.send(notice);
     }
 }
