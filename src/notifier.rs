@@ -27,4 +27,8 @@ impl Notifier {
         let notice = Notice::new(error);
         self.sync_sender.send(notice);
     }
+
+    pub fn close(&mut self) {
+        self.async_sender.close();
+    }
 }

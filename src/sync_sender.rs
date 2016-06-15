@@ -5,6 +5,7 @@ use hyper::client::{Client, Body};
 use config::Config;
 use notice::Notice;
 
+#[derive(Debug)]
 pub struct SyncSender {
     client: Client,
     endpoint: String,
