@@ -29,7 +29,7 @@
 //!
 //! fn main() {
 //!     let airbrake = airbrake::configure(|config| {
-//!         config.project_id = 113743;
+//!         config.project_id = "113743".to_owned();
 //!         config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
 //!     });
 //!
@@ -60,7 +60,7 @@ use config::Config;
 ///
 /// ```
 /// let airbrake = airbrake::configure(|config| {
-///     config.project_id = 113743;
+///     config.project_id = "113743".to_owned();
 ///     config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
 /// });
 pub fn configure<F>(configurator: F) -> Notifier
