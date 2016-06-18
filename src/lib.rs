@@ -28,7 +28,7 @@
 //! }
 //!
 //! fn main() {
-//!     let airbrake = airbrake::configure(|config| {
+//!     let mut airbrake = airbrake::configure(|config| {
 //!         config.project_id = "113743".to_owned();
 //!         config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
 //!     });
@@ -37,6 +37,8 @@
 //!         Ok(n) => assert_eq!(n, 20),
 //!         Err(err) => airbrake.notify(err)
 //!     }
+//!
+//!     airbrake.close();
 //! }
 //! ```
 
@@ -59,7 +61,7 @@ use config::Config;
 /// # Examples
 ///
 /// ```
-/// let airbrake = airbrake::configure(|config| {
+/// let mut airbrake = airbrake::configure(|config| {
 ///     config.project_id = "113743".to_owned();
 ///     config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
 /// });

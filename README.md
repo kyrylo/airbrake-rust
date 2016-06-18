@@ -59,15 +59,17 @@ fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
 }
 
 fn main() {
-    let airbrake = airbrake::configure(|config| {
+    let mut airbrake = airbrake::configure(|config| {
         config.project_id = "113743".to_owned();
         config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
     });
 
     match double_number("NOT A NUMBER") {
         Ok(n) => assert_eq!(n, 20),
-        Err(err) => airbrake.notify_sync(err)
+        Err(err) => airbrake.notify(err),
     }
+
+    airbrake.close();
 }
 ```
 

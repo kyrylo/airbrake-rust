@@ -1,4 +1,3 @@
-use std::thread;
 use std::thread::{JoinHandle, Builder};
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::channel;
