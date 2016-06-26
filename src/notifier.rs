@@ -1,5 +1,7 @@
 use std::error::Error;
 
+use rustc_serialize::json::Json;
+
 use config::Config;
 use notice::Notice;
 use sync_sender::SyncSender;
@@ -23,9 +25,9 @@ impl Notifier {
         self.async_sender.send(notice);
     }
 
-    pub fn notify_sync<E: Error>(&self, error: E) {
+    pub fn notify_sync<E: Error>(&self, error: E) -> Json {
         let notice = Notice::new(error);
-        self.sync_sender.send(notice);
+        self.sync_sender.send(notice)
     }
 
     pub fn close(&mut self) {

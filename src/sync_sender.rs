@@ -1,6 +1,9 @@
+use std::io::Read;
+
 use hyper::Url;
 use hyper::header::ContentType;
 use hyper::client::{Client, Body};
+use rustc_serialize::json::Json;
 
 use config::Config;
 use notice::Notice;
@@ -19,7 +22,7 @@ impl SyncSender {
         }
     }
 
-    pub fn send(&self, notice: Notice) {
+    pub fn send(&self, notice: Notice) -> Json {
         let uri = Url::parse(&self.endpoint).ok().expect("malformed URL");
 
         let payload = notice.to_json();
@@ -32,6 +35,8 @@ impl SyncSender {
             .body(Body::BufBody(bytes, bytes.len()))
             .send();
 
-        debug!("**Airbrake: received response {:?}", response);
+        let mut buffer = String::new();
+        response.unwrap().read_to_string(&mut buffer).unwrap();
+        Json::from_str(&buffer).unwrap()
     }
 }

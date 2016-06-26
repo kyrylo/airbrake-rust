@@ -126,17 +126,28 @@ Sends an error to Airbrake *asynchronously*. `error` must implement the
 [`std::error::Error`][stderror] trait. Returns `()`.
 
 ```rust
-airbrake.notify(error);
+let mut airbrake = airbrake::configure(|config| {
+    config.project_id = "123".to_owned();
+    config.project_key = "321".to_owned();
+});
+
+airbrake.notify(std::io::Error::last_os_error());
 ```
 
 #### airbrake.notify_sync
 
 Sends an error to Airbrake *synchronously*. `error` must implement the
-[`std::error::Error`][stderror] trait. Returns `?????????`. Accepts the same
+[`std::error::Error`][stderror] trait. Returns
+[`rustc_serialize::json::Json`][json-object]. Accepts the same
 parameters as [`Airbrake.notify`](#airbrakenotify).
 
 ```rust
-airbrake.notify_sync(error);
+let mut airbrake = airbrake::configure(|config| {
+    config.project_id = "123".to_owned();
+    config.project_key = "321".to_owned();
+});
+
+airbrake.notify_sync(std::io::Error::last_os_error());
 ```
 
 [airbrake.io]: https://airbrake.io
@@ -144,3 +155,4 @@ airbrake.notify_sync(error);
 [env_logger]: https://crates.io/crates/env_logger
 [project-idkey]: https://s3.amazonaws.com/airbrake-github-assets/airbrake-ruby/project-id-key.png
 [stderror]: https://doc.rust-lang.org/std/error
+[json-object]: https://doc.rust-lang.org/rustc-serialize/rustc_serialize/json/enum.Json.html

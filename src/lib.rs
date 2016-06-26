@@ -58,7 +58,7 @@
 //!
 //! ![][project-idkey]
 //!
-//! ```rust
+//! ```
 //! let mut airbrake = airbrake::configure(|config| {
 //!     config.project_id = "113743".to_owned();
 //!     config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
@@ -71,7 +71,7 @@
 //! containing a scheme ("http" or "https"), a host and a port. You can omit the
 //! port (80 will be assumed).
 //!
-//! ```rust
+//! ```
 //! let mut airbrake = airbrake::configure(|config| {
 //!     config.host = "http://localhost:8080".to_owned();
 //! });
@@ -98,7 +98,12 @@
 //! [`std::error::Error`][stderror] trait. Returns `()`.
 //!
 //! ```
-//! airbrake.notify(error);
+//! let mut airbrake = airbrake::configure(|config| {
+//!     config.project_id = "123".to_owned();
+//!     config.project_key = "321".to_owned();
+//! });
+//!
+//! airbrake.notify(std::io::Error::last_os_error());
 //! ```
 //!
 //! As the second parameter, accepts a hash with additional data. That data will be
@@ -107,11 +112,17 @@
 //! #### airbrake.notify_sync
 //!
 //! Sends an error to Airbrake *synchronously*. `error` must implement the
-//! [`std::error::Error`][stderror] trait. Returns `?????????`. Accepts the same
+//! [`std::error::Error`][stderror] trait. Returns
+//! [`rustc_serialize::json::Json`][json-object]. Accepts the same
 //! parameters as [`Airbrake.notify`](#airbrakenotify).
 //!
 //! ```
-//! airbrake.notify_sync(error);
+//! let mut airbrake = airbrake::configure(|config| {
+//!     config.project_id = "123".to_owned();
+//!     config.project_key = "321".to_owned();
+//! });
+//!
+//! airbrake.notify_sync(std::io::Error::last_os_error());
 //! ```
 //!
 //! [airbrake.io]: https://airbrake.io
@@ -119,7 +130,7 @@
 //! [env_logger]: https://crates.io/crates/env_logger
 //! [project-idkey]: https://s3.amazonaws.com/airbrake-github-assets/airbrake-ruby/project-id-key.png
 //! [stderror]: https://doc.rust-lang.org/std/error
-
+//! [json-object]: https://doc.rust-lang.org/rustc-serialize/rustc_serialize/json/enum.Json.html
 
 extern crate hyper;
 extern crate rustc_serialize;
