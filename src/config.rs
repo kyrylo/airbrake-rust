@@ -25,3 +25,49 @@ impl Config {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Config;
+
+    #[test]
+    fn endpoint_defaults_to_airbrake_server() {
+        assert_eq!(
+            "https://airbrake.io/api/v3/projects/0/notices?key=0",
+            Config::new().endpoint()
+        );
+    }
+
+    #[test]
+    fn project_id_modifies_endpoint() {
+        let mut config = Config::new();
+        config.project_id = "123".to_owned();
+
+        assert_eq!(
+            "https://airbrake.io/api/v3/projects/123/notices?key=0",
+            config.endpoint()
+        );
+    }
+
+    #[test]
+    fn project_key_modifies_endpoint() {
+        let mut config = Config::new();
+        config.project_key = "bingo".to_owned();
+
+        assert_eq!(
+            "https://airbrake.io/api/v3/projects/0/notices?key=bingo",
+            config.endpoint()
+        );
+    }
+
+    #[test]
+    fn host_modifies_endpoint() {
+        let mut config = Config::new();
+        config.host = "http://localhost:9090".to_owned();
+
+        assert_eq!(
+            "http://localhost:9090/api/v3/projects/0/notices?key=0",
+            config.endpoint()
+        );
+    }
+}
