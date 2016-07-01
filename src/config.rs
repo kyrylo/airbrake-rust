@@ -5,6 +5,7 @@ pub struct Config {
     pub host: String,
     pub workers: i32,
     pub proxy: String,
+    pub app_version: String,
 }
 
 impl Config {
@@ -15,6 +16,7 @@ impl Config {
             host: "https://airbrake.io".to_owned(),
             workers: 1,
             proxy: String::new(),
+            app_version: String::new(),
         }
     }
 
