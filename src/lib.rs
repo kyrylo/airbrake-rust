@@ -89,7 +89,7 @@
 //!
 //! ### proxy
 //!
-//! If your server is not able to directly reach Airbrake, you can use HTTP proxy
+//! If your server is not able to directly reach Airbrake, you can use proxy
 //! support. By default, Airbrake Rust uses direct connection. Note: proxy
 //! authentication is not supported yet.
 //!
