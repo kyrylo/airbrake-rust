@@ -16,8 +16,24 @@ pub struct SyncSender {
 
 impl SyncSender {
     pub fn new(config: &Config) -> SyncSender {
+        let client = if config.proxy.is_empty() {
+            Client::new()
+        } else {
+            let mut proxy = config.proxy.clone();
+            let mut port = 80;
+
+            if let Some(colon) = proxy.rfind(':') {
+                port = proxy[colon + 1..].parse().unwrap_or_else(|e| {
+                    panic!("proxy is malformed: {:?}, port parse error: {}",
+                           proxy, e);
+                });
+                proxy.truncate(colon);
+            }
+            Client::with_http_proxy(proxy, port)
+        };
+
         SyncSender {
-            client: Client::new(),
+            client: client,
             endpoint: config.endpoint(),
         }
     }
