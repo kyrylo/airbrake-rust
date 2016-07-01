@@ -11,6 +11,7 @@ pub struct Notifier {
     sync_sender: SyncSender,
     async_sender: AsyncSender,
     closed: bool,
+    config: Config,
 }
 
 impl Notifier {
@@ -19,6 +20,7 @@ impl Notifier {
             sync_sender: SyncSender::new(&config),
             async_sender: AsyncSender::new(&config),
             closed: false,
+            config: config,
         }
     }
 
@@ -27,7 +29,7 @@ impl Notifier {
             panic!("attempted to send through a closed Airbrake notifier");
         }
 
-        let notice = Notice::new(error);
+        let notice = Notice::new(&self.config, error);
         self.async_sender.send(notice);
     }
 
@@ -36,7 +38,7 @@ impl Notifier {
             panic!("attempted to send through a closed Airbrake notifier");
         }
 
-        let notice = Notice::new(error);
+        let notice = Notice::new(&self.config, error);
         self.sync_sender.send(notice)
     }
 

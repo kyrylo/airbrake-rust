@@ -127,6 +127,17 @@ let mut airbrake = airbrake::configure(|config| {
 });
 ```
 
+### app_version
+
+The version of your application that you can pass to differentiate errors
+between multiple versions. It's not set by default.
+
+```rust
+let mut airbrake = airbrake::configure(|config| {
+    config.app_version = "1.0.0".to_owned();
+});
+```
+
 API
 ---
 

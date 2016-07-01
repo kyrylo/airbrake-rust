@@ -4,6 +4,8 @@ use std::collections::BTreeMap;
 use rustc_serialize::json;
 use rustc_serialize::json::{ToJson, Json};
 
+use config::Config;
+
 const NOTIFIER_NAME: &'static str = "airbrake-rust";
 const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
 
@@ -15,7 +17,8 @@ pub struct Notice {
 
 #[derive(Debug, RustcEncodable)]
 struct Context {
-    notifier: NotifierPayload
+    notifier: NotifierPayload,
+    version: String,
 }
 
 #[derive(Debug, RustcEncodable)]
@@ -41,7 +44,7 @@ impl ToJson for AirbrakeError {
 }
 
 impl Notice {
-    pub fn new<E: Error>(error: E) -> Notice {
+    pub fn new<E: Error>(config: &Config, error: E) -> Notice {
         Notice {
             errors: vec![
                 AirbrakeError {
@@ -54,7 +57,8 @@ impl Notice {
                     name: NOTIFIER_NAME.to_owned(),
                     version: env!("CARGO_PKG_VERSION").to_owned(),
                     url: NOTIFIER_URL.to_owned(),
-                }
+                },
+                version: config.app_version.clone(),
             },
         }
     }
