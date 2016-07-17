@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use rustc_serialize::json::Json;
+use serde_json::Value;
 
 use config::Config;
 use notice::Notice;
@@ -33,7 +33,7 @@ impl Notifier {
         self.async_sender.send(notice);
     }
 
-    pub fn notify_sync<E: Error>(&self, error: E) -> Json {
+    pub fn notify_sync<E: Error>(&self, error: E) -> Value {
         if self.closed {
             panic!("attempted to send through a closed Airbrake notifier");
         }
