@@ -1,9 +1,11 @@
+extern crate serde_json;
+
 use std::io::Read;
 
+use self::serde_json::Value;
 use hyper::Url;
 use hyper::header::ContentType;
 use hyper::client::{Client, Body};
-use rustc_serialize::json::Json;
 
 use config::Config;
 use notice::Notice;
@@ -38,7 +40,7 @@ impl SyncSender {
         }
     }
 
-    pub fn send(&self, notice: Notice) -> Json {
+    pub fn send(&self, notice: Notice) -> Value {
         let uri = Url::parse(&self.endpoint).ok().expect("malformed URL");
 
         let payload = notice.to_json();
@@ -53,6 +55,6 @@ impl SyncSender {
 
         let mut buffer = String::new();
         response.unwrap().read_to_string(&mut buffer).unwrap();
-        Json::from_str(&buffer).unwrap()
+        serde_json::from_str(&buffer).unwrap()
     }
 }

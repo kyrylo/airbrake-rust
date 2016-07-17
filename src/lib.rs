@@ -156,9 +156,11 @@
 //! [json-object]: https://doc.rust-lang.org/rustc-serialize/rustc_serialize/json/enum.Json.html
 
 extern crate hyper;
-extern crate rustc_serialize;
+extern crate serde;
+extern crate serde_json;
 #[macro_use]
 extern crate log;
+
 
 mod config;
 mod notifier;
