@@ -6,6 +6,7 @@ pub struct Config {
     pub workers: i32,
     pub proxy: String,
     pub app_version: String,
+    pub root_directory: String,
 }
 
 impl Config {
@@ -17,6 +18,7 @@ impl Config {
             workers: 1,
             proxy: String::new(),
             app_version: String::new(),
+            root_directory: String::new(),
         }
     }
 

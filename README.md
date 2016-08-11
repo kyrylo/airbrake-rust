@@ -138,6 +138,19 @@ let mut airbrake = airbrake::configure(|config| {
 });
 ```
 
+### root_directory
+
+Configures the root directory of your project. Expects a String, which
+represents the path to your project. Providing this option helps Airbrake to
+filter out repetitive data from backtrace frames and link to GitHub files from
+the dashboard.
+
+```rust
+let mut airbrake = airbrake::configure(|config| {
+    config.root_directory = "/home/user/project".to_owned();
+});
+```
+
 API
 ---
 

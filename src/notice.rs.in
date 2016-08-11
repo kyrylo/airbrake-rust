@@ -8,14 +8,15 @@ const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
 
 #[derive(Debug, Serialize)]
 pub struct Notice {
-    errors: Vec<AirbrakeError>,
-    context: Context,
+    pub errors: Vec<AirbrakeError>,
+    pub context: Context,
 }
 
 #[derive(Debug, Serialize)]
 pub struct Context {
+    pub version: String,
     notifier: NotifierPayload,
-    version: String,
+    root_directory: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -28,8 +29,9 @@ pub struct NotifierPayload {
 #[derive(Debug, Serialize)]
 pub struct AirbrakeError {
     #[serde(rename="type")]
-    type_: String,
-    message: String,
+    pub type_: String,
+    pub message: String,
+    pub backtrace: Vec<String>,
 }
 
 impl Notice {
@@ -39,6 +41,7 @@ impl Notice {
                 AirbrakeError {
                     type_: format!("{:?}", error).split_whitespace().next().unwrap().to_owned(),
                     message: format!("{}", error),
+                    backtrace: vec!["foo/bar/baz.rs".to_owned()],
                 }
             ],
             context: Context {
@@ -48,6 +51,7 @@ impl Notice {
                     url: NOTIFIER_URL.to_owned(),
                 },
                 version: config.app_version.clone(),
+                root_directory: config.root_directory.to_owned(),
             },
         }
     }
