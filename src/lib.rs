@@ -161,12 +161,12 @@ extern crate serde_json;
 #[macro_use]
 extern crate log;
 
-
 mod config;
 mod notifier;
 mod notice;
 mod async_sender;
 mod sync_sender;
+mod filter_chain;
 
 use notifier::Notifier;
 use config::Config;

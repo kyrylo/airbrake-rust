@@ -6,12 +6,14 @@ use config::Config;
 use notice::Notice;
 use sync_sender::SyncSender;
 use async_sender::AsyncSender;
+use filter_chain::FilterChain;
 
 pub struct Notifier {
     sync_sender: SyncSender,
     async_sender: AsyncSender,
     closed: bool,
     config: Config,
+    filter_chain: FilterChain,
 }
 
 impl Notifier {
@@ -19,6 +21,7 @@ impl Notifier {
         Notifier {
             sync_sender: SyncSender::new(&config),
             async_sender: AsyncSender::new(&config),
+            filter_chain: FilterChain::new(&config),
             closed: false,
             config: config,
         }
@@ -29,7 +32,8 @@ impl Notifier {
             panic!("attempted to send through a closed Airbrake notifier");
         }
 
-        let notice = Notice::new(&self.config, error);
+        let mut notice = Notice::new(&self.config, error);
+        self.filter_chain.refine(&mut notice);
         self.async_sender.send(notice);
     }
 
@@ -38,7 +42,8 @@ impl Notifier {
             panic!("attempted to send through a closed Airbrake notifier");
         }
 
-        let notice = Notice::new(&self.config, error);
+        let mut notice = Notice::new(&self.config, error);
+        self.filter_chain.refine(&mut notice);
         self.sync_sender.send(notice)
     }
 
@@ -49,6 +54,12 @@ impl Notifier {
 
         self.async_sender.close();
         self.closed = true;
+    }
+
+    pub fn add_filter<F>(&mut self, filter: F)
+        where F: Fn(&mut Notice) + 'static
+    {
+        self.filter_chain.add_filter(filter);
     }
 }
 
