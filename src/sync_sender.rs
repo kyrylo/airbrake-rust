@@ -1,8 +1,7 @@
-extern crate serde_json;
-
 use std::io::Read;
 
-use self::serde_json::Value;
+use serde_json;
+use serde_json::Value;
 use hyper::Url;
 use hyper::header::ContentType;
 use hyper::client::{Client, Body};
