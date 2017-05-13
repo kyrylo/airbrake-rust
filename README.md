@@ -37,7 +37,7 @@ Add the crate to your Cargo.toml:
 
 ```toml
 [dependencies]
-airbrake = "0.1"
+airbrake = "0.2"
 ```
 
 Examples
