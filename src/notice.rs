@@ -16,6 +16,10 @@ pub struct Notice {
 pub struct Context {
     notifier: NotifierPayload,
     version: String,
+    environment: Option<String>,
+    component: Option<String>,
+    os: Option<String>,
+    hostname: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -48,6 +52,10 @@ impl Notice {
                     url: NOTIFIER_URL.to_owned(),
                 },
                 version: config.app_version.clone(),
+                environment: config.environment.clone(),
+                component: config.component.clone(),
+                os: config.os.clone(),
+                hostname: config.hostname.clone(),
             },
         }
     }
