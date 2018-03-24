@@ -3,7 +3,8 @@ Airbrake Rust
 
 [![Build Status](https://travis-ci.org/kyrylo/airbrake-rust.svg?branch=master)](https://travis-ci.org/kyrylo/airbrake-rust)
 
-**/!\ The project is in the alpha stage /!\**
+**The project is in the alpha stage and I don't recommend using it in
+production until it hits v1.0.0**
 
 * [Airbrake Rust README](https://github.com/kyrylo/airbrake-rust)
 
