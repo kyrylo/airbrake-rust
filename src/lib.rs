@@ -40,13 +40,6 @@ impl Notifier {
                         {
                             "type": "error1",
                             "message": error,
-                            "backtrace": [
-                                {
-                                    "file": "backtrace file",
-                                    "line": 10,
-                                    "function": "backtrace function"
-                                }
-                            ]
                         }
                     ]
                 }).to_string(),
