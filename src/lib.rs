@@ -33,7 +33,11 @@ impl Notice {
         Self {
             errors: vec![
                 Error {
-                    type_: String::from("TYPE"),
+                    type_: format!("{:?}", error)
+                        .split_whitespace()
+                        .next()
+                        .unwrap()
+                        .to_owned(),
                     message: String::from(error.description()),
                 },
             ],
