@@ -1,10 +1,9 @@
-extern crate futures;
 extern crate reqwest;
-#[macro_use]
+extern crate serde;
 extern crate serde_json;
-use reqwest::StatusCode;
-use reqwest::header::{Authorization, Bearer};
-// use futures::Future;
+
+#[macro_use]
+extern crate serde_derive;
 
 #[derive(Debug)]
 pub struct Notifier {
@@ -17,36 +16,51 @@ pub struct Config {
     pub project_key: String,
 }
 
+#[derive(Serialize)]
+struct Error {
+    #[serde(rename = "type")]
+    type_: String,
+    message: String,
+}
+
+#[derive(Serialize)]
+struct Notice {
+    errors: Vec<Error>,
+}
+
+impl Notice {
+    pub fn new<T: std::error::Error>(error: T) -> Self {
+        Self {
+            errors: vec![
+                Error {
+                    type_: String::from("TYPE"),
+                    message: String::from(error.description()),
+                },
+            ],
+        }
+    }
+}
+
 impl Notifier {
     pub fn new(config: Config) -> Self {
         Self { config: config }
     }
 
-    pub fn notify(&self, error: String) -> StatusCode {
-        let client = reqwest::Client::new();
-
-        let url = format!(
-            "https://airbrake.io/api/v3/projects/{}/notices",
-            self.config.project_id
-        );
-        let resp = client
-            .post(&url)
-            .header(Authorization(Bearer {
+    pub fn notify<T: std::error::Error>(&self, error: T) -> reqwest::Response {
+        reqwest::Client::new()
+            .post(&self.endpoint())
+            .header(reqwest::header::Authorization(reqwest::header::Bearer {
                 token: self.config.project_key.to_owned(),
             }))
-            .body(
-                json!({
-                    "errors": [
-                        {
-                            "type": "error1",
-                            "message": error,
-                        }
-                    ]
-                }).to_string(),
-            )
+            .body(serde_json::to_string(&Notice::new(error)).unwrap())
             .send()
-            .unwrap();
+            .unwrap()
+    }
 
-        resp.status()
+    fn endpoint(&self) -> String {
+        format!(
+            "https://airbrake.io/api/v3/projects/{}/notices",
+            self.config.project_id
+        )
     }
 }
