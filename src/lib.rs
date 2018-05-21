@@ -5,7 +5,12 @@ extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 
+pub mod notice;
+
+use std::error::Error;
 use std::collections::HashMap;
+
+use notice::{Notice, Param};
 
 #[derive(Debug)]
 pub struct Notifier {
@@ -18,49 +23,12 @@ pub struct Config {
     pub project_key: String,
 }
 
-#[derive(Serialize)]
-struct Error {
-    #[serde(rename = "type")]
-    type_: String,
-    message: String,
-}
-
-#[derive(Serialize)]
-pub struct Notice {
-    errors: Vec<Error>,
-    params: HashMap<String, Param>,
-}
-
-#[derive(Serialize)]
-pub enum Param {
-    Int32(i32),
-    String(String),
-}
-
-impl Notice {
-    pub fn new<T: std::error::Error>(error: T, params: Option<HashMap<String, Param>>) -> Self {
-        Self {
-            errors: vec![
-                Error {
-                    type_: format!("{:?}", error)
-                        .split_whitespace()
-                        .next()
-                        .unwrap()
-                        .to_owned(),
-                    message: String::from(error.description()),
-                },
-            ],
-            params: params.unwrap_or(HashMap::new()),
-        }
-    }
-}
-
 impl Notifier {
     pub fn new(config: Config) -> Self {
         Self { config: config }
     }
 
-    pub fn notify<T: std::error::Error>(
+    pub fn notify<T: Error>(
         &self,
         error: T,
         params: Option<HashMap<String, Param>>,
@@ -80,7 +48,7 @@ impl Notifier {
             .unwrap()
     }
 
-    pub fn build_notice<T: std::error::Error>(
+    pub fn build_notice<T: Error>(
         &self,
         error: T,
         params: Option<HashMap<String, Param>>,
