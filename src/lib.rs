@@ -24,7 +24,7 @@ struct Error {
 }
 
 #[derive(Serialize)]
-struct Notice {
+pub struct Notice {
     errors: Vec<Error>,
 }
 
@@ -56,9 +56,13 @@ impl Notifier {
             .header(reqwest::header::Authorization(reqwest::header::Bearer {
                 token: self.config.project_key.to_owned(),
             }))
-            .body(serde_json::to_string(&Notice::new(error)).unwrap())
+            .body(serde_json::to_string(&self.build_notice(error)).unwrap())
             .send()
             .unwrap()
+    }
+
+    pub fn build_notice<T: std::error::Error>(&self, error: T) -> Notice {
+        Notice::new(error)
     }
 
     fn endpoint(&self) -> String {
