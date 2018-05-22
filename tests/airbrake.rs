@@ -20,10 +20,10 @@ fn it_notifies_airbrake_with_some_params() {
     });
 
     let mut params = std::collections::HashMap::new();
-    params.insert(String::from("mango"), airbrake::notice::Param::Int32(42));
+    params.insert(String::from("mango"), airbrake::Param::Int32(42));
     params.insert(
         String::from("banana"),
-        airbrake::notice::Param::String(String::from("tasty")),
+        airbrake::Param::String(String::from("tasty")),
     );
 
     let error = "xc".parse::<f64>().err().unwrap();
