@@ -1,10 +1,12 @@
+use backtrace::Backtrace;
+
 use std::error::Error;
 use std::collections::HashMap;
 
 #[derive(Serialize)]
 pub struct Notice {
     errors: Vec<AirbrakeError>,
-    params: HashMap<String, Param>,
+    params: Option<Backtrace>, // HashMap<String, Param>,
 }
 
 #[derive(Serialize)]
@@ -12,6 +14,7 @@ struct AirbrakeError {
     #[serde(rename = "type")]
     type_: String,
     message: String,
+    // backtrace: Backtrace,
 }
 
 #[derive(Serialize)]
@@ -21,7 +24,11 @@ pub enum Param {
 }
 
 impl Notice {
-    pub fn new<T: Error>(error: T, params: Option<HashMap<String, Param>>) -> Self {
+    pub fn new<T: Error>(
+        error: T,
+        params: Option<HashMap<String, Param>>,
+        backtrace: Option<Backtrace>,
+    ) -> Self {
         Self {
             errors: vec![
                 AirbrakeError {
@@ -31,9 +38,10 @@ impl Notice {
                         .unwrap()
                         .to_owned(),
                     message: String::from(error.description()),
+                    // backtrace: backtrace.unwrap_or(Backtrace::new()),
                 },
             ],
-            params: params.unwrap_or(HashMap::new()),
+            params: backtrace, // params.unwrap_or(HashMap::new()),
         }
     }
 }

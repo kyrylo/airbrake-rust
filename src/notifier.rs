@@ -1,5 +1,6 @@
 use reqwest;
 use serde_json;
+use backtrace::Backtrace;
 
 use std::error::Error;
 use std::collections::HashMap;
@@ -26,8 +27,9 @@ impl Notifier {
         &self,
         error: T,
         params: Option<HashMap<String, Param>>,
+        backtrace: Option<Backtrace>,
     ) -> reqwest::Response {
-        let notice = self.build_notice(error, params);
+        let notice = self.build_notice(error, params, backtrace);
 
         reqwest::Client::new()
             .post(&format!(
@@ -46,7 +48,8 @@ impl Notifier {
         &self,
         error: T,
         params: Option<HashMap<String, Param>>,
+        backtrace: Option<Backtrace>,
     ) -> Notice {
-        Notice::new(error, params)
+        Notice::new(error, params, backtrace)
     }
 }

@@ -1,5 +1,9 @@
 extern crate airbrake;
 
+extern crate backtrace;
+
+use backtrace::Backtrace;
+
 #[test]
 fn it_notifies_airbrake_without_params() {
     let notifier = airbrake::Notifier::new(airbrake::Config {
@@ -8,12 +12,14 @@ fn it_notifies_airbrake_without_params() {
     });
 
     let error = "xc".parse::<u32>().err().unwrap();
-    let response = notifier.notify(error, None);
+    let response = notifier.notify(error, None, None);
     assert_eq!(response.status().is_success(), true)
 }
 
 #[test]
 fn it_notifies_airbrake_with_some_params() {
+    let bt = Backtrace::new();
+
     let notifier = airbrake::Notifier::new(airbrake::Config {
         project_id: 113743,
         project_key: String::from("81bbff95d52f8856c770bb39e827f3f6"),
@@ -27,6 +33,6 @@ fn it_notifies_airbrake_with_some_params() {
     );
 
     let error = "xc".parse::<f64>().err().unwrap();
-    let response = notifier.notify(error, Some(params));
+    let response = notifier.notify(error, Some(params), Some(bt));
     assert_eq!(response.status().is_success(), true)
 }
