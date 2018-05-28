@@ -1,11 +1,9 @@
 use reqwest;
 use serde_json;
-use backtrace::Backtrace;
 
 use std::error::Error;
-use std::collections::HashMap;
 
-use notice::{Notice, Param};
+use notice::Notice;
 
 #[derive(Debug)]
 pub struct Notifier {
@@ -23,14 +21,7 @@ impl Notifier {
         Self { config: config }
     }
 
-    pub fn notify<T: Error>(
-        &self,
-        error: T,
-        params: Option<HashMap<String, Param>>,
-        backtrace: Option<Backtrace>,
-    ) -> reqwest::Response {
-        let notice = self.build_notice(error, params, backtrace);
-
+    pub fn notify(&self, notice: Notice) -> reqwest::Response {
         reqwest::Client::new()
             .post(&format!(
                 "https://airbrake.io/api/v3/projects/{}/notices",
@@ -44,12 +35,7 @@ impl Notifier {
             .unwrap()
     }
 
-    pub fn build_notice<T: Error>(
-        &self,
-        error: T,
-        params: Option<HashMap<String, Param>>,
-        backtrace: Option<Backtrace>,
-    ) -> Notice {
-        Notice::new(error, params, backtrace)
+    pub fn build_notice<T: Error>(&self, error: T) -> Notice {
+        Notice::new(error)
     }
 }
