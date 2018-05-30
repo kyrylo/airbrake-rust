@@ -63,27 +63,14 @@ impl Notice {
             // TODO: Add support for multiple symbols.
             // https://docs.rs/backtrace/0.3.8/backtrace/struct.BacktraceFrame.html#method.symbols
             if let Some(symbol) = frame.symbols().first() {
-                let file;
-                if let Some(filename) = symbol.filename() {
-                    file = Some(filename.to_path_buf());
-                } else {
-                    file = None;
-                }
-
-                let function;
-                if let Some(func) = symbol.name() {
-                    if let Some(func_str) = func.as_str() {
-                        function = Some(String::from(func_str));
-                    } else {
-                        function = None;
-                    }
-                } else {
-                    function = None;
-                }
+                let function = symbol
+                    .name()
+                    .and_then(|f| f.as_str())
+                    .and_then(|f| Some(String::from(f)));
 
                 frames.push(StackFrame {
                     line: symbol.lineno(),
-                    file: file,
+                    file: symbol.filename().and_then(|f| Some(f.to_path_buf())),
                     function: function,
                 });
             }
