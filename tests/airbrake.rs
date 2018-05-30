@@ -31,8 +31,10 @@ fn it_notifies_airbrake() {
         airbrake::Param::String(String::from("tasty")),
     );
 
-    let notice = notifier.build_notice(error).set_backtrace(backtrace);
-    // .set_params(params)
+    let notice = notifier
+        .build_notice(error)
+        .set_backtrace(backtrace)
+        .set_params(params);
 
     let mut response = notifier.notify(notice);
     println!("{:#?}", response.text());
