@@ -8,12 +8,6 @@ extern crate serde_json;
 
 use backtrace::Backtrace;
 
-#[derive(Debug, Deserialize)]
-struct Resp {
-    // id: i32,
-    // url: String,
-}
-
 #[test]
 fn it_notifies_airbrake() {
     let backtrace = Backtrace::new();
@@ -37,6 +31,5 @@ fn it_notifies_airbrake() {
         .set_params(params);
 
     let mut response = notifier.notify(notice);
-    println!("{:#?}", response.text());
     assert_eq!(response.status().is_success(), true)
 }
