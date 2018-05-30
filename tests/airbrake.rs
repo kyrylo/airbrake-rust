@@ -30,6 +30,6 @@ fn it_notifies_airbrake() {
         .set_backtrace(backtrace)
         .set_params(params);
 
-    let mut response = notifier.notify(notice);
+    let mut response = notifier.notify(notice).expect("notifier.notify failed");
     assert_eq!(response.status().is_success(), true)
 }

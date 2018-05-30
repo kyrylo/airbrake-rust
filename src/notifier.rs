@@ -21,7 +21,7 @@ impl Notifier {
         Self { config: config }
     }
 
-    pub fn notify(&self, notice: Notice) -> reqwest::Response {
+    pub fn notify(&self, notice: Notice) -> Result<reqwest::Response, reqwest::Error> {
         reqwest::Client::new()
             .post(&format!(
                 "https://airbrake.io/api/v3/projects/{}/notices",
@@ -32,7 +32,6 @@ impl Notifier {
             }))
             .body(serde_json::to_string(&notice).unwrap())
             .send()
-            .unwrap()
     }
 
     pub fn build_notice<T: Error>(&self, error: T) -> Notice {
