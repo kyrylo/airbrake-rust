@@ -2,6 +2,7 @@ use backtrace::Backtrace;
 
 use std::error::Error;
 use std::collections::HashMap;
+use std::path::PathBuf;
 use std::fmt;
 
 #[derive(Serialize, Debug)]
@@ -32,9 +33,9 @@ impl fmt::Display for Notice {
 
 #[derive(Serialize, Debug)]
 struct StackFrame {
-    // file: String,
-    // line: String,
-    function: String,
+    line: Option<u32>,
+    file: Option<PathBuf>,
+    function: Option<String>,
 }
 
 impl Error for Notice {
@@ -56,21 +57,38 @@ impl Notice {
     }
 
     pub fn set_backtrace(mut self, backtrace: Backtrace) -> Self {
-        let mut stack_frames = Vec::new();
+        let mut frames = Vec::new();
 
         for frame in backtrace.frames() {
-            let symbols = frame.symbols();
-            if symbols.is_empty() {
-                continue;
-            }
+            // TODO: Add support for multiple symbols.
+            // https://docs.rs/backtrace/0.3.8/backtrace/struct.BacktraceFrame.html#method.symbols
+            if let Some(symbol) = frame.symbols().first() {
+                let file;
+                if let Some(filename) = symbol.filename() {
+                    file = Some(filename.to_path_buf());
+                } else {
+                    file = None;
+                }
 
-            if let Some(function_name) = symbols[0].name() {
-                stack_frames.push(StackFrame {
-                    function: String::from(function_name.as_str().unwrap()),
+                let function;
+                if let Some(func) = symbol.name() {
+                    if let Some(func_str) = func.as_str() {
+                        function = Some(String::from(func_str));
+                    } else {
+                        function = None;
+                    }
+                } else {
+                    function = None;
+                }
+
+                frames.push(StackFrame {
+                    line: symbol.lineno(),
+                    file: file,
+                    function: function,
                 });
             }
         }
-        self.errors[0].backtrace = Some(stack_frames);
+        self.errors[0].backtrace = Some(frames);
         self
     }
 
