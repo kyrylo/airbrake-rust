@@ -15,6 +15,11 @@ _Airbrake Rust_ is an [Airbrake][airbrake.io] notifier library for the Rust
 Programming language. The library provides minimalist API that enables the
 ability to send Rust errors to the Airbrake dashboard.
 
+Key features
+------------
+
+* Backtrace support
+
 Installation
 ------------
 
