@@ -5,6 +5,7 @@ Airbrake Rust
 [![Crates.io](https://img.shields.io/crates/v/airbrake.svg)](https://crates.io/crates/airbrake)
 
 
+* [Documentation](https://docs.rs/crate/airbrake)
 * [Airbrake Rust README](https://github.com/kyrylo/airbrake-rust)
 
 Introduction
