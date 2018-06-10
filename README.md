@@ -25,3 +25,5 @@ Add the crate to your Cargo.toml:
 [dependencies]
 airbrake = "0.3"
 ```
+
+[airbrake.io]: https://airbrake.io
