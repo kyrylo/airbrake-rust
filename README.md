@@ -1,9 +1,6 @@
 Airbrake Rust
 =============
 
-Airbrake Rust
-=============
-
 [![Build Status](https://travis-ci.org/kyrylo/airbrake-rust.svg?branch=master)](https://travis-ci.org/kyrylo/airbrake-rust)
 [![Crates.io](https://img.shields.io/crates/v/airbrake.svg)](https://crates.io/crates/airbrake)
 
