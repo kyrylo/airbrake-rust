@@ -15,6 +15,8 @@ fn it_notifies_airbrake() {
     let notifier = airbrake::Notifier::new(airbrake::Config {
         project_id: 113743,
         project_key: String::from("81bbff95d52f8856c770bb39e827f3f6"),
+        proxy_url: None, // Some(String::from("http://localhost:8080")),
+        ..Default::default()
     });
 
     let error = "xc".parse::<u32>().err().unwrap();
@@ -30,6 +32,6 @@ fn it_notifies_airbrake() {
         .set_backtrace(backtrace)
         .set_params(params);
 
-    let mut response = notifier.notify(notice).expect("notifier.notify failed");
+    let response = notifier.notify(notice).expect("notifier.notify failed");
     assert_eq!(response.status().is_success(), true)
 }

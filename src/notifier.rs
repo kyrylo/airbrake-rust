@@ -5,7 +5,7 @@ use std::error::Error;
 
 use notice::Notice;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Notifier {
     config: Config,
 }
@@ -14,6 +14,7 @@ pub struct Notifier {
 pub struct Config {
     pub project_id: u32,
     pub project_key: String,
+    pub proxy_url: Option<String>,
 }
 
 impl Notifier {
@@ -22,7 +23,15 @@ impl Notifier {
     }
 
     pub fn notify(&self, notice: Notice) -> Result<reqwest::Response, reqwest::Error> {
-        reqwest::Client::new()
+        let mut client_builder = reqwest::Client::builder();
+        if self.config.proxy_url.is_some() {
+            client_builder.proxy(reqwest::Proxy::all(
+                self.config.proxy_url.to_owned().unwrap().as_str(),
+            )?);
+        }
+
+        let client = client_builder.build()?;
+        client
             .post(&format!(
                 "https://airbrake.io/api/v3/projects/{}/notices",
                 self.config.project_id
