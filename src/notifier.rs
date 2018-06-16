@@ -30,8 +30,8 @@ impl Notifier {
             )?);
         }
 
-        let client = client_builder.build()?;
-        client
+        client_builder
+            .build()?
             .post(&format!(
                 "https://airbrake.io/api/v3/projects/{}/notices",
                 self.config.project_id
