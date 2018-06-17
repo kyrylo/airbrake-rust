@@ -1,12 +1,11 @@
 Airbrake Rust
 =============
 
-[![Build Status](https://travis-ci.org/kyrylo/airbrake-rust.svg?branch=master)](https://travis-ci.org/kyrylo/airbrake-rust)
-[![Crates.io](https://img.shields.io/crates/v/airbrake.svg)](https://crates.io/crates/airbrake)
+[![Build Status](https://travis-ci.org/kyrylo/airbrake-rust.svg?branch=master)][travis]
+[![Crates.io](https://img.shields.io/crates/v/airbrake.svg)][crate]
 
-
-* [Documentation](https://docs.rs/crate/airbrake)
-* [Airbrake Rust README](https://github.com/kyrylo/airbrake-rust)
+* [Documentation][crate-docs]
+* [Airbrake Rust README][github-readme]
 
 Introduction
 ------------
@@ -19,6 +18,7 @@ Key features
 ------------
 
 * Backtrace support
+* Proxy support
 
 Installation
 ------------
@@ -172,12 +172,19 @@ TBA
 Contact
 -------
 
-n case you have a problem, question or a bug report, feel free to:
+In case you have a problem, question or a bug report, feel free to:
 
-* [file an issue](https://github.com/kyrylo/airbrake-rust/issues)
-* [send a PR](https://github.com/kyrylo/airbrake-rust/pulls)
-* [send me an email](mailto:silin@kyrylo.org)
+* [file an issue][issues]
+* [send a PR][pulls]
+* [send me an email][email]
 
 [airbrake.io]: https://airbrake.io
+[crate]: https://crates.io/crates/airbrake
+[travis]: https://travis-ci.org/kyrylo/airbrake-rust
+[crate-docs]: https://docs.rs/airbrake
 [project-idkey]: https://s3.amazonaws.com/airbrake-github-assets/airbrake-ruby/project-id-key.png
 [backtrace]: https://docs.rs/backtrace
+[issues]: https://github.com/kyrylo/airbrake-rust/issues
+[pulls]: https://github.com/kyrylo/airbrake-rust/pulls
+[email]: mailto:silin@kyrylo.org
+[github-readme]: https://github.com/kyrylo/airbrake-rust
