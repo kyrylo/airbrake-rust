@@ -5,16 +5,30 @@ use std::error::Error;
 
 use notice::Notice;
 
+const AIRBRAKE_API: &'static str = "https://airbrake.io";
+
 #[derive(Debug, Default)]
 pub struct Notifier<'a> {
     config: Config<'a>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Config<'a> {
     pub project_id: u32,
     pub project_key: &'a str,
-    pub proxy_url: Option<String>,
+    pub proxy_url: &'a str,
+    pub host: &'a str,
+}
+
+impl<'a> Default for Config<'a> {
+    fn default() -> Self {
+        Self {
+            project_id: 0,
+            project_key: "",
+            proxy_url: "",
+            host: AIRBRAKE_API,
+        }
+    }
 }
 
 impl<'a> Notifier<'a> {
@@ -24,21 +38,23 @@ impl<'a> Notifier<'a> {
 
     pub fn notify(&self, notice: Notice) -> Result<reqwest::Response, reqwest::Error> {
         let mut client_builder = reqwest::Client::builder();
-        if self.config.proxy_url.is_some() {
-            client_builder.proxy(reqwest::Proxy::all(
-                self.config.proxy_url.to_owned().unwrap().as_str(),
-            )?);
+        if !self.config.proxy_url.is_empty() {
+            client_builder.proxy(reqwest::Proxy::all(self.config.proxy_url)?);
         }
+
+        let mut headers = reqwest::header::Headers::new();
+        headers.set(reqwest::header::ContentType::json());
+        headers.set(reqwest::header::Authorization(reqwest::header::Bearer {
+            token: String::from(self.config.project_key),
+        }));
 
         client_builder
             .build()?
             .post(&format!(
-                "https://airbrake.io/api/v3/projects/{}/notices",
-                self.config.project_id
+                "{}/api/v3/projects/{}/notices",
+                self.config.host, self.config.project_id
             ))
-            .header(reqwest::header::Authorization(reqwest::header::Bearer {
-                token: self.config.project_key.to_owned(),
-            }))
+            .headers(headers)
             .body(serde_json::to_string(&notice).unwrap())
             .send()
     }
