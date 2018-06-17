@@ -40,13 +40,12 @@ Examples
 This is the minimal example that you can use to test Airbrake Rust with your
 project.
 
-```rs
+```rust
 extern crate airbrake;
 
 let notifier = airbrake::Notifier::new(airbrake::Config {
     project_id: 113743,
     project_key: String::from("81bbff95d52f8856c770bb39e827f3f6"),
-    proxy_url: None, // Some(String::from("http://localhost:8080")),
     ..Default::default()
 });
 
@@ -72,7 +71,7 @@ Settings_ and copy the values from the right sidebar.
 
 ![][project-idkey]
 
-```rs
+```rust
 airbrake::Config {
     project_id: 1,
 	project_key: "key",
