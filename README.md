@@ -164,8 +164,8 @@ that exceed this limit will be truncated to fit the size.
 This is not an official library (yet) despite the fact that I work for
 Airbrake. The library is in development, so please use with caution.
 
-Supported Rust versions
------------------------
+Platform support
+----------------
 
 TBA
 
