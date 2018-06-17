@@ -52,7 +52,7 @@ let notifier = airbrake::Notifier::new(airbrake::Config {
 // Get an error.
 let error = "xc".parse::<u32>().err().unwrap();
 
-// Build a notice from from the error.
+// Build a notice from the error.
 let notice = notifier.build_notice(error);
 
 // Send the notice to Airbrake.
@@ -74,8 +74,20 @@ Settings_ and copy the values from the right sidebar.
 ```rust
 airbrake::Config {
     project_id: 1,
-	project_key: "key",
-	..Default::default()
+    project_key: "key",
+    ..Default::default()
+};
+```
+
+### proxy_url
+
+If your server is not able to directly reach Airbrake, you can route your errors
+through a proxy. By default, Airbrake Rust uses a direct connection.
+
+```rust
+airbrake::Config {
+	proxy_url: Some(String::from("http://localhost:8080")),
+    ..Default::default()
 };
 ```
 
