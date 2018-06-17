@@ -43,6 +43,7 @@ project.
 ```rust
 extern crate airbrake;
 
+// Initialize an Airbrake notifier (client).
 let notifier = airbrake::Notifier::new(airbrake::Config {
     project_id: 113743,
     project_key: String::from("81bbff95d52f8856c770bb39e827f3f6"),
@@ -81,8 +82,9 @@ airbrake::Config {
 
 ### proxy_url
 
-If your server is not able to directly reach Airbrake, you can route your errors
-through a proxy. By default, Airbrake Rust uses a direct connection.
+If your server is not able to reach Airbrake directly, then you can route your
+errors through a proxy. By default, Airbrake Rust uses direct connection. When
+`proxy_url` is provided, then it sends errors to that proxy.
 
 ```rust
 airbrake::Config {
@@ -177,6 +179,11 @@ In case you have a problem, question or a bug report, feel free to:
 * [file an issue][issues]
 * [send a PR][pulls]
 * [send me an email][email]
+
+Licence
+-------
+
+The project uses the MIT License. See LICENCE.md for details.
 
 [airbrake.io]: https://airbrake.io
 [crate]: https://crates.io/crates/airbrake
