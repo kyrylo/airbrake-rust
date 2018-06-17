@@ -108,7 +108,8 @@ let notifier = airbrake::Notifier::new(airbrake::Config {
 
 #### build_notice
 
-Builds an `airbrake::Notice` from the given error.
+Builds an `airbrake::Notice` from the given error. The notice carries error type
+and error message.
 
 ```rust
 let notice = notifier.build_notice(error);
@@ -149,6 +150,33 @@ params.insert(
 
 notice.set_params(params);
 ```
+
+Additional notes
+----------------
+
+### Exception limit (not implemented yet)
+
+The maximum size of an `airbrake::Notice` is 64KB (in its JSON form). Exceptions
+that exceed this limit will be truncated to fit the size.
+
+### Library status
+
+This is not an official library (yet) despite the fact that I work for
+Airbrake. The library is in development, so please use with caution.
+
+Supported Rust versions
+-----------------------
+
+TBA
+
+Contact
+-------
+
+n case you have a problem, question or a bug report, feel free to:
+
+* [file an issue](https://github.com/kyrylo/airbrake-rust/issues)
+* [send a PR](https://github.com/kyrylo/airbrake-rust/pulls)
+* [send me an email](mailto:silin@kyrylo.org)
 
 [airbrake.io]: https://airbrake.io
 [project-idkey]: https://s3.amazonaws.com/airbrake-github-assets/airbrake-ruby/project-id-key.png
