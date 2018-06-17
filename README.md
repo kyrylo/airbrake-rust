@@ -62,7 +62,7 @@ notifier.notify(notice);
 Configuration
 -------------
 
-#### project_id && project_key
+### project_id && project_key
 
 You **must** set both `project_id` & `project_key`.
 
