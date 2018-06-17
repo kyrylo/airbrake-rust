@@ -14,7 +14,7 @@ fn it_notifies_airbrake() {
 
     let notifier = airbrake::Notifier::new(airbrake::Config {
         project_id: 113743,
-        project_key: String::from("81bbff95d52f8856c770bb39e827f3f6"),
+        project_key: "81bbff95d52f8856c770bb39e827f3f6",
         ..Default::default()
     });
 

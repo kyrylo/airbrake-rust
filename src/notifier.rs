@@ -6,19 +6,19 @@ use std::error::Error;
 use notice::Notice;
 
 #[derive(Debug, Default)]
-pub struct Notifier {
-    config: Config,
+pub struct Notifier<'a> {
+    config: Config<'a>,
 }
 
 #[derive(Debug, Default)]
-pub struct Config {
+pub struct Config<'a> {
     pub project_id: u32,
-    pub project_key: String,
+    pub project_key: &'a str,
     pub proxy_url: Option<String>,
 }
 
-impl Notifier {
-    pub fn new(config: Config) -> Self {
+impl<'a> Notifier<'a> {
+    pub fn new(config: Config<'a>) -> Self {
         Self { config: config }
     }
 
