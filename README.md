@@ -91,5 +91,65 @@ airbrake::Config {
 };
 ```
 
+API
+---
+
+### airbrake::Notifier
+
+#### new
+
+Creates a new Airbrake notifier. Accepts a `notifier::Config`.
+
+```rust
+let notifier = airbrake::Notifier::new(airbrake::Config {
+    // ...
+});
+```
+
+#### build_notice
+
+Builds an `airbrake::Notice` from the given error.
+
+```rust
+let notice = notifier.build_notice(error);
+```
+
+#### notify
+
+Sends the notice object to Airbrake.
+
+```rust
+notifier.notify(notice);
+```
+
+### Notice
+
+#### set_backtrace
+
+Attaches a backtrace provided by the [`backtrace`][backtrace] library.
+
+```rust
+extern crate backtrace;
+
+let backtrace = Backtrace::new();
+notice.set_backtrace(backtrace);
+```
+
+#### set_params
+
+Attaches arbitrary string parameters.
+
+```rust
+let mut params = std::collections::HashMap::new();
+params.insert(String::from("mango"), airbrake::Param::Int32(42));
+params.insert(
+    String::from("banana"),
+    airbrake::Param::String(String::from("tasty")),
+);
+
+notice.set_params(params);
+```
+
 [airbrake.io]: https://airbrake.io
 [project-idkey]: https://s3.amazonaws.com/airbrake-github-assets/airbrake-ruby/project-id-key.png
+[backtrace]: https://docs.rs/backtrace
