@@ -86,7 +86,7 @@ through a proxy. By default, Airbrake Rust uses a direct connection.
 
 ```rust
 airbrake::Config {
-	proxy_url: Some(String::from("http://localhost:8080")),
+    proxy_url: Some(String::from("http://localhost:8080")),
     ..Default::default()
 };
 ```
