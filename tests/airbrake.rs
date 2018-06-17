@@ -1,10 +1,5 @@
 extern crate airbrake;
-
 extern crate backtrace;
-
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
 
 use backtrace::Backtrace;
 

@@ -38,12 +38,6 @@ struct StackFrame {
     function: Option<String>,
 }
 
-impl Error for Notice {
-    fn description(&self) -> &str {
-        "Notice: hi"
-    }
-}
-
 impl Notice {
     pub fn new<T: Error>(error: T) -> Self {
         Self {
