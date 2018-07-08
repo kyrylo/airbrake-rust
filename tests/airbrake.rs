@@ -71,19 +71,22 @@ fn test_params_attachment() {
 }
 
 #[test]
-#[ignore]
 fn test_routing_notices_through_a_proxy() {
     let notifier = airbrake::Notifier::new(airbrake::Config {
         project_id: 113743,
         project_key: "81bbff95d52f8856c770bb39e827f3f6",
-        proxy_url: "http://127.0.0.1:8080",
-        host: mockito::SERVER_URL,
+        proxy_url: mockito::SERVER_URL,
+        host: "http://127.0.0.1:8080",
         ..Default::default()
     });
 
     let error = "xc".parse::<u32>().err().unwrap();
     let notice = notifier.build_notice(error);
-    let mock = mock("POST", "/api/v3/projects/113743/notices").create();
-    let resp = notifier.notify(notice).expect("notifier.notify failed");
-    mock.assert();
+    let server_mock = mock(
+        "POST",
+        "http://127.0.0.1:8080/api/v3/projects/113743/notices",
+    ).create();
+    notifier.notify(notice).expect("notifier.notify failed");
+
+    server_mock.assert();
 }
