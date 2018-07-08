@@ -88,7 +88,19 @@ errors through a proxy. By default, Airbrake Rust uses direct connection. When
 
 ```rust
 airbrake::Config {
-    proxy_url: Some(String::from("http://localhost:8080")),
+    proxy_url: "http://localhost:8080",
+    ..Default::default()
+};
+```
+
+### app_version
+
+The version of your application that you can pass to differentiate exceptions
+between multiple versions. It's not set by default.
+
+```rust
+airbrake::Config {
+    app_version: "v1.2.3",
     ..Default::default()
 };
 ```
@@ -151,6 +163,14 @@ params.insert(
 );
 
 notice.set_params(params);
+```
+
+#### set_app_version
+
+Sets app version.
+
+```rust
+notice.set_app_version("v1.2.3");
 ```
 
 Additional notes

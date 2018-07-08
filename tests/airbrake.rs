@@ -90,3 +90,23 @@ fn test_routing_notices_through_a_proxy() {
 
     server_mock.assert();
 }
+
+#[test]
+fn test_app_version_setting() {
+    let notifier = airbrake::Notifier::new(airbrake::Config {
+        project_id: 113743,
+        project_key: "81bbff95d52f8856c770bb39e827f3f6",
+        host: mockito::SERVER_URL,
+        app_version: "v1.2.3",
+        ..Default::default()
+    });
+
+    let error = "xc".parse::<u32>().err().unwrap();
+    let notice = notifier.build_notice(error);
+
+    let mock = mock("POST", "/api/v3/projects/113743/notices")
+        .match_body(Matcher::Regex(String::from(r#""version":"v1.2.3""#)))
+        .create();
+    notifier.notify(notice).expect("notifier.notify failed");
+    mock.assert();
+}

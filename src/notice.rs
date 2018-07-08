@@ -8,6 +8,7 @@ use std::fmt;
 #[derive(Serialize, Debug)]
 pub struct Notice {
     errors: [AirbrakeError; 1],
+    context: Context,
     params: HashMap<String, Param>,
 }
 
@@ -38,6 +39,11 @@ struct StackFrame {
     function: Option<String>,
 }
 
+#[derive(Serialize, Debug)]
+struct Context {
+    version: String,
+}
+
 impl Notice {
     pub fn new<T: Error>(error: T) -> Self {
         Self {
@@ -46,6 +52,9 @@ impl Notice {
                 message: String::from(error.description()),
                 backtrace: None,
             }; 1],
+            context: Context {
+                version: String::from(""),
+            },
             params: HashMap::new(),
         }
     }
@@ -75,6 +84,15 @@ impl Notice {
 
     pub fn set_params(mut self, params: HashMap<String, Param>) -> Self {
         self.params = params;
+        self
+    }
+
+    pub fn set_app_version(mut self, app_version: &str) -> Self {
+        if app_version.is_empty() {
+            return self;
+        }
+
+        self.context.version = String::from(app_version);
         self
     }
 }

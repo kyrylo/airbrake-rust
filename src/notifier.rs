@@ -18,6 +18,7 @@ pub struct Config<'a> {
     pub project_key: &'a str,
     pub proxy_url: &'a str,
     pub host: &'a str,
+    pub app_version: &'a str,
 }
 
 impl<'a> Default for Config<'a> {
@@ -27,6 +28,7 @@ impl<'a> Default for Config<'a> {
             project_key: "",
             proxy_url: "",
             host: AIRBRAKE_API,
+            app_version: "",
         }
     }
 }
@@ -60,6 +62,6 @@ impl<'a> Notifier<'a> {
     }
 
     pub fn build_notice<T: Error>(&self, error: T) -> Notice {
-        Notice::new(error)
+        Notice::new(error).set_app_version(self.config.app_version)
     }
 }
