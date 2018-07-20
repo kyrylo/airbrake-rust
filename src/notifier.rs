@@ -7,12 +7,12 @@ use notice::Notice;
 
 const AIRBRAKE_API: &'static str = "https://airbrake.io";
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct Notifier<'a> {
     config: Config<'a>,
+    filters: Vec<Box<Fn(&mut Notice) + 'a>>,
 }
 
-#[derive(Debug)]
 pub struct Config<'a> {
     pub project_id: u32,
     pub project_key: &'a str,
@@ -35,10 +35,17 @@ impl<'a> Default for Config<'a> {
 
 impl<'a> Notifier<'a> {
     pub fn new(config: Config<'a>) -> Self {
-        Self { config: config }
+        Self {
+            config: config,
+            filters: Vec::new(),
+        }
     }
 
-    pub fn notify(&self, notice: Notice) -> Result<reqwest::Response, reqwest::Error> {
+    pub fn notify(&self, notice: &mut Notice) -> Result<reqwest::Response, reqwest::Error> {
+        for filter in &self.filters {
+            filter(notice);
+        }
+
         let mut client_builder = reqwest::Client::builder();
         if !self.config.proxy_url.is_empty() {
             client_builder.proxy(reqwest::Proxy::all(self.config.proxy_url)?);
@@ -62,6 +69,12 @@ impl<'a> Notifier<'a> {
     }
 
     pub fn build_notice<T: Error>(&self, error: T) -> Notice {
-        Notice::new(error).set_app_version(self.config.app_version)
+        let mut notice = Notice::new(error);
+        notice.set_app_version(self.config.app_version);
+        notice
+    }
+
+    pub fn add_filter<T: Fn(&mut Notice) + 'a>(&mut self, filter: T) {
+        self.filters.push(Box::new(filter));
     }
 }
