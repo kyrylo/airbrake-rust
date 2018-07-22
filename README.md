@@ -57,7 +57,7 @@ let error = "xc".parse::<u32>().err().unwrap();
 let notice = notifier.build_notice(error);
 
 // Send the notice to Airbrake.
-notifier.notify(notice);
+notifier.notify(&mut notice);
 ```
 
 Configuration
@@ -134,7 +134,48 @@ let notice = notifier.build_notice(error);
 Sends the notice object to Airbrake.
 
 ```rust
-notifier.notify(notice);
+notifier.notify(&mut notice);
+```
+
+#### add_filter
+
+Runs a callback before `.notify` kicks in. Yields a `&mut Notice`. This is
+useful if you want to ignore specific notices or filter the data the notice
+contains.
+
+If you want to ignore a notice, simply call `ignore()` on it. This interrupts
+execution of any further `add_filter` callbacks. Once you ignore a notice,
+there's no way to unignore it. Such a notice won't be sent to Airbrake.
+
+This example demonstrates how to ignore all notices.
+
+```rust
+notifier.add_filter(|n| {
+    n.ignore();
+});
+```
+
+You can also ignore notices based on some condition.
+
+```rust
+notifier.add_filter(|n| {
+    // Ignore all notices coming from version "1.2.3".
+	// This example is contrived.
+    if n.context.version == "1.2.3" {
+        n.ignore();
+    }
+});
+```
+
+In order to filter a notice, simply change the data you are interested in.
+
+```rust
+notifier.add_filter(|n| {
+    // Filter out password from params;
+    if let Some(password) = n.params.get_mut("password") {
+        *password = "[Filtered]";
+    }
+});
 ```
 
 ### Notice

@@ -5,14 +5,14 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::fmt;
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize)]
 pub struct Notice {
     errors: [AirbrakeError; 1],
-    context: Context,
-    params: HashMap<String, Param>,
+    pub context: Context,
+    pub params: HashMap<String, Param>,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize)]
 struct AirbrakeError {
     #[serde(rename = "type")]
     type_: String,
@@ -20,7 +20,7 @@ struct AirbrakeError {
     backtrace: Option<Vec<StackFrame>>,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize)]
 pub enum Param {
     Int32(i32),
     String(String),
@@ -32,16 +32,16 @@ impl fmt::Display for Notice {
     }
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize)]
 struct StackFrame {
     line: Option<u32>,
     file: Option<PathBuf>,
     function: Option<String>,
 }
 
-#[derive(Serialize, Debug)]
-struct Context {
-    version: String,
+#[derive(Serialize)]
+pub struct Context {
+    pub version: String,
 }
 
 impl Notice {
@@ -59,7 +59,7 @@ impl Notice {
         }
     }
 
-    pub fn set_backtrace(mut self, backtrace: Backtrace) -> Self {
+    pub fn set_backtrace(&mut self, backtrace: Backtrace) -> &mut Self {
         let mut frames = Vec::new();
 
         for frame in backtrace.frames() {
@@ -82,12 +82,12 @@ impl Notice {
         self
     }
 
-    pub fn set_params(mut self, params: HashMap<String, Param>) -> Self {
+    pub fn set_params(&mut self, params: HashMap<String, Param>) -> &mut Self {
         self.params = params;
         self
     }
 
-    pub fn set_app_version(mut self, app_version: &str) -> Self {
+    pub fn set_app_version(&mut self, app_version: &str) -> &mut Self {
         if app_version.is_empty() {
             return self;
         }
