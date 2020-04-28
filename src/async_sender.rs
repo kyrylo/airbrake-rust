@@ -1,75 +1,59 @@
-use std::thread;
-use std::thread::{JoinHandle, Builder};
-use std::sync::{Arc, Mutex};
-use std::sync::mpsc::channel;
-use std::sync::mpsc::{Sender, Receiver};
+use std::io::Read;
 
-use notice::Notice;
+use serde_json;
+use serde_json::Value;
+use hyper::Url;
+use hyper::header::ContentType;
+use hyper::client::{Client, Body};
+
 use config::Config;
-use sync_sender::SyncSender;
+use notice::Notice;
 
-pub struct AsyncSender {
-    workers: Vec<JoinHandle<()>>,
-    tx: Sender<Option<Notice>>,
+#[derive(Debug)]
+pub struct SyncSender {
+    client: Client,
+    endpoint: String,
 }
 
-impl AsyncSender {
-    pub fn new(config: &Config) -> AsyncSender {
-        let (tx, rx) = channel();
-        let rx = Arc::new(Mutex::new(rx));
+impl SyncSender {
+    pub fn new(config: &Config) -> SyncSender {
+        let client = if config.proxy.is_empty() {
+            Client::new()
+        } else {
+            let mut proxy = config.proxy.clone();
+            let mut port = 80;
 
-        AsyncSender {
-            workers: AsyncSender::spawn_workers(config, rx),
-            tx: tx,
+            if let Some(colon) = proxy.rfind(':') {
+                port = proxy[colon + 1..].parse().unwrap_or_else(|e| {
+                    panic!("proxy is malformed: {:?}, port parse error: {}",
+                           proxy, e);
+                });
+                proxy.truncate(colon);
+            }
+            Client::with_http_proxy(proxy, port)
+        };
+
+        SyncSender {
+            client: client,
+            endpoint: config.endpoint(),
         }
     }
 
-    pub fn send(&self, notice: Notice) {
-        self.tx.send(Some(notice)).unwrap();
-    }
+    pub fn send(&self, notice: Notice) -> Value {
+        let uri = Url::parse(&self.endpoint).ok().expect("malformed URL");
 
-    pub fn close(&mut self) {
-        for _ in 0..self.workers.len() {
-            self.tx.send(None).unwrap();
-        }
+        let payload = notice.to_json();
+        let bytes = payload.as_bytes();
 
-        for _ in 0..self.workers.len() {
-            let worker = self.workers.pop().unwrap();
-            worker.join().unwrap();
-        }
-    }
+        debug!("**Airbrake: sending {}", payload);
 
-    fn spawn_workers(config: &Config,
-                     rx: Arc<Mutex<Receiver<Option<Notice>>>>) -> Vec<JoinHandle<()>> {
-        let mut workers = vec![];
+        let response = self.client.post(uri)
+            .header(ContentType::json())
+            .body(Body::BufBody(bytes, bytes.len()))
+            .send();
 
-        for i in 0..config.workers {
-            let sync_sender = SyncSender::new(config);
-            let rx = rx.clone();
-
-            workers.push(Builder::new().name(i.to_string()).spawn(move || {
-                debug!("**Airbrake: spawning thread {:?}", thread::current());
-
-                loop {
-                    let message = {
-                        let lock = rx.lock().unwrap();
-                        lock.recv()
-                    };
-
-                    match message {
-                        Ok(Some(notice)) => {
-                            debug!("**Airbrake: sending {:?}", notice);
-                            sync_sender.send(notice);
-                        },
-                        Ok(None) | Err(..) => {
-                            debug!("**Airbrake: terminating thread {:?}", thread::current());
-                            break;
-                        },
-                    };
-                }
-            }).unwrap());
-        }
-
-        workers
+        let mut buffer = String::new();
+        response.unwrap().read_to_string(&mut buffer).unwrap();
+        serde_json::from_str(&buffer).unwrap()
     }
 }
