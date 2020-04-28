@@ -1,7 +1,8 @@
 use serde_json;
 
 use std::error::Error;
-use config::Config;
+use hyper::body::Body;
+use crate::config::Config;
 
 const NOTIFIER_NAME: &'static str = "airbrake-rust";
 const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
@@ -54,5 +55,11 @@ impl Notice {
 
     pub fn to_json(&self) -> String {
         serde_json::to_string(&self).unwrap()
+    }
+}
+
+impl Into<Body> for Notice {
+    fn into(self) -> Body {
+        Body::from(self.to_json())
     }
 }

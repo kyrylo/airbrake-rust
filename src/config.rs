@@ -1,3 +1,6 @@
+
+use hyper::Uri;
+
 #[derive(Debug, Clone)]
 pub struct Config {
     pub project_id: String,
@@ -27,6 +30,10 @@ impl Config {
             self.project_id,
             self.project_key,
         )
+    }
+
+    pub fn endpoint_uri(&self) -> Uri {
+        self.endpoint().parse().expect("malformed URL")
     }
 }
 

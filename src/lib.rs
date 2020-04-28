@@ -155,7 +155,9 @@
 //! [stderror]: https://doc.rust-lang.org/std/error
 //! [json-object]: https://doc.rust-lang.org/rustc-serialize/rustc_serialize/json/enum.Json.html
 
+extern crate tokio;
 extern crate hyper;
+extern crate hyper_tls;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -168,7 +170,6 @@ mod config;
 mod notifier;
 mod notice;
 mod async_sender;
-mod sync_sender;
 
 use notifier::Notifier;
 use config::Config;

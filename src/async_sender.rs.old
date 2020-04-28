@@ -4,9 +4,9 @@ use std::sync::{Arc, Mutex};
 use std::sync::mpsc::channel;
 use std::sync::mpsc::{Sender, Receiver};
 
-use notice::Notice;
-use config::Config;
-use sync_sender::SyncSender;
+use ::notice::Notice;
+use ::config::Config;
+use ::sync_sender::SyncSender;
 
 pub struct AsyncSender {
     workers: Vec<JoinHandle<()>>,

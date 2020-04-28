@@ -12,10 +12,14 @@ Airbrake Rust is an Airbrake (https://airbrake.io) notifier library for the Rust
 Programming language. The library provides minimalist API that enables the
 ability to send Rust errors to the Airbrake dashboard.
 """
+edition = "2018"
 
 [dependencies]
-hyper = "0.9"
+tokio = "0.2.19"
+hyper = "0.13.5"
+hyper-tls = "0.4.1"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 log = "0.3"
+futures = "0.3.4"
