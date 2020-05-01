@@ -2,7 +2,7 @@ use std::error::Error;
 
 use tokio::runtime::Runtime;
 use log::warn;
-use hyper::Request;
+use hyper::{Uri, Body, Request};
 use hyper::header::CONTENT_TYPE;
 use hyper::client::{Client, HttpConnector};
 use hyper_tls::HttpsConnector;
@@ -12,7 +12,7 @@ use crate::AirbrakeConfig;
 
 pub struct AirbrakeClient {
     client: Client<HttpsConnector<HttpConnector>>,
-    config: AirbrakeConfig,
+    config: AirbrakeConfig
 }
 
 impl AirbrakeClient {
@@ -22,15 +22,16 @@ impl AirbrakeClient {
 
         AirbrakeClient {
             client: client,
-            config: config,
+            config: config
         }
     }
 
-    async fn send(&self, notice: Notice) -> () {
-        let endpoint = self.config.endpoint_uri();
-        let request = Request::post(endpoint)
+    async fn send<T>(&self, uri: Uri, payload: T) -> ()
+    where T: Into<Body>
+    {
+        let request = Request::post(uri)
             .header(CONTENT_TYPE, "application/json")
-            .body(notice.into())
+            .body(payload.into())
             .unwrap();
         let response = self.client
             .request(request)
@@ -41,10 +42,11 @@ impl AirbrakeClient {
         }
     }
 
-    // TODO: Should not panic on closed notifier
     pub fn notify<E: Error>(&self, error: E) {
-        let notice = Notice::new(&self.config, error);
-        Runtime::new().unwrap().block_on(self.send(notice));
+        let endpoint = self.config.endpoint_uri();
+        let payload = Notice::new(&self.config, error);
+        let mut runtime = Runtime::new().unwrap();
+        runtime.block_on(self.send(endpoint, payload));
     }
 }
 
