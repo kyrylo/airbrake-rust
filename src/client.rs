@@ -6,9 +6,9 @@ use hyper::{Uri, Body, Request};
 use hyper::header::CONTENT_TYPE;
 use hyper::client::{Client, HttpConnector};
 use hyper_tls::HttpsConnector;
+
 use crate::Notice;
 use crate::AirbrakeConfig;
-
 
 pub struct AirbrakeClient {
     client: Client<HttpsConnector<HttpConnector>>,
@@ -42,11 +42,10 @@ impl AirbrakeClient {
         }
     }
 
-    pub fn notify<E: Error>(&self, error: E) {
+    pub fn notify(&self, notice: Notice) {
         let endpoint = self.config.endpoint_uri();
-        let payload = Notice::new(&self.config, error);
         let mut runtime = Runtime::new().unwrap();
-        runtime.block_on(self.send(endpoint, payload));
+        runtime.block_on(self.send(endpoint, notice));
     }
 }
 

@@ -18,10 +18,6 @@ pub struct NoticeBacktrace {
     pub file: String,
     pub line: i32,
     pub function: String,
-    pub code: Option<BacktraceCodeBlock>
+    pub code: Option<HashMap<i32, String>>
 }
 
-#[derive(Debug, Serialize)]
-pub struct BacktraceCodeBlock {
-    pub lines: HashMap<i32, String>
-}
