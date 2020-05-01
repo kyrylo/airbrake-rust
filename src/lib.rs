@@ -165,14 +165,17 @@ extern crate serde_json;
 #[macro_use]
 extern crate log;
 
-
 mod config;
-mod notifier;
+mod client;
 mod notice;
-mod async_sender;
 
-use notifier::Notifier;
-use config::Config;
+pub use client::AirbrakeClient;
+pub use config::AirbrakeConfig;
+pub use notice::*;
+
+pub const NOTIFIER_NAME: &'static str = "airbrake-rust";
+pub const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
+pub const NOTIFIER_VERSION: &'static str = "0.2.0";
 
 /// Configures an Airbrake notifier.
 ///
@@ -183,10 +186,10 @@ use config::Config;
 ///     config.project_id = "113743".to_owned();
 ///     config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
 /// });
-pub fn configure<F>(configurator: F) -> Notifier
-    where F: Fn(&mut Config)
+pub fn configure<F>(builder_callback: F) -> AirbrakeClient
+    where F: Fn(&mut AirbrakeConfig)
 {
-    let mut config = Config::new();
-    configurator(&mut config);
-    Notifier::new(config)
+    let mut config = AirbrakeConfig::new();
+    builder_callback(&mut config);
+    AirbrakeClient::new(config)
 }

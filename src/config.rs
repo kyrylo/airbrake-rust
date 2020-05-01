@@ -2,7 +2,7 @@
 use hyper::Uri;
 
 #[derive(Debug, Clone)]
-pub struct Config {
+pub struct AirbrakeConfig {
     pub project_id: String,
     pub project_key: String,
     pub host: String,
@@ -11,9 +11,9 @@ pub struct Config {
     pub app_version: String,
 }
 
-impl Config {
-    pub fn new() -> Config {
-        Config {
+impl AirbrakeConfig {
+    pub fn new() -> AirbrakeConfig {
+        AirbrakeConfig {
             project_id: "0".to_owned(),
             project_key: "0".to_owned(),
             host: "https://airbrake.io".to_owned(),
