@@ -26,26 +26,29 @@ impl AirbrakeClient {
         }
     }
 
-    async fn send<T>(&self, uri: Uri, payload: T) -> ()
+    fn request<T>(&self, uri: Uri, payload: T) -> Request<Body>
     where T: Into<Body>
     {
-        let request = Request::post(uri)
+        Request::post(uri)
             .header(CONTENT_TYPE, "application/json")
             .body(payload.into())
-            .unwrap();
-        let response = self.client
-            .request(request)
-            .await
-            .unwrap();
-        if response.status() == 200 {
-            warn!("notification failed")
+            .unwrap()
+    }
+
+    async fn send(&self, request: Request<Body>) -> () {
+        let response = self.client.request(request).await;
+        match response {
+            Ok ( response ) => (),
+            Err ( x ) => warn!("notification failed")
         }
     }
 
     pub fn notify(&self, notice: Notice) {
         let endpoint = self.config.endpoint_uri();
+        let request = self.request(endpoint, notice);
+
         let mut runtime = Runtime::new().unwrap();
-        runtime.block_on(self.send(endpoint, notice));
+        runtime.block_on(self.send(request));
     }
 }
 
