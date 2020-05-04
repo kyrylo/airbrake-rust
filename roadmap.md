@@ -44,7 +44,10 @@ Along with these concrete features are some more abiguous developer oriented erg
 
 This repo will move forward with a partial [git flow](https://nvie.com/posts/a-successful-git-branching-model/#the-main-branches) branching strategy, reducing complexity in releasing future bug and security fixes.
 
-Git flow, as described here typically has a `develop` and a `master` branch, though in our case there is little to be gained from a `master` as described in the document. I propose the existing `master` branch serve as the `develop` branch described by Git Flow, and each feature branch will be branched off master when appropriet, and not be merged into anything.
+Git flow, as described here typically has a `develop` and a `master` branch, though in our case there is little to be gained from a `master` as described in the document. I propose the following strategy:
+- The existing `master` branch serve as the `develop` branch as described by Git Flow.
+- Feature branches will branch to and from `master`.
+- Release branch will be branched off `master` when appropriate, and not be merged back into any other branches.
 
 ## Timelines and Milestones
 
