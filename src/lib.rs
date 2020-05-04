@@ -193,7 +193,10 @@ pub const NOTIFIER_VERSION: &'static str = "0.2.0";
 pub fn configure<F>(builder_callback: F) -> AirbrakeClient
     where F: Fn(&mut AirbrakeConfig)
 {
-    let mut config = AirbrakeConfig::new();
+    let mut config = AirbrakeConfig::new(
+        "".to_owned(),  // In aid of keeping the interface consistent
+        "".to_owned()
+    );
     builder_callback(&mut config);
     AirbrakeClient::new(config)
 }
