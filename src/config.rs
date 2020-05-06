@@ -7,6 +7,14 @@ const ENV_VAR_PROJECT_ID: &'static str = "AIRBRAKE_PROJECT_ID";
 const ENV_VAR_PROJECT_KEY: &'static str = "AIRBRAKE_API_KEY";
 const ENV_VAR_HOST: &'static str = "AIRBRAKE_HOST";
 
+#[derive(Debug, PartialEq)]
+pub enum ConfigError {
+    MissingProjectId,
+    MissingProjectKey,
+    EmptyProjectId,
+    EmptyProjectKey
+}
+
 pub struct ConfigBuilder {
     pub project_id: Option<String>,
     pub project_key: Option<String>,
@@ -22,6 +30,13 @@ impl ConfigBuilder {
             host: None,
             proxy: None
         }
+    }
+
+    pub fn configure<F>(&mut self, builder_callback: F) -> &mut ConfigBuilder
+    where F: Fn(&mut ConfigBuilder)
+    {
+        builder_callback(self);
+        self
     }
 
     pub fn project<'a>(&'a mut self, project_id: String, project_key: String) -> &'a mut ConfigBuilder {
@@ -73,7 +88,7 @@ impl ConfigBuilder {
     /// if config.project_key_from_env().is_err() {
     ///     config.project_key(default_project_key);
     /// }
-    /// let config = config.build();
+    /// let config = config.build().unwrap();
     /// assert_eq!(config.project_id, "foo");
     /// assert_eq!(config.project_key, "baz");
     /// ```
@@ -123,17 +138,32 @@ impl ConfigBuilder {
         self
     }
 
-    pub fn build(&self) -> AirbrakeConfig {
-        AirbrakeConfig {
-            project_id: self.project_id.clone().unwrap(),
-            project_key: self.project_key.clone().unwrap(),
+    pub fn build(&self) -> Result<AirbrakeConfig, ConfigError> {
+        let project_id = match &self.project_id {
+            Some( id ) => id,
+            None => return Err( ConfigError::MissingProjectId )
+        };
+        let project_key = match &self.project_key {
+            Some( key ) => key,
+            None => return Err( ConfigError::MissingProjectKey )
+        };
+        if project_id.is_empty() {
+            return Err( ConfigError::EmptyProjectId )
+        }
+        if project_key.is_empty() {
+            return Err( ConfigError::EmptyProjectKey )
+        }
+
+        Ok(AirbrakeConfig {
+            project_id: project_id.to_string(),
+            project_key: project_key.to_string(),
             host: self.host.clone().unwrap_or(DEFAULT_HOSTNAME.to_owned()),
             proxy: self.proxy.clone()
-        }
+        })
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct AirbrakeConfig {
     pub project_id: String,
     pub project_key: String,
@@ -156,7 +186,8 @@ impl AirbrakeConfig {
     pub fn builder() -> ConfigBuilder {
         ConfigBuilder::new()
     }
-    pub fn new(project_id: String, project_key: String) -> AirbrakeConfig {
+
+    pub fn new(project_id: String, project_key: String) -> Result<AirbrakeConfig, ConfigError> {
         AirbrakeConfig::builder()
             .project_id(project_id)
             .project_key(project_key)
@@ -179,46 +210,79 @@ impl AirbrakeConfig {
 
 #[cfg(test)]
 mod tests {
-    use super::Config;
+    use crate::AirbrakeConfig;
+    use crate::ConfigError;
 
     #[test]
     fn endpoint_defaults_to_airbrake_server() {
+        let project_id = "foo".to_owned();
+        let project_key = "bar".to_owned();
+        let config = AirbrakeConfig::builder()
+            .project_id("foo".to_owned())
+            .project_key("bar".to_owned())
+            .build();
         assert_eq!(
-            "https://airbrake.io/api/v3/projects/0/notices?key=0",
-            Config::new().endpoint()
+            "https://airbrake.io/api/v3/projects/foo/notices?key=bar",
+            config.unwrap().endpoint_uri()
         );
+    }
+
+    fn project_sets_both_id_and_key() {
+        let project_id = "foo".to_owned();
+        let project_key = "bar".to_owned();
+        let config1 = AirbrakeConfig::builder()
+            .project(project_id, project_key)
+            .build();
+        let config2 = AirbrakeConfig::builder()
+            .project_id("foo".to_owned())
+            .project_key("bar".to_owned())
+            .build();
+        assert_eq!(config1, config2);
+        assert_eq!(
+            "https://airbrake.io/api/v3/projects/foo/notices?key=bar",
+            config1.unwrap().endpoint_uri()
+        )
     }
 
     #[test]
-    fn project_id_modifies_endpoint() {
-        let mut config = Config::new();
-        config.project_id = "123".to_owned();
-
-        assert_eq!(
-            "https://airbrake.io/api/v3/projects/123/notices?key=0",
-            config.endpoint()
-        );
+    fn config_build_fails_on_empty_project_id() {
+        let config = AirbrakeConfig::builder()
+            .project_id("".to_owned())
+            .project_key("bar".to_owned())
+            .build();
+        assert_eq!(config, Err(ConfigError::EmptyProjectId))
     }
 
     #[test]
-    fn project_key_modifies_endpoint() {
-        let mut config = Config::new();
-        config.project_key = "bingo".to_owned();
-
-        assert_eq!(
-            "https://airbrake.io/api/v3/projects/0/notices?key=bingo",
-            config.endpoint()
-        );
+    fn config_build_fails_on_empty_project_key() {
+        let config = AirbrakeConfig::builder()
+            .project_id("foo".to_owned())
+            .project_key("".to_owned())
+            .build();
+        assert_eq!(config, Err(ConfigError::EmptyProjectKey))
     }
 
     #[test]
-    fn host_modifies_endpoint() {
-        let mut config = Config::new();
-        config.host = "http://localhost:9090".to_owned();
-
-        assert_eq!(
-            "http://localhost:9090/api/v3/projects/0/notices?key=0",
-            config.endpoint()
-        );
+    fn default_builder_fails_build() {
+        let config = AirbrakeConfig::builder().build();
+        assert_eq!(config, Err(ConfigError::MissingProjectId))
     }
+
+    #[test]
+    fn config_build_fails_on_missing_project_id() {
+        let config = AirbrakeConfig::builder()
+            .project_key("bar".to_owned())
+            .build();
+        assert_eq!(config, Err(ConfigError::MissingProjectId))
+    }
+
+    #[test]
+    fn config_build_fails_on_missing_project_key() {
+        let config = AirbrakeConfig::builder()
+            .project_id("foo".to_owned())
+            .build();
+        assert_eq!(config, Err(ConfigError::MissingProjectKey))
+    }
+
+
 }

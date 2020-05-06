@@ -31,18 +31,20 @@
 //!
 //! fn main() {
 //!     let mut airbrake = airbrake::configure(|config| {
-//!         config.project_id = "113743".to_owned();
-//!         config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
+//!         config.project_id("113743".to_owned());
+//!         config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
 //!     });
 //!
 //!     match double_number("NOT A NUMBER") {
 //!         Ok(n) => assert_eq!(n, 20),
 //!         // Asynchronously sends the error to the dashboard.
-//!         Err(err) => airbrake.notify(err)
+//!         Err(err) => {
+//!             let notice = airbrake::Notice::builder()
+//!                 .add_error(err)
+//!                 .build();
+//!             airbrake.notify(notice)
+//!         }
 //!     }
-//!
-//!     // Joins worker threads.
-//!     airbrake.close();
 //! }
 //! ```
 //!
@@ -60,8 +62,8 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.project_id = "113743".to_owned();
-//!     config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
+//!     config.project_id("113743".to_owned());
+//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
 //! });
 //! ```
 //!
@@ -73,17 +75,11 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.host = "http://localhost:8080".to_owned();
-//! });
-//! ```
-//!
-//! ### workers
-//!
-//! The number of threads that handle notice sending. The default value is 1.
-//!
-//! ```
-//! let mut airbrake = airbrake::configure(|config| {
-//!     config.workers = 5;
+//!     // Project ID & Key are required
+//!     config.project_id("113743".to_owned());
+//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
+//!     // Setting the host
+//!     config.host("http://localhost:8080".to_owned());
 //! });
 //! ```
 //!
@@ -95,18 +91,11 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.proxy = "127.0.0.1:8080".to_owned();
-//! });
-//! ```
-//!
-//! ### app_version
-//!
-//! The version of your application that you can pass to differentiate errors
-//! between multiple versions. It's not set by default.
-//!
-//! ```
-//! let mut airbrake = airbrake::configure(|config| {
-//!     config.app_version = "1.0.0".to_owned();
+//!     // Project ID & Key are required
+//!     config.project_id("113743".to_owned());
+//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
+//!     // Setting the proxy
+//!     config.proxy("127.0.0.1:8080".to_owned());
 //! });
 //! ```
 //!
@@ -122,17 +111,21 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.project_id = "123".to_owned();
-//!     config.project_key = "321".to_owned();
+//!     config.project_id("123".to_owned());
+//!     config.project_key("321".to_owned());
 //! });
 //!
-//! airbrake.notify(std::io::Error::last_os_error());
+//! let err = std::io::Error::last_os_error();
+//! let notice = airbrake::Notice::builder()
+//!     .add_error(err)
+//!     .build();
+//! airbrake.notify(notice);
 //! ```
 //!
 //! As the second parameter, accepts a hash with additional data. That data will be
 //! displayed in the _Params_ tab in your project's dashboard.
 //!
-//! #### airbrake.notify_sync
+//! #### airbrake.notify
 //!
 //! Sends an error to Airbrake *synchronously*. `error` must implement the
 //! [`std::error::Error`][stderror] trait. Returns
@@ -141,11 +134,15 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.project_id = "123".to_owned();
-//!     config.project_key = "321".to_owned();
+//!     config.project_id("123".to_owned());
+//!     config.project_key("321".to_owned());
 //! });
 //!
-//! airbrake.notify_sync(std::io::Error::last_os_error());
+//! let err = std::io::Error::last_os_error();
+//! let notice = airbrake::Notice::builder()
+//!     .add_error(err)
+//!     .build();
+//! airbrake.notify(notice);
 //! ```
 //!
 //! [airbrake.io]: https://airbrake.io
@@ -172,7 +169,7 @@ mod errors;
 mod notice;
 
 pub use client::AirbrakeClient;
-pub use config::AirbrakeConfig;
+pub use config::{AirbrakeConfig, ConfigBuilder, ConfigError};
 pub use context::*;
 pub use errors::*;
 pub use notice::*;
@@ -187,16 +184,15 @@ pub const NOTIFIER_VERSION: &'static str = "0.2.0";
 ///
 /// ```
 /// let mut airbrake = airbrake::configure(|config| {
-///     config.project_id = "113743".to_owned();
-///     config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
+///     config.project_id("113743".to_owned());
+///     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
 /// });
 pub fn configure<F>(builder_callback: F) -> AirbrakeClient
-    where F: Fn(&mut AirbrakeConfig)
+    where F: Fn(&mut ConfigBuilder)
 {
-    let mut config = AirbrakeConfig::new(
-        "".to_owned(),  // In aid of keeping the interface consistent
-        "".to_owned()
-    );
-    builder_callback(&mut config);
+    let config = AirbrakeConfig::builder()
+        .configure(builder_callback)
+        .build()
+        .unwrap();
     AirbrakeClient::new(config)
 }

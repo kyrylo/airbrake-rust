@@ -35,19 +35,30 @@ impl NoticeBuilder {
         }
     }
 
-    /// Add multiple errors from an iterator
-    pub fn add_errors<T: Iterator<Item = NoticeError>>(mut self, errors: T) -> NoticeBuilder
-    where
-        T: Iterator,
-    {
-        self.errors.extend(errors);
+    /// Add multiple NoticeErrors from an iterator
+    pub fn add_notices<T: Iterator<Item = NoticeError>>(mut self, notice_errors: T) -> NoticeBuilder {
+        self.errors.extend(notice_errors);
         self
     }
 
-    /// Add a single error
-    pub fn add_error(mut self, error: NoticeError) -> NoticeBuilder {
-        self.errors.push(error);
+    /// Add a single NoticeError
+    pub fn add_notice(mut self, notice_error: NoticeError) -> NoticeBuilder {
+        self.errors.push(notice_error);
         self
+    }
+
+    /// Add multiple Errors from an iterator
+    pub fn add_errors<T: Iterator<Item = E>, E: Error>(mut self, errors: T) -> NoticeBuilder {
+        let notice_errors = errors
+            .into_iter()
+            .map(|x| x.into());
+        self.add_notices(notice_errors)
+    }
+
+    /// Add a single Error
+    pub fn add_error<E: Error>(mut self, error: E) -> NoticeBuilder {
+        let notice_error = NoticeError::from(error);
+        self.add_notice(notice_error.into())
     }
 
     /// Set the context on the NoticeBuilder
@@ -103,6 +114,12 @@ impl<'a> From<Context> for NoticeBuilder {
     }
 }
 
+impl<'a, E: Error> From<E> for NoticeBuilder {
+    fn from(error: E) -> NoticeBuilder {
+        NoticeBuilder::new().add_error(error)
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct Notice {
     pub errors: Vec<NoticeError>,
@@ -136,13 +153,9 @@ impl Notice {
     }
 
     pub fn new<E: Error>(config: &AirbrakeConfig, error: E) -> Notice {
-        let notice_error = NoticeError {
-            type_: format!("{:?}", error).split_whitespace().next().unwrap().to_owned(),
-            message: Some(format!("{}", error)),
-            backtrace: None
-        };
+        let notice_error = NoticeError::from(error);
         NoticeBuilder::new()
-            .add_error(notice_error)
+            .add_notice(notice_error)
             .build()
         // Notice {
         //     context: Some(Context {

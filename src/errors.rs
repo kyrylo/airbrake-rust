@@ -1,4 +1,5 @@
 
+use std::error::Error;
 use std::collections::HashMap;
 
 #[derive(Debug, Serialize)]
@@ -11,6 +12,16 @@ pub struct NoticeError {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub backtrace: Option<Vec<NoticeBacktrace>>
+}
+
+impl<'a, E: Error> From<E> for NoticeError {
+    fn from(error: E) -> NoticeError {
+        NoticeError {
+            type_: format!("{:?}", error).split_whitespace().next().unwrap().to_owned(),
+            message: Some(format!("{}", error)),
+            backtrace: None
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
