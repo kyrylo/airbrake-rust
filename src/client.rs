@@ -32,7 +32,7 @@ impl AirbrakeClient {
         Request::post(uri)
             .header(CONTENT_TYPE, "application/json")
             .body(payload.into())
-            .unwrap()
+            .expect("Request creation failed unexpectedly")
     }
 
     async fn send(&self, request: Request<Body>) -> () {
