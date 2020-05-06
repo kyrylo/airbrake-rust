@@ -164,15 +164,11 @@ extern crate log;
 
 mod config;
 mod client;
-mod context;
-mod errors;
-mod notice;
+pub mod notice;
 
 pub use client::AirbrakeClient;
-pub use config::{AirbrakeConfig, ConfigBuilder, ConfigError};
-pub use context::*;
-pub use errors::*;
-pub use notice::*;
+pub use config::{AirbrakeConfig, ConfigBuilder};
+use notice::*;
 
 pub const NOTIFIER_NAME: &'static str = "airbrake-rust";
 pub const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";

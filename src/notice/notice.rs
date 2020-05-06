@@ -1,11 +1,8 @@
 
-pub use crate::ContextNotifier;
-pub use crate::ContextUser;
-pub use crate::Context;
-pub use crate::ContextBuilder;
-pub use crate::CONTEXT_NOTIFIER;
-pub use crate::NoticeError;
-pub use crate::NoticeBacktrace;
+use super::{
+    Context,
+    NoticeError
+};
 
 use serde_json;
 
@@ -48,7 +45,7 @@ impl NoticeBuilder {
     }
 
     /// Add multiple Errors from an iterator
-    pub fn add_errors<T: Iterator<Item = E>, E: Error>(mut self, errors: T) -> NoticeBuilder {
+    pub fn add_errors<T: Iterator<Item = E>, E: Error>(self, errors: T) -> NoticeBuilder {
         let notice_errors = errors
             .into_iter()
             .map(|x| x.into());
@@ -56,7 +53,7 @@ impl NoticeBuilder {
     }
 
     /// Add a single Error
-    pub fn add_error<E: Error>(mut self, error: E) -> NoticeBuilder {
+    pub fn add_error<E: Error>(self, error: E) -> NoticeBuilder {
         let notice_error = NoticeError::from(error);
         self.add_notice(notice_error.into())
     }
