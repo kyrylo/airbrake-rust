@@ -50,32 +50,3 @@ impl AirbrakeClient {
         runtime.block_on(self.send(request));
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use std::io::Error;
-    use super::Notifier;
-    use config::Config;
-
-    #[test]
-    fn close_doesnt_panic() {
-        let mut notifier = Notifier::new(Config::new());
-        notifier.close();
-    }
-
-    #[test]
-    #[should_panic(expected="attempted to close an already closed Airbrake notifier")]
-    fn double_close_panics() {
-        let mut notifier = Notifier::new(Config::new());
-        notifier.close();
-        notifier.close();
-    }
-
-    #[test]
-    #[should_panic(expected="attempted to send through a closed Airbrake notifier")]
-    fn notify_with_closed_notifier_panics() {
-        let mut notifier = Notifier::new(Config::new());
-        notifier.close();
-        notifier.notify(Error::last_os_error());
-    }
-}
