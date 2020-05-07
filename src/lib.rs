@@ -164,15 +164,11 @@ extern crate log;
 
 mod config;
 mod client;
-pub mod notice;
+mod notice;
 
 pub use client::AirbrakeClient;
-pub use config::{AirbrakeConfig, ConfigBuilder};
-use notice::*;
-
-pub const NOTIFIER_NAME: &'static str = "airbrake-rust";
-pub const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
-pub const NOTIFIER_VERSION: &'static str = "0.2.0";
+pub use config::{AirbrakeConfig, AirbrakeConfigBuilder};
+pub use notice::*;
 
 /// Configures an Airbrake notifier.
 ///
@@ -183,8 +179,9 @@ pub const NOTIFIER_VERSION: &'static str = "0.2.0";
 ///     config.project_id("113743".to_owned());
 ///     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
 /// });
+/// ```
 pub fn configure<F>(builder_callback: F) -> AirbrakeClient
-    where F: Fn(&mut ConfigBuilder)
+    where F: Fn(&mut AirbrakeConfigBuilder)
 {
     let config = AirbrakeConfig::builder()
         .configure(builder_callback)

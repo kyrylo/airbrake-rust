@@ -8,23 +8,23 @@ const ENV_VAR_PROJECT_KEY: &'static str = "AIRBRAKE_API_KEY";
 const ENV_VAR_HOST: &'static str = "AIRBRAKE_HOST";
 
 #[derive(Debug, PartialEq)]
-pub enum ConfigError {
+pub enum AirbrakeConfigError {
     MissingProjectId,
     MissingProjectKey,
     EmptyProjectId,
     EmptyProjectKey
 }
 
-pub struct ConfigBuilder {
+pub struct AirbrakeConfigBuilder {
     pub project_id: Option<String>,
     pub project_key: Option<String>,
     pub host: Option<String>,
     pub proxy: Option<String>
 }
 
-impl ConfigBuilder {
-    pub fn new() -> ConfigBuilder {
-        ConfigBuilder {
+impl AirbrakeConfigBuilder {
+    pub fn new() -> AirbrakeConfigBuilder {
+        AirbrakeConfigBuilder {
             project_id: None,
             project_key: None,
             host: None,
@@ -32,19 +32,19 @@ impl ConfigBuilder {
         }
     }
 
-    pub fn configure<F>(&mut self, builder_callback: F) -> &mut ConfigBuilder
-    where F: Fn(&mut ConfigBuilder)
+    pub fn configure<F>(&mut self, builder_callback: F) -> &mut AirbrakeConfigBuilder
+    where F: Fn(&mut AirbrakeConfigBuilder)
     {
         builder_callback(self);
         self
     }
 
-    pub fn project<'a>(&'a mut self, project_id: String, project_key: String) -> &'a mut ConfigBuilder {
+    pub fn project<'a>(&'a mut self, project_id: String, project_key: String) -> &'a mut AirbrakeConfigBuilder {
         self.project_id(project_id)
             .project_key(project_key)
     }
 
-    pub fn project_id<'a>(&'a mut self, project_id: String) -> &'a mut ConfigBuilder {
+    pub fn project_id<'a>(&'a mut self, project_id: String) -> &'a mut AirbrakeConfigBuilder {
         self.project_id = Some(project_id);
         self
     }
@@ -93,7 +93,7 @@ impl ConfigBuilder {
     /// assert_eq!(config.project_key, "baz");
     /// ```
     ///
-    pub fn project_id_from_env<'a>(&'a mut self) -> Result<&'a mut ConfigBuilder, env::VarError> {
+    pub fn project_id_from_env<'a>(&'a mut self) -> Result<&'a mut AirbrakeConfigBuilder, env::VarError> {
         match env::var(ENV_VAR_PROJECT_ID) {
             Ok(val) => {
                 self.project_id = Some(val);
@@ -103,7 +103,7 @@ impl ConfigBuilder {
         }
     }
 
-    pub fn project_key_from_env<'a>(&'a mut self) -> Result<&'a mut ConfigBuilder, env::VarError> {
+    pub fn project_key_from_env<'a>(&'a mut self) -> Result<&'a mut AirbrakeConfigBuilder, env::VarError> {
         match env::var(ENV_VAR_PROJECT_KEY) {
             Ok(val) => {
                 self.project_key = Some(val);
@@ -113,12 +113,12 @@ impl ConfigBuilder {
         }
     }
 
-    pub fn project_key<'a>(&'a mut self, project_key: String) -> &'a mut ConfigBuilder {
+    pub fn project_key<'a>(&'a mut self, project_key: String) -> &'a mut AirbrakeConfigBuilder {
         self.project_key = Some(project_key);
         self
     }
 
-    pub fn host_from_env<'a>(&'a mut self) -> Result<&'a mut ConfigBuilder, env::VarError> {
+    pub fn host_from_env<'a>(&'a mut self) -> Result<&'a mut AirbrakeConfigBuilder, env::VarError> {
         match env::var(ENV_VAR_HOST) {
             Ok(val) => {
                 self.host = Some(val);
@@ -128,30 +128,30 @@ impl ConfigBuilder {
         }
     }
 
-    pub fn host<'a>(&'a mut self, host: String) -> &'a mut ConfigBuilder {
+    pub fn host<'a>(&'a mut self, host: String) -> &'a mut AirbrakeConfigBuilder {
         self.host = Some(host);
         self
     }
 
-    pub fn proxy<'a>(&'a mut self, proxy: String) -> &'a mut ConfigBuilder {
+    pub fn proxy<'a>(&'a mut self, proxy: String) -> &'a mut AirbrakeConfigBuilder {
         self.proxy = Some(proxy);
         self
     }
 
-    pub fn build(&self) -> Result<AirbrakeConfig, ConfigError> {
+    pub fn build(&self) -> Result<AirbrakeConfig, AirbrakeConfigError> {
         let project_id = match &self.project_id {
             Some( id ) => id,
-            None => return Err( ConfigError::MissingProjectId )
+            None => return Err( AirbrakeConfigError::MissingProjectId )
         };
         let project_key = match &self.project_key {
             Some( key ) => key,
-            None => return Err( ConfigError::MissingProjectKey )
+            None => return Err( AirbrakeConfigError::MissingProjectKey )
         };
         if project_id.is_empty() {
-            return Err( ConfigError::EmptyProjectId )
+            return Err( AirbrakeConfigError::EmptyProjectId )
         }
         if project_key.is_empty() {
-            return Err( ConfigError::EmptyProjectKey )
+            return Err( AirbrakeConfigError::EmptyProjectKey )
         }
 
         Ok(AirbrakeConfig {
@@ -183,11 +183,11 @@ impl AirbrakeConfig {
     ///     .project(my_project_id, my_project_key)
     ///     .build();
     /// ```
-    pub fn builder() -> ConfigBuilder {
-        ConfigBuilder::new()
+    pub fn builder() -> AirbrakeConfigBuilder {
+        AirbrakeConfigBuilder::new()
     }
 
-    pub fn new(project_id: String, project_key: String) -> Result<AirbrakeConfig, ConfigError> {
+    pub fn new(project_id: String, project_key: String) -> Result<AirbrakeConfig, AirbrakeConfigError> {
         AirbrakeConfig::builder()
             .project_id(project_id)
             .project_key(project_key)
@@ -210,16 +210,16 @@ impl AirbrakeConfig {
 
 #[cfg(test)]
 mod tests {
-    use crate::AirbrakeConfig;
-    use crate::ConfigError;
+    use super::AirbrakeConfig;
+    use super::AirbrakeConfigError;
 
     #[test]
     fn endpoint_defaults_to_airbrake_server() {
         let project_id = "foo".to_owned();
         let project_key = "bar".to_owned();
         let config = AirbrakeConfig::builder()
-            .project_id("foo".to_owned())
-            .project_key("bar".to_owned())
+            .project_id(project_id)
+            .project_key(project_key)
             .build();
         assert_eq!(
             "https://airbrake.io/api/v3/projects/foo/notices?key=bar",
@@ -227,15 +227,16 @@ mod tests {
         );
     }
 
+    #[test]
     fn project_sets_both_id_and_key() {
         let project_id = "foo".to_owned();
         let project_key = "bar".to_owned();
         let config1 = AirbrakeConfig::builder()
-            .project(project_id, project_key)
+            .project(project_id.clone(), project_key.clone())
             .build();
         let config2 = AirbrakeConfig::builder()
-            .project_id("foo".to_owned())
-            .project_key("bar".to_owned())
+            .project_id(project_id)
+            .project_key(project_key)
             .build();
         assert_eq!(config1, config2);
         assert_eq!(
@@ -250,7 +251,7 @@ mod tests {
             .project_id("".to_owned())
             .project_key("bar".to_owned())
             .build();
-        assert_eq!(config, Err(ConfigError::EmptyProjectId))
+        assert_eq!(config, Err(AirbrakeConfigError::EmptyProjectId))
     }
 
     #[test]
@@ -259,13 +260,13 @@ mod tests {
             .project_id("foo".to_owned())
             .project_key("".to_owned())
             .build();
-        assert_eq!(config, Err(ConfigError::EmptyProjectKey))
+        assert_eq!(config, Err(AirbrakeConfigError::EmptyProjectKey))
     }
 
     #[test]
     fn default_builder_fails_build() {
         let config = AirbrakeConfig::builder().build();
-        assert_eq!(config, Err(ConfigError::MissingProjectId))
+        assert_eq!(config, Err(AirbrakeConfigError::MissingProjectId))
     }
 
     #[test]
@@ -273,7 +274,7 @@ mod tests {
         let config = AirbrakeConfig::builder()
             .project_key("bar".to_owned())
             .build();
-        assert_eq!(config, Err(ConfigError::MissingProjectId))
+        assert_eq!(config, Err(AirbrakeConfigError::MissingProjectId))
     }
 
     #[test]
@@ -281,8 +282,6 @@ mod tests {
         let config = AirbrakeConfig::builder()
             .project_id("foo".to_owned())
             .build();
-        assert_eq!(config, Err(ConfigError::MissingProjectKey))
+        assert_eq!(config, Err(AirbrakeConfigError::MissingProjectKey))
     }
-
-
 }

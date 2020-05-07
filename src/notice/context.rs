@@ -169,10 +169,14 @@ pub struct ContextNotifier {
     url: &'static str,
 }
 
+const NOTIFIER_NAME: &'static str = "airbrake-rust";
+const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
+const NOTIFIER_VERSION: &'static str = "0.2.0";
+
 pub const CONTEXT_NOTIFIER: ContextNotifier = ContextNotifier {
-    name: crate::NOTIFIER_NAME,
-    version: crate::NOTIFIER_VERSION,
-    url: crate::NOTIFIER_URL
+    name: NOTIFIER_NAME,
+    version: NOTIFIER_VERSION,
+    url: NOTIFIER_URL
 };
 
 #[derive(Debug, Serialize, Clone)]
