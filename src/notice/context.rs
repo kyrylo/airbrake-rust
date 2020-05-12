@@ -1,4 +1,6 @@
 
+use super::{Notice, NoticeBuilder};
+
 pub struct ContextBuilder {
     pub operating_system: Option<String>,
     pub hostname: Option<String>,
@@ -158,6 +160,10 @@ pub struct Context {
 impl Context {
     pub fn builder() -> ContextBuilder {
         ContextBuilder::new()
+    }
+
+    pub fn new_notice_builder(&self) -> NoticeBuilder {
+        Notice::builder().context(self.clone())
     }
 }
 

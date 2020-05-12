@@ -14,12 +14,22 @@ pub struct NoticeError {
     pub backtrace: Option<Vec<NoticeBacktrace>>
 }
 
+impl NoticeError {
+    pub fn new(name: String, message: Option<String>, backtrace: Option<Vec<NoticeBacktrace>>) -> NoticeError {
+        NoticeError {
+            type_: name,
+            message: message,
+            backtrace: backtrace
+        }
+    }
+}
+
 impl<'a, E: Error> From<E> for NoticeError {
     fn from(error: E) -> NoticeError {
-        NoticeError {
-            type_: format!("{:?}", error).split_whitespace().next().unwrap().to_owned(),
-            message: Some(format!("{}", error)),
-            backtrace: None
-        }
+        let name = format!("{:?}", error).split_whitespace().next().unwrap().to_owned();
+        let message = Some(format!("{}", error));
+        let backtrace = None;
+
+        NoticeError::new(name, message, backtrace)
     }
 }
