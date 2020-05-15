@@ -70,15 +70,70 @@ impl NoticeBuilder {
         self
     }
 
+    /// Add environment to the NoticeBuilder
+    /// ```
+    /// use airbrake::Notice;
+    /// let notice = Notice::builder()
+    ///     .add_environment("PORT".to_owned(), "443".to_owned())
+    ///     .add_environment("CODE_NAME".to_owned(), "gorilla".to_owned())
+    ///     .build();
+    /// ```
+    pub fn add_environment(mut self, key: String, value: String) -> NoticeBuilder {
+        self.environment = self.environment
+            .or_else(|| Some(HashMap::new()))
+            .and_then(|mut h| {
+                h.insert(key, value);
+                Some(h)
+            });
+        self
+    }
+
     /// Set the environment on the NoticeBuilder
     pub fn session(mut self, session: HashMap<String, String>) -> NoticeBuilder {
         self.session = Some(session);
         self
     }
 
+    /// Add session to the NoticeBuilder
+    /// ```
+    /// use airbrake::Notice;
+    /// let notice = Notice::builder()
+    ///     .add_session("basketId".to_owned(), "123".to_owned())
+    ///     .add_session("userId".to_owned(), "456".to_owned())
+    ///     .build();
+    /// ```
+    pub fn add_session(mut self, key: String, value: String) -> NoticeBuilder {
+        self.session = self.session
+            .or_else(|| Some(HashMap::new()))
+            .and_then(|mut h| {
+                h.insert(key, value);
+                Some(h)
+            });
+        self
+    }
+
     /// Set the environment on the NoticeBuilder
     pub fn params(mut self, params: HashMap<String, String>) -> NoticeBuilder {
         self.params = Some(params);
+        self
+    }
+
+    /// Add param to the NoticeBuilder
+    /// ```
+    /// use airbrake::Notice;
+    /// let notice = Notice::builder()
+    ///     .add_param("page".to_owned(), "3".to_owned())
+    ///     .add_param("sort".to_owned(), "name".to_owned())
+    ///     .add_param("direction".to_owned(), "asc".to_owned())
+    ///     .build();
+    /// ```
+    pub fn add_param(mut self, key: String, value: String) -> NoticeBuilder {
+        self.params = self.params
+            .or_else(|| Some(HashMap::new()))
+            .and_then(|mut h| {
+                h.insert(key, value);
+                Some(h)
+            });
         self
     }
 

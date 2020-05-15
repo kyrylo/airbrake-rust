@@ -145,6 +145,7 @@ pub struct Context {
     pub url: Option<String>,
 
     #[serde(rename="rootDirectory")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub root_directory: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -154,6 +155,7 @@ pub struct Context {
     pub route: Option<String>,
 
     #[serde(rename="httpMethod")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub http_method: Option<String>
 }
 
