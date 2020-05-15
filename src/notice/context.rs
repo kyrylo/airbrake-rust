@@ -194,4 +194,270 @@ pub struct ContextUser {
     email: Option<String>
 }
 
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+    use std::collections::HashMap;
+    use serde_json::{self, Value};
+    use hyper::body::Body;
+    use super::{Context, ContextUser};
+
+    #[test]
+    fn context_default_has_notifier() {
+        let context = Context::builder().build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_operating_system() {
+        let context = Context::builder()
+            .operating_system("SolarOS".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "os": "SolarOS"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_hostname() {
+        let context = Context::builder()
+            .hostname("usw2.swa.foobar.com".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "hostname": "usw2.swa.foobar.com"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_language() {
+        let context = Context::builder()
+            .language("klingon".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "language": "klingon"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_environment() {
+        let context = Context::builder()
+            .environment("production".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "environment": "production"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_severity() {
+        let context = Context::builder()
+            .severity("critical".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "severity": "critical"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_version() {
+        let context = Context::builder()
+            .version("9000.0.1".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "version": "9000.0.1"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_url() {
+        let context = Context::builder()
+            .url("http://localhost/my/foobar".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "url": "http://localhost/my/foobar"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_root_directory() {
+        let context = Context::builder()
+            .root_directory("/dev/null".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "rootDirectory": "/dev/null"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_user() {
+        let context_user = ContextUser {
+            id: Some("foo".to_string()),
+            email: Some("bar".to_string()),
+            name: Some("baz".to_string())
+        };
+        let context = Context::builder()
+            .user(context_user)
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "user": {
+                "id": "foo",
+                "email": "bar",
+                "name": "baz"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_route() {
+        let context = Context::builder()
+            .route("/foo/bar/baz".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "route": "/foo/bar/baz"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_http_method() {
+        let context = Context::builder()
+            .http_method("post".to_string())
+            .build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "httpMethod": "post"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+}
 

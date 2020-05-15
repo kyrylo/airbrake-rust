@@ -4,7 +4,7 @@ use super::{
     NoticeError
 };
 
-use serde_json;
+use serde_json::{self, Value};
 
 use std::error::Error;
 use std::collections::HashMap;
@@ -209,30 +209,185 @@ impl Notice {
         NoticeBuilder::new()
             .add_notice(notice_error)
             .build()
-        // Notice {
-        //     context: Some(Context {
-        //         notifier: &CONTEXT_NOTIFIER,
-        //         operating_system: None,
-        //         hostname: None,
-        //         language: None,
-        //         environment: None,
-        //         severity: None,
-        //         version: Some(config.app_version.clone()),
-        //         url: None,
-        //         root_directory: None,
-        //         user: None,
-        //         route: None,
-        //         http_method: None
-        //     }),
-        //     environment: None,
-        //     session: None,
-        //     params: None
-        // }
+    }
+}
+
+impl From<Notice> for Value {
+    fn from(notice: Notice) -> Value {
+        serde_json::json!(notice)
     }
 }
 
 impl Into<Body> for Notice {
     fn into(self) -> Body {
-        Body::from(serde_json::json!(self).to_string())
+        Body::from(Value::from(self).to_string())
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+    use std::collections::HashMap;
+    use serde_json::{self, Value};
+    use hyper::body::Body;
+    use super::{Notice, Context};
+
+    #[test]
+    fn notice_default() {
+        let notice = Notice::builder().build();
+        let expected_json = r#"
+        {
+            "errors": []
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
+    }
+
+    #[test]
+    fn notice_with_add_environment() {
+        let notice = Notice::builder()
+            .add_environment("foo".to_owned(), "bar".to_owned())
+            .build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "environment": {
+                "foo": "bar"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
+    }
+
+    #[test]
+    fn notice_with_set_environment() {
+        let mut hashmap = HashMap::new();
+        hashmap.insert("foo".to_owned(), "bar".to_owned());
+        let notice = Notice::builder()
+            .environment(hashmap)
+            .build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "environment": {
+                "foo": "bar"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
+    }
+
+    #[test]
+    fn notice_with_add_session() {
+        let notice = Notice::builder()
+            .add_session("foo".to_owned(), "bar".to_owned())
+            .build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "session": {
+                "foo": "bar"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
+    }
+
+    #[test]
+    fn notice_with_set_session() {
+        let mut hashmap = HashMap::new();
+        hashmap.insert("foo".to_owned(), "bar".to_owned());
+        let notice = Notice::builder()
+            .session(hashmap)
+            .build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "session": {
+                "foo": "bar"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
+    }
+
+    #[test]
+    fn notice_with_add_param() {
+        let notice = Notice::builder()
+            .add_param("foo".to_owned(), "bar".to_owned())
+            .build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "params": {
+                "foo": "bar"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
+    }
+
+    #[test]
+    fn notice_with_set_params() {
+        let mut hashmap = HashMap::new();
+        hashmap.insert("foo".to_owned(), "bar".to_owned());
+        let notice = Notice::builder()
+            .params(hashmap)
+            .build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "params": {
+                "foo": "bar"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
+    }
+
+    #[test]
+    fn notice_context_default() {
+        let context = Context::builder().build();
+        let notice = Notice::builder()
+            .context(context)
+            .build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "context": {
+                "notifier": {
+                    "name": "airbrake-rust",
+                    "version": "0.2.0",
+                    "url": "https://github.com/airbrake/airbrake-rust"
+                }
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            Value::from(notice)
+        );
     }
 }
