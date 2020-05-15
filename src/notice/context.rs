@@ -189,13 +189,129 @@ pub const CONTEXT_NOTIFIER: ContextNotifier = ContextNotifier {
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ContextUser {
+    #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     email: Option<String>
 }
 
+impl ContextUser {
+    /// Get a blank ContextUser, whose values are all None
+    pub fn empty() -> ContextUser {
+        ContextUser {
+            id: None,
+            name: None,
+            email: None
+        }
+    }
+
+    /// Set the id on the ContextUser
+    pub fn id(mut self, id: String) -> ContextUser {
+        self.id = Some(id);
+        self
+    }
+
+    /// Set the name on the ContextUser
+    pub fn name(mut self, name: String) -> ContextUser {
+        self.name = Some(name);
+        self
+    }
+
+    /// Set the email on the ContextUser
+    pub fn email(mut self, email: String) -> ContextUser {
+        self.email = Some(email);
+        self
+    }
+}
+
 #[cfg(test)]
-mod tests {
+mod context_user_tests {
+    use std::str::FromStr;
+    use std::collections::HashMap;
+    use serde_json::{self, Value};
+    use hyper::body::Body;
+    use super::{Context, ContextUser};
+
+    #[test]
+    fn context_user_default() {
+        let context = ContextUser::empty();
+        let expected_json = r#"
+        {}
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_user_with_id() {
+        let context = ContextUser::empty().id("foo".to_string());
+        let expected_json = r#"
+        {
+            "id": "foo"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_user_with_name() {
+        let context = ContextUser::empty().name("foo".to_string());
+        let expected_json = r#"
+        {
+            "name": "foo"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_user_with_email() {
+        let context = ContextUser::empty().email("foo".to_string());
+        let expected_json = r#"
+        {
+            "email": "foo"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_user_with_all_fields() {
+        let context = ContextUser::empty()
+            .id("foo".to_string())
+            .email("bar".to_string())
+            .name("baz".to_string());
+        let expected_json = r#"
+        {
+            "id": "foo",
+            "email": "bar",
+            "name": "baz"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+}
+
+#[cfg(test)]
+mod context_tests {
     use std::str::FromStr;
     use std::collections::HashMap;
     use serde_json::{self, Value};
@@ -390,11 +506,10 @@ mod tests {
 
     #[test]
     fn context_user() {
-        let context_user = ContextUser {
-            id: Some("foo".to_string()),
-            email: Some("bar".to_string()),
-            name: Some("baz".to_string())
-        };
+        let context_user = ContextUser::empty()
+            .id("foo".to_string())
+            .email("bar".to_string())
+            .name("baz".to_string());
         let context = Context::builder()
             .user(context_user)
             .build();
