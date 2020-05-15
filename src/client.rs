@@ -25,7 +25,7 @@ impl AirbrakeClient {
         }
     }
 
-    fn request<T>(&self, uri: Uri, payload: T) -> Request<Body>
+    fn build_request<T>(&self, uri: Uri, payload: T) -> Request<Body>
     where T: Into<Body>
     {
         Request::post(uri)
@@ -34,7 +34,7 @@ impl AirbrakeClient {
             .expect("Request creation failed unexpectedly")
     }
 
-    async fn send(&self, request: Request<Body>) -> () {
+    async fn send_request(&self, request: Request<Body>) -> () {
         let response = self.client.request(request).await;
         match response {
             Ok ( response ) => (),
@@ -44,9 +44,9 @@ impl AirbrakeClient {
 
     pub fn notify(&self, notice: Notice) {
         let endpoint = self.config.endpoint_uri();
-        let request = self.request(endpoint, notice);
+        let request = self.build_request(endpoint, notice);
 
         let mut runtime = Runtime::new().unwrap();
-        runtime.block_on(self.send(request));
+        runtime.block_on(self.send_request(request));
     }
 }
