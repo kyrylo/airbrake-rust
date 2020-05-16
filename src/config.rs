@@ -2,7 +2,7 @@
 use std::env;
 use hyper::Uri;
 
-use crate::{Context, ContextBuilder};
+use crate::{Context, ContextBuilder, ContextUser};
 
 const DEFAULT_HOSTNAME: &'static str = "https://airbrake.io";
 const ENV_VAR_PROJECT_ID: &'static str = "AIRBRAKE_PROJECT_ID";
@@ -142,19 +142,139 @@ impl AirbrakeConfigBuilder {
         self
     }
 
-    // Context configuration functions
-
+    // Sets the configurations context to an existing context builder
     pub fn context<'a>(&'a mut self, context: ContextBuilder) -> &'a mut AirbrakeConfigBuilder {
         self.context = Some(context);
         self
     }
 
+    /// Set the operating_system on the configurations context
     pub fn operating_system<'a>(&'a mut self, os: String) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c.operating_system(os);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the hostname on the configurations context
+    pub fn hostname<'a>(&'a mut self, hostname: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.hostname(hostname);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the language on the configurations context
+    pub fn language<'a>(&'a mut self, language: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.language(language);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the environment on the configurations context
+    pub fn environment<'a>(&'a mut self, environment: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.environment(environment);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the severity on the configurations context
+    pub fn severity<'a>(&'a mut self, severity: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.severity(severity);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the version on the configurations context
+    pub fn version<'a>(&'a mut self, version: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.version(version);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the url on the configurations context
+    pub fn url<'a>(&'a mut self, url: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.url(url);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the root_directory on the configurations context
+    pub fn root_directory<'a>(&'a mut self, root_directory: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.root_directory(root_directory);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the user on the configurations context
+    pub fn user<'a>(&'a mut self, user: ContextUser) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.user(user);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the route on the configurations context
+    pub fn route<'a>(&'a mut self, route: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.route(route);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the http_method on the configurations context
+    pub fn http_method<'a>(&'a mut self, http_method: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.http_method(http_method);
                 Some(c)
             });
         self
