@@ -1,6 +1,7 @@
 
 use super::{Notice, NoticeBuilder};
 
+#[derive(Debug, Clone)]
 pub struct ContextBuilder {
     pub operating_system: Option<String>,
     pub hostname: Option<String>,
@@ -117,7 +118,7 @@ impl ContextBuilder {
 
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct Context {
     // Builtin notifier
     pub notifier: &'static ContextNotifier,
@@ -170,7 +171,7 @@ impl Context {
 }
 
 /// This type is not intended to be used beyond the const CONTEXT_NOTIFIER
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct ContextNotifier {
     name: &'static str,
     version: &'static str,
@@ -187,7 +188,7 @@ pub const CONTEXT_NOTIFIER: ContextNotifier = ContextNotifier {
     url: NOTIFIER_URL
 };
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct ContextUser {
     #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<String>,

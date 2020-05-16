@@ -2,6 +2,8 @@
 use std::env;
 use hyper::Uri;
 
+use crate::{Context, ContextBuilder};
+
 const DEFAULT_HOSTNAME: &'static str = "https://airbrake.io";
 const ENV_VAR_PROJECT_ID: &'static str = "AIRBRAKE_PROJECT_ID";
 const ENV_VAR_PROJECT_KEY: &'static str = "AIRBRAKE_API_KEY";
@@ -19,7 +21,8 @@ pub struct AirbrakeConfigBuilder {
     pub project_id: Option<String>,
     pub project_key: Option<String>,
     pub host: Option<String>,
-    pub proxy: Option<String>
+    pub proxy: Option<String>,
+    pub context: Option<ContextBuilder>,
 }
 
 impl AirbrakeConfigBuilder {
@@ -28,7 +31,8 @@ impl AirbrakeConfigBuilder {
             project_id: None,
             project_key: None,
             host: None,
-            proxy: None
+            proxy: None,
+            context: None,
         }
     }
 
@@ -138,6 +142,24 @@ impl AirbrakeConfigBuilder {
         self
     }
 
+    // Context configuration functions
+
+    pub fn context<'a>(&'a mut self, context: ContextBuilder) -> &'a mut AirbrakeConfigBuilder {
+        self.context = Some(context);
+        self
+    }
+
+    pub fn operating_system<'a>(&'a mut self, os: String) -> &'a mut AirbrakeConfigBuilder {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.operating_system(os);
+                Some(c)
+            });
+        self
+    }
+
     pub fn build(&self) -> Result<AirbrakeConfig, AirbrakeConfigError> {
         let project_id = match &self.project_id {
             Some( id ) => id,
@@ -153,12 +175,14 @@ impl AirbrakeConfigBuilder {
         if project_key.is_empty() {
             return Err( AirbrakeConfigError::EmptyProjectKey )
         }
+        let context = self.context.clone().and_then(|c| Some(c.build()));
 
         Ok(AirbrakeConfig {
             project_id: project_id.to_string(),
             project_key: project_key.to_string(),
             host: self.host.clone().unwrap_or(DEFAULT_HOSTNAME.to_owned()),
-            proxy: self.proxy.clone()
+            proxy: self.proxy.clone(),
+            context: context
         })
     }
 }
@@ -168,7 +192,8 @@ pub struct AirbrakeConfig {
     pub project_id: String,
     pub project_key: String,
     pub host: String,
-    pub proxy: Option<String>
+    pub proxy: Option<String>,
+    pub context: Option<Context>
 }
 
 impl AirbrakeConfig {
