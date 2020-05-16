@@ -33,85 +33,85 @@ impl ContextBuilder {
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn operating_system(mut self, os: String) -> ContextBuilder {
+    pub fn operating_system<'a>(&'a mut self, os: String) -> &'a mut ContextBuilder {
         self.operating_system = Some(os);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn hostname(mut self, hostname: String) -> ContextBuilder {
+    pub fn hostname<'a>(&'a mut self, hostname: String) -> &'a mut ContextBuilder {
         self.hostname = Some(hostname);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn language(mut self, language: String) -> ContextBuilder {
+    pub fn language<'a>(&'a mut self, language: String) -> &'a mut ContextBuilder {
         self.language = Some(language);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn environment(mut self, environment: String) -> ContextBuilder {
+    pub fn environment<'a>(&'a mut self, environment: String) -> &'a mut ContextBuilder {
         self.environment = Some(environment);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn severity(mut self, severity: String) -> ContextBuilder {
+    pub fn severity<'a>(&'a mut self, severity: String) -> &'a mut ContextBuilder {
         self.severity = Some(severity);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn version(mut self, version: String) -> ContextBuilder {
+    pub fn version<'a>(&'a mut self, version: String) -> &'a mut ContextBuilder {
         self.version = Some(version);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn url(mut self, url: String) -> ContextBuilder {
+    pub fn url<'a>(&'a mut self, url: String) -> &'a mut ContextBuilder {
         self.url = Some(url);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn root_directory(mut self, root_directory: String) -> ContextBuilder {
+    pub fn root_directory<'a>(&'a mut self, root_directory: String) -> &'a mut ContextBuilder {
         self.root_directory = Some(root_directory);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn user(mut self, user: ContextUser) -> ContextBuilder {
+    pub fn user<'a>(&'a mut self, user: ContextUser) -> &'a mut ContextBuilder {
         self.user = Some(user);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn route(mut self, route: String) -> ContextBuilder {
+    pub fn route<'a>(&'a mut self, route: String) -> &'a mut ContextBuilder {
         self.route = Some(route);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn http_method(mut self, http_method: String) -> ContextBuilder {
+    pub fn http_method<'a>(&'a mut self, http_method: String) -> &'a mut ContextBuilder {
         self.http_method = Some(http_method);
         self
     }
 
-    pub fn build(self) -> Context {
+    pub fn build(&self) -> Context {
         Context {
             notifier: &CONTEXT_NOTIFIER,
-            operating_system: self.operating_system,
-            hostname: self.hostname,
-            language: self.language,
-            environment: self.environment,
-            severity: self.severity,
-            version: self.version,
-            url: self.url,
-            root_directory: self.root_directory,
-            user: self.user,
-            route: self.route,
-            http_method: self.http_method
+            operating_system: self.operating_system.clone(),
+            hostname: self.hostname.clone(),
+            language: self.language.clone(),
+            environment: self.environment.clone(),
+            severity: self.severity.clone(),
+            version: self.version.clone(),
+            url: self.url.clone(),
+            root_directory: self.root_directory.clone(),
+            user: self.user.clone(),
+            route: self.route.clone(),
+            http_method: self.http_method.clone()
         }
     }
 
