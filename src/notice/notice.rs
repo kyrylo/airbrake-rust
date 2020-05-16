@@ -11,8 +11,10 @@ use std::collections::HashMap;
 use std::string::ToString;
 use hyper::body::Body;
 use crate::AirbrakeConfig;
+use crate::AirbrakeClient;
 
-pub struct NoticeBuilder {
+pub struct NoticeBuilder<'a> {
+    pub client: Option<&'a AirbrakeClient>,
     pub errors: Vec<NoticeError>,
     pub context: Option<Context>,
     pub environment: Option<HashMap<String, String>>,
@@ -20,10 +22,11 @@ pub struct NoticeBuilder {
     pub params: Option<HashMap<String, String>>
 }
 
-impl NoticeBuilder {
+impl<'a> NoticeBuilder<'a> {
     /// Set the environment on the NoticeBuilder
-    pub fn new() -> NoticeBuilder {
+    pub fn new() -> NoticeBuilder<'a> {
         NoticeBuilder {
+            client: None,
             errors: vec![],
             context: None,
             environment: None,
@@ -32,20 +35,25 @@ impl NoticeBuilder {
         }
     }
 
+    pub fn set_client(mut self, client: &'a AirbrakeClient) -> NoticeBuilder<'a> {
+        self.client = Some(client);
+        self
+    }
+
     /// Add multiple NoticeErrors from an iterator
-    pub fn add_notices<T: Iterator<Item = NoticeError>>(mut self, notice_errors: T) -> NoticeBuilder {
+    pub fn add_notices<T: Iterator<Item = NoticeError>>(mut self, notice_errors: T) -> NoticeBuilder<'a> {
         self.errors.extend(notice_errors);
         self
     }
 
     /// Add a single NoticeError
-    pub fn add_notice(mut self, notice_error: NoticeError) -> NoticeBuilder {
+    pub fn add_notice(mut self, notice_error: NoticeError) -> NoticeBuilder<'a> {
         self.errors.push(notice_error);
         self
     }
 
     /// Add multiple Errors from an iterator
-    pub fn add_errors<T: Iterator<Item = E>, E: Error>(self, errors: T) -> NoticeBuilder {
+    pub fn add_errors<T: Iterator<Item = E>, E: Error>(self, errors: T) -> NoticeBuilder<'a> {
         let notice_errors = errors
             .into_iter()
             .map(|x| x.into());
@@ -53,19 +61,19 @@ impl NoticeBuilder {
     }
 
     /// Add a single Error
-    pub fn add_error<E: Error>(self, error: E) -> NoticeBuilder {
+    pub fn add_error<E: Error>(self, error: E) -> NoticeBuilder<'a> {
         let notice_error = NoticeError::from(error);
         self.add_notice(notice_error.into())
     }
 
     /// Set the context on the NoticeBuilder
-    pub fn context(mut self, context: Context) -> NoticeBuilder {
+    pub fn context(mut self, context: Context) -> NoticeBuilder<'a> {
         self.context = Some(context);
         self
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn environment(mut self, environment: HashMap<String, String>) -> NoticeBuilder {
+    pub fn environment(mut self, environment: HashMap<String, String>) -> NoticeBuilder<'a> {
         self.environment = Some(environment);
         self
     }
@@ -78,7 +86,7 @@ impl NoticeBuilder {
     ///     .add_environment("CODE_NAME".to_owned(), "gorilla".to_owned())
     ///     .build();
     /// ```
-    pub fn add_environment(mut self, key: String, value: String) -> NoticeBuilder {
+    pub fn add_environment(mut self, key: String, value: String) -> NoticeBuilder<'a> {
         self.environment = self.environment
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
@@ -89,7 +97,7 @@ impl NoticeBuilder {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn session(mut self, session: HashMap<String, String>) -> NoticeBuilder {
+    pub fn session(mut self, session: HashMap<String, String>) -> NoticeBuilder<'a> {
         self.session = Some(session);
         self
     }
@@ -102,7 +110,7 @@ impl NoticeBuilder {
     ///     .add_session("userId".to_owned(), "456".to_owned())
     ///     .build();
     /// ```
-    pub fn add_session(mut self, key: String, value: String) -> NoticeBuilder {
+    pub fn add_session(mut self, key: String, value: String) -> NoticeBuilder<'a> {
         self.session = self.session
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
@@ -113,7 +121,7 @@ impl NoticeBuilder {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn params(mut self, params: HashMap<String, String>) -> NoticeBuilder {
+    pub fn params(mut self, params: HashMap<String, String>) -> NoticeBuilder<'a> {
         self.params = Some(params);
         self
     }
@@ -127,7 +135,7 @@ impl NoticeBuilder {
     ///     .add_param("direction".to_owned(), "asc".to_owned())
     ///     .build();
     /// ```
-    pub fn add_param(mut self, key: String, value: String) -> NoticeBuilder {
+    pub fn add_param(mut self, key: String, value: String) -> NoticeBuilder<'a> {
         self.params = self.params
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
@@ -138,8 +146,9 @@ impl NoticeBuilder {
     }
 
     /// Executes the command as a child process, which is returned.
-    pub fn build(self) -> Notice {
+    pub fn build(self) -> Notice<'a> {
         Notice {
+            client: self.client,
             errors: self.errors,
             context: self.context,
             environment: self.environment,
@@ -160,20 +169,23 @@ impl NoticeBuilder {
 /// let context = Context::builder().build();
 /// let notice_builder = NoticeBuilder::from(context);
 /// ```
-impl<'a> From<Context> for NoticeBuilder {
-    fn from(context: Context) -> NoticeBuilder {
+impl<'a, 'b> From<Context> for NoticeBuilder<'b> {
+    fn from(context: Context) -> NoticeBuilder<'b> {
         NoticeBuilder::new().context(context.clone())
     }
 }
 
-impl<'a, E: Error> From<E> for NoticeBuilder {
-    fn from(error: E) -> NoticeBuilder {
+impl<'a, 'b, E: Error> From<E> for NoticeBuilder<'b> {
+    fn from(error: E) -> NoticeBuilder<'b> {
         NoticeBuilder::new().add_error(error)
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct Notice {
+pub struct Notice<'a> {
+    #[serde(skip)]
+    pub client: Option<&'a AirbrakeClient>,
+
     pub errors: Vec<NoticeError>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -189,7 +201,7 @@ pub struct Notice {
     pub params: Option<HashMap<String, String>>
 }
 
-impl Notice {
+impl<'a> Notice<'a> {
     /// Makes it easy to construct a new Notice
     ///
     /// ```
@@ -200,25 +212,32 @@ impl Notice {
     ///     .context(context)
     ///     .build();
     /// ```
-    pub fn builder() -> NoticeBuilder {
+    pub fn builder() -> NoticeBuilder<'a> {
         NoticeBuilder::new()
     }
 
-    pub fn new<E: Error>(config: &AirbrakeConfig, error: E) -> Notice {
+    pub fn new<E: Error>(config: &AirbrakeConfig, error: E) -> Notice<'a> {
         let notice_error = NoticeError::from(error);
         NoticeBuilder::new()
             .add_notice(notice_error)
             .build()
     }
+
+    pub fn send(self) {
+        self.client.and_then(|c| {
+            c.notify(self);
+            Some(c)
+        });
+    }
 }
 
-impl From<Notice> for Value {
-    fn from(notice: Notice) -> Value {
+impl<'a> From<Notice<'a>> for Value {
+    fn from(notice: Notice<'a>) -> Value {
         serde_json::json!(notice)
     }
 }
 
-impl Into<Body> for Notice {
+impl<'a> Into<Body> for Notice<'a> {
     fn into(self) -> Body {
         Body::from(Value::from(self).to_string())
     }

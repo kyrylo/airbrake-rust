@@ -10,6 +10,7 @@ use crate::Notice;
 use crate::NoticeBuilder;
 use crate::AirbrakeConfig;
 
+#[derive(Debug)]
 pub struct AirbrakeClient {
     client: Client<HttpsConnector<HttpConnector>>,
     config: AirbrakeConfig
@@ -44,10 +45,11 @@ impl AirbrakeClient {
     }
 
     pub fn new_notice_builder(&self) -> NoticeBuilder {
-        match &self.config.context {
+        let notice_builder = match &self.config.context {
             Some( context ) => context.new_notice_builder(),
             None => Notice::builder()
-        }
+        };
+        notice_builder.set_client(&self)
     }
 
     pub fn notify(&self, mut notice: Notice) {
