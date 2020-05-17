@@ -39,8 +39,8 @@ impl AirbrakeClient {
     async fn send_request(&self, request: Request<Body>) -> () {
         let response = self.client.request(request).await;
         match response {
-            Ok ( response ) => (),
-            Err ( x ) => warn!("notification failed")
+            Ok ( _response ) => (),
+            Err ( _x ) => warn!("notification failed")
         }
     }
 
@@ -53,7 +53,11 @@ impl AirbrakeClient {
     }
 
     pub fn notify(&self, mut notice: Notice) {
-        notice.context = self.config.context.clone();
+        // TODO: This is a codesmell- the notify function shouldn't be
+        // mutating the notice. Testing this is very difficult. Too
+        // difficult for me to bother figuring out, which means this is
+        // poorly designed
+        notice.context = notice.context.or_else(|| {self.config.context.clone()});
         let endpoint = self.config.endpoint_uri();
         let request = self.build_request(endpoint, notice);
 
@@ -68,7 +72,7 @@ mod context_user_tests {
     use std::collections::HashMap;
     use serde_json::{self, Value};
     use hyper::body::Body;
-    use crate::{AirbrakeConfig, AirbrakeClient};
+    use crate::{AirbrakeConfig, AirbrakeClient, NoticeError};
 
     #[test]
     fn client_with_context_included_in_notices() {
@@ -76,6 +80,8 @@ mod context_user_tests {
             .project_id("foo".to_string())
             .project_key("bar".to_string())
             .operating_system("SolarOS".to_string())
+            .version("0.0.0".to_string())
+            .severity("critical".to_string())
             .build()
             .unwrap();
         let client = AirbrakeClient::new(config);
@@ -90,7 +96,44 @@ mod context_user_tests {
                     "url": "https://github.com/airbrake/airbrake-rust",
                     "version": "0.2.0"
                 },
-                "os": "SolarOS"
+                "os": "SolarOS",
+                "version": "0.0.0",
+                "severity": "critical"
+            }
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(notice)
+        );
+    }
+
+    #[test]
+    fn notice_from_client_inherits_context() {
+        let config = AirbrakeConfig::builder()
+            .project_id("foo".to_string())
+            .project_key("bar".to_string())
+            .operating_system("SolarOS".to_string())
+            .version("0.0.0".to_string())
+            .build()
+            .unwrap();
+        let client = AirbrakeClient::new(config);
+        let notice = client.new_notice_builder()
+            .severity("warning".to_string())
+            .build();
+
+        let expected_json = r#"
+        {
+            "errors": [],
+            "context": {
+                "notifier": {
+                    "name": "airbrake-rust",
+                    "url": "https://github.com/airbrake/airbrake-rust",
+                    "version": "0.2.0"
+                },
+                "os": "SolarOS",
+                "version": "0.0.0",
+                "severity": "warning"
             }
         }
         "#;

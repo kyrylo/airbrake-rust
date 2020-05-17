@@ -1,22 +1,24 @@
 
 use super::{
     Context,
+    ContextUser,
+    ContextBuilder,
     NoticeError
 };
 
 use serde_json::{self, Value};
 
+use log::debug;
 use std::error::Error;
 use std::collections::HashMap;
 use std::string::ToString;
 use hyper::body::Body;
-use crate::AirbrakeConfig;
 use crate::AirbrakeClient;
 
 pub struct NoticeBuilder<'a> {
     pub client: Option<&'a AirbrakeClient>,
     pub errors: Vec<NoticeError>,
-    pub context: Option<Context>,
+    pub context: Option<ContextBuilder>,
     pub environment: Option<HashMap<String, String>>,
     pub session: Option<HashMap<String, String>>,
     pub params: Option<HashMap<String, String>>
@@ -67,8 +69,140 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the context on the NoticeBuilder
-    pub fn context(mut self, context: Context) -> NoticeBuilder<'a> {
+    pub fn context(mut self, context: ContextBuilder) -> NoticeBuilder<'a> {
         self.context = Some(context);
+        self
+    }
+
+    /// Set the operating_system on the configurations context
+    pub fn operating_system(mut self, os: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.operating_system(os);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the hostname on the configurations context
+    pub fn hostname(mut self, hostname: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.hostname(hostname);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the language on the configurations context
+    pub fn language(mut self, language: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.language(language);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the environment on the configurations context
+    pub fn context_environment(mut self, environment: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.environment(environment);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the severity on the configurations context
+    pub fn severity(mut self, severity: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.severity(severity);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the version on the configurations context
+    pub fn version(mut self, version: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.version(version);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the url on the configurations context
+    pub fn url(mut self, url: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.url(url);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the root_directory on the configurations context
+    pub fn root_directory(mut self, root_directory: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.root_directory(root_directory);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the user on the configurations context
+    pub fn user(mut self, user: ContextUser) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.user(user);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the route on the configurations context
+    pub fn route(mut self, route: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.route(route);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the http_method on the configurations context
+    pub fn http_method(mut self, http_method: String) -> NoticeBuilder<'a> {
+        self.context = self.context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.http_method(http_method);
+                Some(c)
+            });
         self
     }
 
@@ -147,10 +281,11 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Executes the command as a child process, which is returned.
     pub fn build(self) -> Notice<'a> {
+        let context = self.context.clone().and_then(|c| Some(c.build()));
         Notice {
             client: self.client,
             errors: self.errors,
-            context: self.context,
+            context: context,
             environment: self.environment,
             session: self.session,
             params: self.params
@@ -166,11 +301,11 @@ impl<'a> NoticeBuilder<'a> {
 /// ```
 /// use airbrake::{Context, NoticeBuilder};
 ///
-/// let context = Context::builder().build();
-/// let notice_builder = NoticeBuilder::from(context);
+/// let context = Context::builder();
+/// let notice_builder = NoticeBuilder::from(&context);
 /// ```
-impl<'a, 'b> From<Context> for NoticeBuilder<'b> {
-    fn from(context: Context) -> NoticeBuilder<'b> {
+impl<'a, 'b> From<&ContextBuilder> for NoticeBuilder<'b> {
+    fn from(context: &ContextBuilder) -> NoticeBuilder<'b> {
         NoticeBuilder::new().context(context.clone())
     }
 }
@@ -207,7 +342,7 @@ impl<'a> Notice<'a> {
     /// ```
     /// use airbrake::{Context, Notice};
     ///
-    /// let context = Context::builder().build();
+    /// let context = Context::builder();
     /// let notice = Notice::builder()
     ///     .context(context)
     ///     .build();
@@ -216,15 +351,9 @@ impl<'a> Notice<'a> {
         NoticeBuilder::new()
     }
 
-    pub fn new<E: Error>(config: &AirbrakeConfig, error: E) -> Notice<'a> {
-        let notice_error = NoticeError::from(error);
-        NoticeBuilder::new()
-            .add_notice(notice_error)
-            .build()
-    }
-
     pub fn send(self) {
         self.client.and_then(|c| {
+            debug!("Sending via notice client");
             c.notify(self);
             Some(c)
         });
@@ -388,7 +517,7 @@ mod tests {
 
     #[test]
     fn notice_context_default() {
-        let context = Context::builder().build();
+        let context = Context::builder();
         let notice = Notice::builder()
             .context(context)
             .build();

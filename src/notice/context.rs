@@ -118,6 +118,24 @@ impl ContextBuilder {
 
 }
 
+impl From<&Context> for ContextBuilder {
+    fn from(context: &Context) -> ContextBuilder {
+        ContextBuilder {
+            operating_system: context.operating_system.clone(),
+            hostname: context.hostname.clone(),
+            language: context.language.clone(),
+            environment: context.environment.clone(),
+            severity: context.severity.clone(),
+            version: context.version.clone(),
+            url: context.url.clone(),
+            root_directory: context.root_directory.clone(),
+            user: context.user.clone(),
+            route: context.route.clone(),
+            http_method: context.http_method.clone()
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct Context {
     // Builtin notifier
@@ -166,7 +184,7 @@ impl Context {
     }
 
     pub fn new_notice_builder(&self) -> NoticeBuilder {
-        Notice::builder().context(self.clone())
+        Notice::builder().context(self.into())
     }
 }
 
