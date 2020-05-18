@@ -304,14 +304,14 @@ impl<'a> NoticeBuilder<'a> {
 /// let context = Context::builder();
 /// let notice_builder = NoticeBuilder::from(&context);
 /// ```
-impl<'a, 'b> From<&ContextBuilder> for NoticeBuilder<'b> {
-    fn from(context: &ContextBuilder) -> NoticeBuilder<'b> {
+impl<'a> From<&ContextBuilder> for NoticeBuilder<'a> {
+    fn from(context: &ContextBuilder) -> NoticeBuilder<'a> {
         NoticeBuilder::new().context(context.clone())
     }
 }
 
-impl<'a, 'b, E: Error> From<E> for NoticeBuilder<'b> {
-    fn from(error: E) -> NoticeBuilder<'b> {
+impl<'a, E: Error> From<E> for NoticeBuilder<'a> {
+    fn from(error: E) -> NoticeBuilder<'a> {
         NoticeBuilder::new().add_error(error)
     }
 }
