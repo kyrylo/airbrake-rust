@@ -5,37 +5,37 @@ use serde_json::{self, Value};
 use backtrace::{Backtrace, BacktraceFrame, BacktraceSymbol};
 
 #[derive(Debug)]
-pub struct NoticeBacktrace {
-    frames: Vec<NoticeBacktraceFrame>
+pub struct NoticeTrace {
+    frames: Vec<NoticeFrame>
 }
 
-impl NoticeBacktrace {
-    fn new(frames: Vec<NoticeBacktraceFrame>) -> NoticeBacktrace {
-        NoticeBacktrace {
+impl NoticeTrace {
+    fn new(frames: Vec<NoticeFrame>) -> NoticeTrace {
+        NoticeTrace {
             frames: frames
         }
     }
 
-    pub fn frames(&self) -> Vec<NoticeBacktraceFrame> {
+    pub fn frames(&self) -> Vec<NoticeFrame> {
         self.frames.clone()
     }
 }
 
-impl From<Backtrace> for NoticeBacktrace {
-    fn from(backtrace: Backtrace) -> NoticeBacktrace {
-        let mut frames: Vec<NoticeBacktraceFrame> = vec![];
+impl From<Backtrace> for NoticeTrace {
+    fn from(backtrace: Backtrace) -> NoticeTrace {
+        let mut frames: Vec<NoticeFrame> = vec![];
         for f in backtrace.frames() {
             frames.append(
-                &mut NoticeBacktraceFrame::unroll_frame_symbols(&f)
+                &mut NoticeFrame::unroll_frame_symbols(&f)
             );
         }
-        NoticeBacktrace {
+        NoticeTrace {
             frames: frames
         }
     }
 }
 
-impl Serialize for NoticeBacktrace {
+impl Serialize for NoticeTrace {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -48,14 +48,14 @@ impl Serialize for NoticeBacktrace {
     }
 }
 
-impl From<NoticeBacktrace> for Value {
-    fn from(notice_backtrace: NoticeBacktrace) -> Value {
+impl From<NoticeTrace> for Value {
+    fn from(notice_backtrace: NoticeTrace) -> Value {
         serde_json::json!(notice_backtrace)
     }
 }
 
 #[derive(Debug, Serialize, Clone)]
-pub struct NoticeBacktraceFrame {
+pub struct NoticeFrame {
     pub file: String,
     pub function: String,
 
@@ -66,14 +66,14 @@ pub struct NoticeBacktraceFrame {
     pub code: Option<HashMap<i32, String>>
 }
 
-impl NoticeBacktraceFrame {
-    fn unroll_frame_symbols(frame: &BacktraceFrame) -> Vec<NoticeBacktraceFrame> {
-        frame.symbols().iter().map(NoticeBacktraceFrame::from).collect()
+impl NoticeFrame {
+    fn unroll_frame_symbols(frame: &BacktraceFrame) -> Vec<NoticeFrame> {
+        frame.symbols().iter().map(NoticeFrame::from).collect()
     }
 }
 
-impl From<&BacktraceSymbol> for NoticeBacktraceFrame {
-    fn from(symbol: &BacktraceSymbol) -> NoticeBacktraceFrame {
+impl From<&BacktraceSymbol> for NoticeFrame {
+    fn from(symbol: &BacktraceSymbol) -> NoticeFrame {
         let filename = match symbol.filename() {
             Some( f ) => {
                 f.to_str()
@@ -86,7 +86,7 @@ impl From<&BacktraceSymbol> for NoticeBacktraceFrame {
             .expect("Backtrace frame doesn't have a function name")
             .to_string();
 
-        NoticeBacktraceFrame {
+        NoticeFrame {
             file: filename,
             line: symbol.lineno(),
             function: function_name,
@@ -99,7 +99,7 @@ impl From<&BacktraceSymbol> for NoticeBacktraceFrame {
 mod tests {
     use std::convert::From;
     use backtrace::{Backtrace, BacktraceFrame};
-    use super::{NoticeBacktrace, NoticeBacktraceFrame};
+    use super::{NoticeTrace, NoticeFrame};
 
     #[test]
     fn backtrace_contains_current_function_frame() {
@@ -108,7 +108,7 @@ mod tests {
         // the current function exists somewhere in the resulting
         // list of frames.
         let backtrace = Backtrace::new();
-        let selected_frames: Vec<NoticeBacktraceFrame> = NoticeBacktrace::from(backtrace)
+        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(backtrace)
             .frames()
             .into_iter()
             .filter(|f| {
@@ -127,7 +127,7 @@ mod tests {
         // that the backtraces creates a single frame with two symboles
         let fn_backtrace = || { (|| { Backtrace::new() })() };
         let backtrace = fn_backtrace();
-        let selected_frames: Vec<NoticeBacktraceFrame> = NoticeBacktrace::from(backtrace)
+        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(backtrace)
             .frames()
             .into_iter()
             .filter(|f| {
@@ -146,7 +146,7 @@ mod tests {
         use serde_json::{self, Value};
 
         let backtrace = Backtrace::new();
-        let notice_backtrace = NoticeBacktrace::from(backtrace);
+        let notice_backtrace = NoticeTrace::from(backtrace);
         let json_backtrace = Value::from(notice_backtrace);
 
         assert_matches!(json_backtrace, Value::Array(_));

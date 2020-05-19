@@ -1,6 +1,6 @@
 
 use std::error::Error;
-use super::NoticeBacktrace;
+use super::NoticeTrace;
 
 #[derive(Debug, Serialize)]
 pub struct NoticeError {
@@ -11,11 +11,11 @@ pub struct NoticeError {
     pub message: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub backtrace: Option<NoticeBacktrace>
+    pub backtrace: Option<NoticeTrace>
 }
 
 impl NoticeError {
-    pub fn new(name: String, message: Option<String>, backtrace: Option<NoticeBacktrace>) -> NoticeError {
+    pub fn new(name: String, message: Option<String>, backtrace: Option<NoticeTrace>) -> NoticeError {
         NoticeError {
             type_: name,
             message: message,

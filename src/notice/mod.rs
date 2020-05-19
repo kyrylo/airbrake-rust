@@ -108,4 +108,4 @@ pub use context::{
     CONTEXT_NOTIFIER
 };
 pub use error::NoticeError;
-pub use notice_backtrace::{NoticeBacktrace, NoticeBacktraceFrame};
+pub use notice_backtrace::{NoticeTrace, NoticeFrame};
