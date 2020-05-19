@@ -27,3 +27,4 @@ backtrace = "0.3"
 
 [dev-dependencies]
 more-asserts = "0.2.1"
+matches = "0.1.8"

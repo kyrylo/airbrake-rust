@@ -1,7 +1,10 @@
 
 use std::collections::HashMap;
+use serde::ser::{Serialize, Serializer, SerializeSeq};
+use serde_json::{self, Value};
 use backtrace::{Backtrace, BacktraceFrame, BacktraceSymbol};
 
+#[derive(Debug)]
 pub struct NoticeBacktrace {
     frames: Vec<NoticeBacktraceFrame>
 }
@@ -29,6 +32,25 @@ impl From<Backtrace> for NoticeBacktrace {
         NoticeBacktrace {
             frames: frames
         }
+    }
+}
+
+impl Serialize for NoticeBacktrace {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(self.frames.len()))?;
+        for element in self.frames() {
+            seq.serialize_element(&element)?;
+        }
+        seq.end()
+    }
+}
+
+impl From<NoticeBacktrace> for Value {
+    fn from(notice_backtrace: NoticeBacktrace) -> Value {
+        serde_json::json!(notice_backtrace)
     }
 }
 
@@ -100,7 +122,7 @@ mod tests {
     #[test]
     fn backtrace_unrolls_multiple_symboles() {
         let function_name: String = "backtrace_unrolls_multiple_symboles".to_string();
-        let nested_frame_line: u32 = 107;
+        let nested_frame_line: u32 = 128;
         // This backtrace is generated from within a nested enclosure so
         // that the backtraces creates a single frame with two symboles
         let fn_backtrace = || { (|| { Backtrace::new() })() };
@@ -115,5 +137,19 @@ mod tests {
             .collect();
 
         assert_gt!(selected_frames.len(), 1);
+    }
+
+    #[test]
+    fn json_backtrace_is_array_of_objects() {
+        use std::str::FromStr;
+        use std::collections::HashMap;
+        use serde_json::{self, Value};
+
+        let backtrace = Backtrace::new();
+        let notice_backtrace = NoticeBacktrace::from(backtrace);
+        let json_backtrace = Value::from(notice_backtrace);
+
+        assert_matches!(json_backtrace, Value::Array(_));
+        assert_matches!(json_backtrace[0], Value::Object(_));
     }
 }
