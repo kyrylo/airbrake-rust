@@ -1,6 +1,6 @@
 
 use std::error::Error;
-use super::NoticeBacktrace;
+use super::NoticeBacktraceFrame;
 
 #[derive(Debug, Serialize)]
 pub struct NoticeError {
@@ -11,11 +11,11 @@ pub struct NoticeError {
     pub message: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub backtrace: Option<Vec<NoticeBacktrace>>
+    pub backtrace: Option<Vec<NoticeBacktraceFrame>>
 }
 
 impl NoticeError {
-    pub fn new(name: String, message: Option<String>, backtrace: Option<Vec<NoticeBacktrace>>) -> NoticeError {
+    pub fn new(name: String, message: Option<String>, backtrace: Option<Vec<NoticeBacktraceFrame>>) -> NoticeError {
         NoticeError {
             type_: name,
             message: message,
@@ -31,5 +31,35 @@ impl<'a, E: Error> From<E> for NoticeError {
         let backtrace = None;
 
         NoticeError::new(name, message, backtrace)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use backtrace::{Backtrace, BacktraceFrame};
+    use super::{NoticeError, NoticeBacktraceFrame};
+
+    #[test]
+    fn backtrace_contains_current_function_frame() {
+        let function_name: String = "airbrake::notice::error::tests::backtrace_contains_current_function_frame".to_string();
+        // This test builds a new backtrace object and asserts that
+        // the current function exists somewhere in the resulting
+        // list of frames.
+        let backtrace = Backtrace::new();
+        let frames: Vec<NoticeBacktraceFrame> = backtrace
+            .frames()
+            .into_iter()
+            .map(|frame: &BacktraceFrame| {
+                // TODO: Frames can have multiple symbols in cases where
+                // a single line contains multiple function calls
+                NoticeBacktraceFrame::from(&frame.symbols()[0])
+            })
+            .collect();
+
+        let has_function_name: bool = frames.iter()
+            .fold(false, |acc: bool, frame: &NoticeBacktraceFrame| {
+                acc || frame.function.contains(&function_name)
+            });
+        assert!(has_function_name);
     }
 }

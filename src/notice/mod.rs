@@ -94,7 +94,7 @@
 
 mod context;
 mod error;
-mod backtrace;
+mod notice_backtrace;
 mod notice;
 
 pub use notice::{
@@ -108,4 +108,4 @@ pub use context::{
     CONTEXT_NOTIFIER
 };
 pub use error::NoticeError;
-pub use backtrace::NoticeBacktrace;
+pub use notice_backtrace::NoticeBacktraceFrame;
