@@ -274,6 +274,7 @@ mod notice;
 pub use client::AirbrakeClient;
 pub use config::{AirbrakeConfig, AirbrakeConfigBuilder};
 pub use notice::*;
+pub use backtrace;
 
 /// Configures an Airbrake notifier.
 ///

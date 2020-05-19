@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use serde::ser::{Serialize, Serializer, SerializeSeq};
 use serde_json::{self, Value};
-use backtrace::{Backtrace, BacktraceFrame, BacktraceSymbol};
+use crate::backtrace::{Backtrace, BacktraceFrame, BacktraceSymbol};
 
 #[derive(Debug)]
 pub struct NoticeTrace {
@@ -98,7 +98,7 @@ impl From<&BacktraceSymbol> for NoticeFrame {
 #[cfg(test)]
 mod tests {
     use std::convert::From;
-    use backtrace::{Backtrace, BacktraceFrame};
+    use crate::backtrace::{Backtrace, BacktraceFrame};
     use super::{NoticeTrace, NoticeFrame};
 
     #[test]

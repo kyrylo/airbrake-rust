@@ -3,7 +3,8 @@ use super::{
     Context,
     ContextUser,
     ContextBuilder,
-    NoticeError
+    NoticeError,
+    NoticeTrace
 };
 
 use serde_json::{self, Value};
@@ -14,6 +15,7 @@ use std::collections::HashMap;
 use std::string::ToString;
 use hyper::body::Body;
 use crate::AirbrakeClient;
+use crate::backtrace::Backtrace;
 
 pub struct NoticeBuilder<'a> {
     pub client: Option<&'a AirbrakeClient>,
@@ -65,6 +67,12 @@ impl<'a> NoticeBuilder<'a> {
     /// Add a single Error
     pub fn add_error<E: Error>(self, error: E) -> NoticeBuilder<'a> {
         let notice_error = NoticeError::from(error);
+        self.add_notice(notice_error.into())
+    }
+
+    pub fn add_error_with_backtrace<E: Error>(self, error: E, backtrace: Backtrace) -> NoticeBuilder<'a> {
+        let mut notice_error = NoticeError::from(error);
+        notice_error.backtrace = Some(NoticeTrace::from(backtrace));
         self.add_notice(notice_error.into())
     }
 

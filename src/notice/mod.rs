@@ -56,6 +56,46 @@
 //!     .build();
 //! ```
 //!
+//! Backtraces are also supported in error reporting. You will typically have
+//! a raw backtrace created by the backtrace crate. These sort of backtraces
+//! can be added using the `raw_backtrace` builder method.
+//! ```
+//! use airbrake::{Notice, NoticeError};
+//! use airbrake::backtrace::Backtrace;
+//!
+//! let notice_error = NoticeError::builder("foo")
+//!     .raw_backtrace(Backtrace::new())
+//!     .build();
+//! let notice = Notice::builder()
+//!     .add_notice(notice_error)
+//!     .build();
+//! ```
+//!
+//! You can also include a backtrace while building a Notice based on an
+//! error, however since backtraces aren't part of the Error trait, you'll
+//! have to provide it using the add_error_with_backtrace() function:
+//!
+//! ```
+//! use std::error::Error;
+//! use std::fmt::{Display, Formatter, Result};
+//! use backtrace;
+//! use airbrake::{Notice, NoticeError};
+//! use airbrake::backtrace::Backtrace;
+//!
+//! #[derive(Debug)]
+//! struct MyError;
+//! impl Error for MyError {}
+//! impl Display for MyError {
+//!     fn fmt(&self, f: &mut Formatter<'_>) -> Result { write!(f, "") }
+//! }
+//! let my_error = MyError {};
+//! let my_backtrace = Backtrace::new();
+//!
+//! let notice = Notice::builder()
+//!     .add_error_with_backtrace(my_error, my_backtrace)
+//!     .build();
+//! ```
+//!
 //! Airbreak supports multiple errors being logged in a single notification,
 //! so using `.add_error` and `.add_notice` will append to the list of errors
 //! that contained. If you have multiple errors ready, you can add them all
@@ -107,5 +147,8 @@ pub use context::{
     ContextUser,
     CONTEXT_NOTIFIER
 };
-pub use error::NoticeError;
+pub use error::{
+    NoticeError,
+    NoticeErrorBuilder
+};
 pub use notice_backtrace::{NoticeTrace, NoticeFrame};
