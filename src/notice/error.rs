@@ -37,7 +37,7 @@ impl<'a, E: Error> From<E> for NoticeError {
 #[cfg(test)]
 mod tests {
     use backtrace::{Backtrace, BacktraceFrame};
-    use super::{NoticeError, NoticeBacktraceFrame};
+    use super::super::{NoticeBacktrace, NoticeBacktraceFrame};
 
     #[test]
     fn backtrace_contains_current_function_frame() {
@@ -46,17 +46,9 @@ mod tests {
         // the current function exists somewhere in the resulting
         // list of frames.
         let backtrace = Backtrace::new();
-        let frames: Vec<NoticeBacktraceFrame> = backtrace
-            .frames()
-            .into_iter()
-            .map(|frame: &BacktraceFrame| {
-                // TODO: Frames can have multiple symbols in cases where
-                // a single line contains multiple function calls
-                NoticeBacktraceFrame::from(&frame.symbols()[0])
-            })
-            .collect();
+        let notice_backtrace = NoticeBacktrace::from(backtrace);
 
-        let has_function_name: bool = frames.iter()
+        let has_function_name: bool = notice_backtrace.frames().iter()
             .fold(false, |acc: bool, frame: &NoticeBacktraceFrame| {
                 acc || frame.function.contains(&function_name)
             });
