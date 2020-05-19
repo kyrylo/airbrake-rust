@@ -259,6 +259,10 @@ extern crate serde_json;
 #[macro_use]
 extern crate log;
 
+#[cfg(test)]
+#[macro_use]
+extern crate more_asserts;
+
 mod config;
 mod client;
 mod notice;

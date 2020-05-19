@@ -33,25 +33,3 @@ impl<'a, E: Error> From<E> for NoticeError {
         NoticeError::new(name, message, backtrace)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use backtrace::{Backtrace, BacktraceFrame};
-    use super::super::{NoticeBacktrace, NoticeBacktraceFrame};
-
-    #[test]
-    fn backtrace_contains_current_function_frame() {
-        let function_name: String = "airbrake::notice::error::tests::backtrace_contains_current_function_frame".to_string();
-        // This test builds a new backtrace object and asserts that
-        // the current function exists somewhere in the resulting
-        // list of frames.
-        let backtrace = Backtrace::new();
-        let notice_backtrace = NoticeBacktrace::from(backtrace);
-
-        let has_function_name: bool = notice_backtrace.frames().iter()
-            .fold(false, |acc: bool, frame: &NoticeBacktraceFrame| {
-                acc || frame.function.contains(&function_name)
-            });
-        assert!(has_function_name);
-    }
-}

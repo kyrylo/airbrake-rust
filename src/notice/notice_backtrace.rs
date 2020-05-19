@@ -72,3 +72,48 @@ impl From<&BacktraceSymbol> for NoticeBacktraceFrame {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::convert::From;
+    use backtrace::{Backtrace, BacktraceFrame};
+    use super::{NoticeBacktrace, NoticeBacktraceFrame};
+
+    #[test]
+    fn backtrace_contains_current_function_frame() {
+        let function_name: String = "backtrace_contains_current_function_frame".to_string();
+        // This test builds a new backtrace object and asserts that
+        // the current function exists somewhere in the resulting
+        // list of frames.
+        let backtrace = Backtrace::new();
+        let selected_frames: Vec<NoticeBacktraceFrame> = NoticeBacktrace::from(backtrace)
+            .frames()
+            .into_iter()
+            .filter(|f| {
+                f.function.contains(&function_name)
+            })
+            .collect();
+
+        assert_gt!(selected_frames.len(), 0);
+    }
+
+    #[test]
+    fn backtrace_unrolls_multiple_symboles() {
+        let function_name: String = "backtrace_unrolls_multiple_symboles".to_string();
+        let nested_frame_line: u32 = 107;
+        // This backtrace is generated from within a nested enclosure so
+        // that the backtraces creates a single frame with two symboles
+        let fn_backtrace = || { (|| { Backtrace::new() })() };
+        let backtrace = fn_backtrace();
+        let selected_frames: Vec<NoticeBacktraceFrame> = NoticeBacktrace::from(backtrace)
+            .frames()
+            .into_iter()
+            .filter(|f| {
+                f.function.contains(&function_name) &&
+                f.line == Some(nested_frame_line)
+            })
+            .collect();
+
+        assert_gt!(selected_frames.len(), 1);
+    }
+}
