@@ -1,10 +1,8 @@
 
-use tokio::runtime::Runtime;
+use std::time::Instant;
 use log::warn;
-use hyper::{Uri, Body, Request};
-use hyper::header::CONTENT_TYPE;
-use hyper::client::{Client, HttpConnector};
-use hyper_tls::HttpsConnector;
+use reqwest::blocking::Client;
+use serde::Serialize;
 
 use crate::Notice;
 use crate::NoticeBuilder;
@@ -12,35 +10,37 @@ use crate::AirbrakeConfig;
 
 #[derive(Debug)]
 pub struct AirbrakeClient {
-    client: Client<HttpsConnector<HttpConnector>>,
+    client: Client,
     config: AirbrakeConfig
 }
 
 impl AirbrakeClient {
     pub fn new(config: AirbrakeConfig) -> AirbrakeClient {
-        let connector = HttpsConnector::new();
-        let client = Client::builder().build(connector);
-
         AirbrakeClient {
-            client: client,
+            client: Client::new(),
             config: config
         }
     }
 
-    fn build_request<T>(&self, uri: Uri, payload: T) -> Request<Body>
-    where T: Into<Body>
+    fn send_request<T>(&self, uri: &str, payload: &T) -> ()
+    where T: Serialize
     {
-        Request::post(uri)
-            .header(CONTENT_TYPE, "application/json")
-            .body(payload.into())
-            .expect("Request creation failed unexpectedly")
-    }
+        // Prepare a duration timer to track how long it takes to send the request.
+        let start_time = Instant::now();
 
-    async fn send_request(&self, request: Request<Body>) -> () {
-        let response = self.client.request(request).await;
+        // Now send the request to the airbrake server
+        let response = self.client.post(uri)
+            .json(payload)
+            .send();
+
+        // Calculate send duration and print it to debug
+        let duration = start_time.elapsed();
+        debug!("Airbrake notify request took: {:?}", duration);
+
+        // Now handle the response
         match response {
-            Ok ( _response ) => (),
-            Err ( _x ) => warn!("notification failed")
+            Ok ( _ ) => (),
+            Err ( _ ) => warn!("notification failed")
         }
     }
 
@@ -59,10 +59,7 @@ impl AirbrakeClient {
         // poorly designed
         notice.context = notice.context.or_else(|| {self.config.context.clone()});
         let endpoint = self.config.endpoint_uri();
-        let request = self.build_request(endpoint, notice);
-
-        let mut runtime = Runtime::new().unwrap();
-        runtime.block_on(self.send_request(request));
+        self.send_request(&endpoint, &notice)
     }
 }
 
@@ -71,7 +68,6 @@ mod context_user_tests {
     use std::str::FromStr;
     use std::collections::HashMap;
     use serde_json::{self, Value};
-    use hyper::body::Body;
     use crate::{AirbrakeConfig, AirbrakeClient, NoticeError};
 
     #[test]

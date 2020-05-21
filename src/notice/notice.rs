@@ -13,7 +13,6 @@ use log::debug;
 use std::error::Error;
 use std::collections::HashMap;
 use std::string::ToString;
-use hyper::body::Body;
 use crate::AirbrakeClient;
 use crate::backtrace::Backtrace;
 
@@ -374,19 +373,11 @@ impl<'a> From<Notice<'a>> for Value {
     }
 }
 
-impl<'a> Into<Body> for Notice<'a> {
-    fn into(self) -> Body {
-        Body::from(Value::from(self).to_string())
-    }
-}
-
-
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
     use std::collections::HashMap;
     use serde_json::{self, Value};
-    use hyper::body::Body;
     use super::{Notice, Context};
 
     #[test]

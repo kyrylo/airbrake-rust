@@ -252,7 +252,6 @@ mod context_user_tests {
     use std::str::FromStr;
     use std::collections::HashMap;
     use serde_json::{self, Value};
-    use hyper::body::Body;
     use super::{Context, ContextUser};
 
     #[test]
@@ -334,7 +333,6 @@ mod context_tests {
     use std::str::FromStr;
     use std::collections::HashMap;
     use serde_json::{self, Value};
-    use hyper::body::Body;
     use super::{Context, ContextUser};
 
     #[test]

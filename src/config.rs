@@ -1,7 +1,5 @@
 
 use std::env;
-use hyper::Uri;
-
 use crate::{Context, ContextBuilder, ContextUser};
 
 const DEFAULT_HOSTNAME: &'static str = "https://airbrake.io";
@@ -339,17 +337,13 @@ impl AirbrakeConfig {
             .build()
     }
 
-    pub fn endpoint(&self) -> String {
+    pub fn endpoint_uri(&self) -> String {
         format!(
             "{}/api/v3/projects/{}/notices?key={}",
             self.host,
             self.project_id,
             self.project_key,
         )
-    }
-
-    pub fn endpoint_uri(&self) -> Uri {
-        self.endpoint().parse().expect("malformed URL")
     }
 }
 
