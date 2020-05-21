@@ -265,12 +265,10 @@ extern crate more_asserts;
 #[macro_use]
 extern crate matches;
 
-mod config;
 mod client;
 mod notice;
 
-pub use client::AirbrakeClient;
-pub use config::{AirbrakeConfig, AirbrakeConfigBuilder};
+pub use client::{AirbrakeClient, AirbrakeClientBuilder};
 pub use notice::*;
 pub use backtrace;
 
@@ -285,11 +283,10 @@ pub use backtrace;
 /// });
 /// ```
 pub fn configure<F>(builder_callback: F) -> AirbrakeClient
-    where F: Fn(&mut AirbrakeConfigBuilder)
+    where F: Fn(&mut AirbrakeClientBuilder)
 {
-    let config = AirbrakeConfig::builder()
+    AirbrakeClient::builder()
         .configure(builder_callback)
         .build()
-        .unwrap();
-    AirbrakeClient::new(config)
+        .expect("Airbrake configuration failed")
 }

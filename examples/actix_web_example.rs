@@ -23,7 +23,7 @@ fn main() -> () {
     env_logger::init();
 
     // Set up the client
-    let config = AirbrakeConfig::builder()
+    let airbrake: AirbrakeClient = AirbrakeClient::builder()
         .project_id_from_env().expect("Missing AIRBRAKE_PROJECT_ID")
         .project_key_from_env().expect("Missing AIRBRAKE_API_KEY")
         .environment("development")
@@ -31,7 +31,7 @@ fn main() -> () {
         .expect("Failed to build config");
 
     panic::set_hook(
-        AirbrakeClient::new(config).panic_hook()
+        airbrake.panic_hook()
     );
     actix_main();
 }
