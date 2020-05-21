@@ -10,7 +10,7 @@
 //! ```
 //! use airbrake::{Notice, NoticeError};
 //!
-//! let notice_error = NoticeError::new("foo".to_owned(), None, None);
+//! let notice_error = NoticeError::new("foo", None, None);
 //! let notice = Notice::builder()
 //!     .add_notice(notice_error)
 //!     .build();
@@ -105,8 +105,8 @@
 //! use std::error::Error;
 //! use airbrake::{Notice, NoticeError};
 //!
-//! let my_error1 = NoticeError::new("foo".to_owned(), None, None);
-//! let my_error2 = NoticeError::new("bar".to_owned(), None, None);
+//! let my_error1 = NoticeError::new("foo", None, None);
+//! let my_error2 = NoticeError::new("bar", None, None);
 //! let error_list = vec![my_error1, my_error2].into_iter();
 //! let notice = Notice::builder()
 //!     .add_notices(error_list)
@@ -125,7 +125,7 @@
 //!
 //! let context = Context::builder().build();
 //!
-//! let notice_error = NoticeError::new("foo".to_owned(), None, None);
+//! let notice_error = NoticeError::new("foo", None, None);
 //! let notice = context.new_notice_builder()
 //!     .add_notice(notice_error)
 //!     .build();

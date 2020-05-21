@@ -26,7 +26,7 @@ fn main() -> () {
     let config = AirbrakeConfig::builder()
         .project_id_from_env().expect("Missing AIRBRAKE_PROJECT_ID")
         .project_key_from_env().expect("Missing AIRBRAKE_API_KEY")
-        .environment("development".to_string())
+        .environment("development")
         .build()
         .expect("Failed to build config");
 

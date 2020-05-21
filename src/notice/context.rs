@@ -34,50 +34,50 @@ impl ContextBuilder {
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn operating_system<'a>(&'a mut self, os: String) -> &'a mut ContextBuilder {
-        self.operating_system = Some(os);
+    pub fn operating_system<'a>(&'a mut self, os: &str) -> &'a mut ContextBuilder {
+        self.operating_system = Some(os.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn hostname<'a>(&'a mut self, hostname: String) -> &'a mut ContextBuilder {
-        self.hostname = Some(hostname);
+    pub fn hostname<'a>(&'a mut self, hostname: &str) -> &'a mut ContextBuilder {
+        self.hostname = Some(hostname.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn language<'a>(&'a mut self, language: String) -> &'a mut ContextBuilder {
-        self.language = Some(language);
+    pub fn language<'a>(&'a mut self, language: &str) -> &'a mut ContextBuilder {
+        self.language = Some(language.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn environment<'a>(&'a mut self, environment: String) -> &'a mut ContextBuilder {
-        self.environment = Some(environment);
+    pub fn environment<'a>(&'a mut self, environment: &str) -> &'a mut ContextBuilder {
+        self.environment = Some(environment.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn severity<'a>(&'a mut self, severity: String) -> &'a mut ContextBuilder {
-        self.severity = Some(severity);
+    pub fn severity<'a>(&'a mut self, severity: &str) -> &'a mut ContextBuilder {
+        self.severity = Some(severity.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn version<'a>(&'a mut self, version: String) -> &'a mut ContextBuilder {
-        self.version = Some(version);
+    pub fn version<'a>(&'a mut self, version: &str) -> &'a mut ContextBuilder {
+        self.version = Some(version.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn url<'a>(&'a mut self, url: String) -> &'a mut ContextBuilder {
-        self.url = Some(url);
+    pub fn url<'a>(&'a mut self, url: &str) -> &'a mut ContextBuilder {
+        self.url = Some(url.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn root_directory<'a>(&'a mut self, root_directory: String) -> &'a mut ContextBuilder {
-        self.root_directory = Some(root_directory);
+    pub fn root_directory<'a>(&'a mut self, root_directory: &str) -> &'a mut ContextBuilder {
+        self.root_directory = Some(root_directory.to_string());
         self
     }
 
@@ -88,14 +88,14 @@ impl ContextBuilder {
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn route<'a>(&'a mut self, route: String) -> &'a mut ContextBuilder {
-        self.route = Some(route);
+    pub fn route<'a>(&'a mut self, route: &str) -> &'a mut ContextBuilder {
+        self.route = Some(route.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn http_method<'a>(&'a mut self, http_method: String) -> &'a mut ContextBuilder {
-        self.http_method = Some(http_method);
+    pub fn http_method<'a>(&'a mut self, http_method: &str) -> &'a mut ContextBuilder {
+        self.http_method = Some(http_method.to_string());
         self
     }
 
@@ -229,20 +229,20 @@ impl ContextUser {
     }
 
     /// Set the id on the ContextUser
-    pub fn id(mut self, id: String) -> ContextUser {
-        self.id = Some(id);
+    pub fn id(mut self, id: &str) -> ContextUser {
+        self.id = Some(id.to_string());
         self
     }
 
     /// Set the name on the ContextUser
-    pub fn name(mut self, name: String) -> ContextUser {
-        self.name = Some(name);
+    pub fn name(mut self, name: &str) -> ContextUser {
+        self.name = Some(name.to_string());
         self
     }
 
     /// Set the email on the ContextUser
-    pub fn email(mut self, email: String) -> ContextUser {
-        self.email = Some(email);
+    pub fn email(mut self, email: &str) -> ContextUser {
+        self.email = Some(email.to_string());
         self
     }
 }
@@ -268,7 +268,7 @@ mod context_user_tests {
 
     #[test]
     fn context_user_with_id() {
-        let context = ContextUser::empty().id("foo".to_string());
+        let context = ContextUser::empty().id("foo");
         let expected_json = r#"
         {
             "id": "foo"
@@ -282,7 +282,7 @@ mod context_user_tests {
 
     #[test]
     fn context_user_with_name() {
-        let context = ContextUser::empty().name("foo".to_string());
+        let context = ContextUser::empty().name("foo");
         let expected_json = r#"
         {
             "name": "foo"
@@ -296,7 +296,7 @@ mod context_user_tests {
 
     #[test]
     fn context_user_with_email() {
-        let context = ContextUser::empty().email("foo".to_string());
+        let context = ContextUser::empty().email("foo");
         let expected_json = r#"
         {
             "email": "foo"
@@ -311,9 +311,9 @@ mod context_user_tests {
     #[test]
     fn context_user_with_all_fields() {
         let context = ContextUser::empty()
-            .id("foo".to_string())
-            .email("bar".to_string())
-            .name("baz".to_string());
+            .id("foo")
+            .email("bar")
+            .name("baz");
         let expected_json = r#"
         {
             "id": "foo",
@@ -356,7 +356,7 @@ mod context_tests {
     #[test]
     fn context_operating_system() {
         let context = Context::builder()
-            .operating_system("SolarOS".to_string())
+            .operating_system("SolarOS")
             .build();
         let expected_json = r#"
         {
@@ -377,7 +377,7 @@ mod context_tests {
     #[test]
     fn context_hostname() {
         let context = Context::builder()
-            .hostname("usw2.swa.foobar.com".to_string())
+            .hostname("usw2.swa.foobar.com")
             .build();
         let expected_json = r#"
         {
@@ -398,7 +398,7 @@ mod context_tests {
     #[test]
     fn context_language() {
         let context = Context::builder()
-            .language("klingon".to_string())
+            .language("klingon")
             .build();
         let expected_json = r#"
         {
@@ -419,7 +419,7 @@ mod context_tests {
     #[test]
     fn context_environment() {
         let context = Context::builder()
-            .environment("production".to_string())
+            .environment("production")
             .build();
         let expected_json = r#"
         {
@@ -440,7 +440,7 @@ mod context_tests {
     #[test]
     fn context_severity() {
         let context = Context::builder()
-            .severity("critical".to_string())
+            .severity("critical")
             .build();
         let expected_json = r#"
         {
@@ -461,7 +461,7 @@ mod context_tests {
     #[test]
     fn context_version() {
         let context = Context::builder()
-            .version("9000.0.1".to_string())
+            .version("9000.0.1")
             .build();
         let expected_json = r#"
         {
@@ -482,7 +482,7 @@ mod context_tests {
     #[test]
     fn context_url() {
         let context = Context::builder()
-            .url("http://localhost/my/foobar".to_string())
+            .url("http://localhost/my/foobar")
             .build();
         let expected_json = r#"
         {
@@ -503,7 +503,7 @@ mod context_tests {
     #[test]
     fn context_root_directory() {
         let context = Context::builder()
-            .root_directory("/dev/null".to_string())
+            .root_directory("/dev/null")
             .build();
         let expected_json = r#"
         {
@@ -524,9 +524,9 @@ mod context_tests {
     #[test]
     fn context_user() {
         let context_user = ContextUser::empty()
-            .id("foo".to_string())
-            .email("bar".to_string())
-            .name("baz".to_string());
+            .id("foo")
+            .email("bar")
+            .name("baz");
         let context = Context::builder()
             .user(context_user)
             .build();
@@ -553,7 +553,7 @@ mod context_tests {
     #[test]
     fn context_route() {
         let context = Context::builder()
-            .route("/foo/bar/baz".to_string())
+            .route("/foo/bar/baz")
             .build();
         let expected_json = r#"
         {
@@ -574,7 +574,7 @@ mod context_tests {
     #[test]
     fn context_http_method() {
         let context = Context::builder()
-            .http_method("post".to_string())
+            .http_method("post")
             .build();
         let expected_json = r#"
         {

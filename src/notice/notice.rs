@@ -82,7 +82,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the operating_system on the configurations context
-    pub fn operating_system(mut self, os: String) -> NoticeBuilder<'a> {
+    pub fn operating_system(mut self, os: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -94,7 +94,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the hostname on the configurations context
-    pub fn hostname(mut self, hostname: String) -> NoticeBuilder<'a> {
+    pub fn hostname(mut self, hostname: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -106,7 +106,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the language on the configurations context
-    pub fn language(mut self, language: String) -> NoticeBuilder<'a> {
+    pub fn language(mut self, language: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -118,7 +118,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the environment on the configurations context
-    pub fn context_environment(mut self, environment: String) -> NoticeBuilder<'a> {
+    pub fn context_environment(mut self, environment: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -130,7 +130,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the severity on the configurations context
-    pub fn severity(mut self, severity: String) -> NoticeBuilder<'a> {
+    pub fn severity(mut self, severity: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -142,7 +142,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the version on the configurations context
-    pub fn version(mut self, version: String) -> NoticeBuilder<'a> {
+    pub fn version(mut self, version: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -154,7 +154,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the url on the configurations context
-    pub fn url(mut self, url: String) -> NoticeBuilder<'a> {
+    pub fn url(mut self, url: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -166,7 +166,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the root_directory on the configurations context
-    pub fn root_directory(mut self, root_directory: String) -> NoticeBuilder<'a> {
+    pub fn root_directory(mut self, root_directory: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -190,7 +190,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the route on the configurations context
-    pub fn route(mut self, route: String) -> NoticeBuilder<'a> {
+    pub fn route(mut self, route: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -202,7 +202,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the http_method on the configurations context
-    pub fn http_method(mut self, http_method: String) -> NoticeBuilder<'a> {
+    pub fn http_method(mut self, http_method: &str) -> NoticeBuilder<'a> {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -223,15 +223,15 @@ impl<'a> NoticeBuilder<'a> {
     /// ```
     /// use airbrake::Notice;
     /// let notice = Notice::builder()
-    ///     .add_environment("PORT".to_owned(), "443".to_owned())
-    ///     .add_environment("CODE_NAME".to_owned(), "gorilla".to_owned())
+    ///     .add_environment("PORT", "443")
+    ///     .add_environment("CODE_NAME", "gorilla")
     ///     .build();
     /// ```
-    pub fn add_environment(mut self, key: String, value: String) -> NoticeBuilder<'a> {
+    pub fn add_environment(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
         self.environment = self.environment
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
-                h.insert(key, value);
+                h.insert(key.to_string(), value.to_string());
                 Some(h)
             });
         self
@@ -247,15 +247,15 @@ impl<'a> NoticeBuilder<'a> {
     /// ```
     /// use airbrake::Notice;
     /// let notice = Notice::builder()
-    ///     .add_session("basketId".to_owned(), "123".to_owned())
-    ///     .add_session("userId".to_owned(), "456".to_owned())
+    ///     .add_session("basketId", "123")
+    ///     .add_session("userId", "456")
     ///     .build();
     /// ```
-    pub fn add_session(mut self, key: String, value: String) -> NoticeBuilder<'a> {
+    pub fn add_session(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
         self.session = self.session
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
-                h.insert(key, value);
+                h.insert(key.to_string(), value.to_string());
                 Some(h)
             });
         self
@@ -271,16 +271,16 @@ impl<'a> NoticeBuilder<'a> {
     /// ```
     /// use airbrake::Notice;
     /// let notice = Notice::builder()
-    ///     .add_param("page".to_owned(), "3".to_owned())
-    ///     .add_param("sort".to_owned(), "name".to_owned())
-    ///     .add_param("direction".to_owned(), "asc".to_owned())
+    ///     .add_param("page", "3")
+    ///     .add_param("sort", "name")
+    ///     .add_param("direction", "asc")
     ///     .build();
     /// ```
-    pub fn add_param(mut self, key: String, value: String) -> NoticeBuilder<'a> {
+    pub fn add_param(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
         self.params = self.params
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
-                h.insert(key, value);
+                h.insert(key.to_string(), value.to_string());
                 Some(h)
             });
         self
@@ -397,7 +397,7 @@ mod tests {
     #[test]
     fn notice_with_add_environment() {
         let notice = Notice::builder()
-            .add_environment("foo".to_owned(), "bar".to_owned())
+            .add_environment("foo", "bar")
             .build();
         let expected_json = r#"
         {
@@ -416,7 +416,7 @@ mod tests {
     #[test]
     fn notice_with_set_environment() {
         let mut hashmap = HashMap::new();
-        hashmap.insert("foo".to_owned(), "bar".to_owned());
+        hashmap.insert("foo".to_string(), "bar".to_string());
         let notice = Notice::builder()
             .environment(hashmap)
             .build();
@@ -437,7 +437,7 @@ mod tests {
     #[test]
     fn notice_with_add_session() {
         let notice = Notice::builder()
-            .add_session("foo".to_owned(), "bar".to_owned())
+            .add_session("foo", "bar")
             .build();
         let expected_json = r#"
         {
@@ -456,7 +456,7 @@ mod tests {
     #[test]
     fn notice_with_set_session() {
         let mut hashmap = HashMap::new();
-        hashmap.insert("foo".to_owned(), "bar".to_owned());
+        hashmap.insert("foo".to_string(), "bar".to_string());
         let notice = Notice::builder()
             .session(hashmap)
             .build();
@@ -477,7 +477,7 @@ mod tests {
     #[test]
     fn notice_with_add_param() {
         let notice = Notice::builder()
-            .add_param("foo".to_owned(), "bar".to_owned())
+            .add_param("foo", "bar")
             .build();
         let expected_json = r#"
         {
@@ -496,7 +496,7 @@ mod tests {
     #[test]
     fn notice_with_set_params() {
         let mut hashmap = HashMap::new();
-        hashmap.insert("foo".to_owned(), "bar".to_owned());
+        hashmap.insert("foo".to_string(), "bar".to_string());
         let notice = Notice::builder()
             .params(hashmap)
             .build();

@@ -91,11 +91,11 @@ mod context_user_tests {
     #[test]
     fn client_with_context_included_in_notices() {
         let config = AirbrakeConfig::builder()
-            .project_id("foo".to_string())
-            .project_key("bar".to_string())
-            .operating_system("SolarOS".to_string())
-            .version("0.0.0".to_string())
-            .severity("critical".to_string())
+            .project_id("foo")
+            .project_key("bar")
+            .operating_system("SolarOS")
+            .version("0.0.0")
+            .severity("critical")
             .build()
             .unwrap();
         let client = AirbrakeClient::new(config);
@@ -125,15 +125,15 @@ mod context_user_tests {
     #[test]
     fn notice_from_client_inherits_context() {
         let config = AirbrakeConfig::builder()
-            .project_id("foo".to_string())
-            .project_key("bar".to_string())
-            .operating_system("SolarOS".to_string())
-            .version("0.0.0".to_string())
+            .project_id("foo")
+            .project_key("bar")
+            .operating_system("SolarOS")
+            .version("0.0.0")
             .build()
             .unwrap();
         let client = AirbrakeClient::new(config);
         let notice = client.new_notice_builder()
-            .severity("warning".to_string())
+            .severity("warning")
             .build();
 
         let expected_json = r#"

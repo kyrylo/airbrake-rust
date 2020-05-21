@@ -31,8 +31,8 @@
 //!
 //! fn main() {
 //!     let mut airbrake = airbrake::configure(|config| {
-//!         config.project_id("113743".to_owned());
-//!         config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
+//!         config.project_id("113743");
+//!         config.project_key("81bbff95d52f8856c770bb39e827f3f6");
 //!     });
 //!
 //!     match double_number("NOT A NUMBER") {
@@ -62,8 +62,8 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.project_id("113743".to_owned());
-//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
+//!     config.project_id("113743");
+//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6");
 //! });
 //! ```
 //!
@@ -76,10 +76,10 @@
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
 //!     // Project ID & Key are required
-//!     config.project_id("113743".to_owned());
-//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
+//!     config.project_id("113743");
+//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6");
 //!     // Setting the host
-//!     config.host("http://localhost:8080".to_owned());
+//!     config.host("http://localhost:8080");
 //! });
 //! ```
 //!
@@ -92,10 +92,10 @@
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
 //!     // Project ID & Key are required
-//!     config.project_id("113743".to_owned());
-//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
+//!     config.project_id("113743");
+//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6");
 //!     // Setting the proxy
-//!     config.proxy("127.0.0.1:8080".to_owned());
+//!     config.proxy("127.0.0.1:8080");
 //! });
 //! ```
 //!
@@ -111,8 +111,8 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.project_id("123".to_owned());
-//!     config.project_key("321".to_owned());
+//!     config.project_id("123");
+//!     config.project_key("321");
 //! });
 //!
 //! let err = std::io::Error::last_os_error();
@@ -134,8 +134,8 @@
 //!
 //! ```
 //! let mut airbrake = airbrake::configure(|config| {
-//!     config.project_id("123".to_owned());
-//!     config.project_key("321".to_owned());
+//!     config.project_id("123");
+//!     config.project_key("321");
 //! });
 //!
 //! let err = std::io::Error::last_os_error();
@@ -166,7 +166,7 @@
 //! ```
 //! use airbrake::{Notice, NoticeError};
 //!
-//! let notice_error = NoticeError::new("foo".to_owned(), None, None);
+//! let notice_error = NoticeError::new("foo", None, None);
 //! let notice = Notice::builder()
 //!     .add_notice(notice_error)
 //!     .build();
@@ -221,8 +221,8 @@
 //! use std::error::Error;
 //! use airbrake::{Notice, NoticeError};
 //!
-//! let my_error1 = NoticeError::new("foo".to_owned(), None, None);
-//! let my_error2 = NoticeError::new("bar".to_owned(), None, None);
+//! let my_error1 = NoticeError::new("foo", None, None);
+//! let my_error2 = NoticeError::new("bar", None, None);
 //! let error_list = vec![my_error1, my_error2].into_iter();
 //! let notice = Notice::builder()
 //!     .add_notices(error_list)
@@ -241,7 +241,7 @@
 //!
 //! let context = Context::builder().build();
 //!
-//! let notice_error = NoticeError::new("foo".to_owned(), None, None);
+//! let notice_error = NoticeError::new("foo", None, None);
 //! let notice = context.new_notice_builder()
 //!     .add_notice(notice_error)
 //!     .build();
@@ -280,8 +280,8 @@ pub use backtrace;
 ///
 /// ```
 /// let mut airbrake = airbrake::configure(|config| {
-///     config.project_id("113743".to_owned());
-///     config.project_key("81bbff95d52f8856c770bb39e827f3f6".to_owned());
+///     config.project_id("113743");
+///     config.project_key("81bbff95d52f8856c770bb39e827f3f6");
 /// });
 /// ```
 pub fn configure<F>(builder_callback: F) -> AirbrakeClient

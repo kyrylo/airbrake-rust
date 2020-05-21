@@ -41,13 +41,13 @@ impl AirbrakeConfigBuilder {
         self
     }
 
-    pub fn project<'a>(&'a mut self, project_id: String, project_key: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn project<'a>(&'a mut self, project_id: &str, project_key: &str) -> &'a mut AirbrakeConfigBuilder {
         self.project_id(project_id)
             .project_key(project_key)
     }
 
-    pub fn project_id<'a>(&'a mut self, project_id: String) -> &'a mut AirbrakeConfigBuilder {
-        self.project_id = Some(project_id);
+    pub fn project_id<'a>(&'a mut self, project_id: &str) -> &'a mut AirbrakeConfigBuilder {
+        self.project_id = Some(project_id.to_string());
         self
     }
 
@@ -75,20 +75,16 @@ impl AirbrakeConfigBuilder {
     /// use std::env;
     /// use airbrake::AirbrakeConfig;
     ///
-    /// // Set defaults to use if env vars are missing
-    /// let default_project_id = "foo".to_owned();
-    /// let default_project_key = "bar".to_owned();
-    ///
     /// // Only set the project key using the env var
     /// env::set_var("AIRBRAKE_API_KEY", "baz");
     ///
     /// // Begin constructing a config builder
     /// let mut config = AirbrakeConfig::builder();
     /// if config.project_id_from_env().is_err() {
-    ///     config.project_id(default_project_id);
+    ///     config.project_id("foo");
     /// }
     /// if config.project_key_from_env().is_err() {
-    ///     config.project_key(default_project_key);
+    ///     config.project_key("bar");
     /// }
     /// let config = config.build().unwrap();
     /// assert_eq!(config.project_id, "foo");
@@ -115,8 +111,8 @@ impl AirbrakeConfigBuilder {
         }
     }
 
-    pub fn project_key<'a>(&'a mut self, project_key: String) -> &'a mut AirbrakeConfigBuilder {
-        self.project_key = Some(project_key);
+    pub fn project_key<'a>(&'a mut self, project_key: &str) -> &'a mut AirbrakeConfigBuilder {
+        self.project_key = Some(project_key.to_string());
         self
     }
 
@@ -130,13 +126,13 @@ impl AirbrakeConfigBuilder {
         }
     }
 
-    pub fn host<'a>(&'a mut self, host: String) -> &'a mut AirbrakeConfigBuilder {
-        self.host = Some(host);
+    pub fn host<'a>(&'a mut self, host: &str) -> &'a mut AirbrakeConfigBuilder {
+        self.host = Some(host.to_string());
         self
     }
 
-    pub fn proxy<'a>(&'a mut self, proxy: String) -> &'a mut AirbrakeConfigBuilder {
-        self.proxy = Some(proxy);
+    pub fn proxy<'a>(&'a mut self, proxy: &str) -> &'a mut AirbrakeConfigBuilder {
+        self.proxy = Some(proxy.to_string());
         self
     }
 
@@ -147,7 +143,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the operating_system on the configurations context
-    pub fn operating_system<'a>(&'a mut self, os: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn operating_system<'a>(&'a mut self, os: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -159,7 +155,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the hostname on the configurations context
-    pub fn hostname<'a>(&'a mut self, hostname: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn hostname<'a>(&'a mut self, hostname: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -171,7 +167,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the language on the configurations context
-    pub fn language<'a>(&'a mut self, language: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn language<'a>(&'a mut self, language: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -183,7 +179,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the environment on the configurations context
-    pub fn environment<'a>(&'a mut self, environment: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn environment<'a>(&'a mut self, environment: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -195,7 +191,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the severity on the configurations context
-    pub fn severity<'a>(&'a mut self, severity: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn severity<'a>(&'a mut self, severity: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -207,7 +203,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the version on the configurations context
-    pub fn version<'a>(&'a mut self, version: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn version<'a>(&'a mut self, version: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -219,7 +215,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the url on the configurations context
-    pub fn url<'a>(&'a mut self, url: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn url<'a>(&'a mut self, url: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -231,7 +227,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the root_directory on the configurations context
-    pub fn root_directory<'a>(&'a mut self, root_directory: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn root_directory<'a>(&'a mut self, root_directory: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -255,7 +251,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the route on the configurations context
-    pub fn route<'a>(&'a mut self, route: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn route<'a>(&'a mut self, route: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -267,7 +263,7 @@ impl AirbrakeConfigBuilder {
     }
 
     /// Set the http_method on the configurations context
-    pub fn http_method<'a>(&'a mut self, http_method: String) -> &'a mut AirbrakeConfigBuilder {
+    pub fn http_method<'a>(&'a mut self, http_method: &str) -> &'a mut AirbrakeConfigBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -320,17 +316,15 @@ impl AirbrakeConfig {
     /// ```
     /// use airbrake::AirbrakeConfig;
     ///
-    /// let my_project_id = "foo".to_owned();
-    /// let my_project_key = "bar".to_owned();
     /// let config = AirbrakeConfig::builder()
-    ///     .project(my_project_id, my_project_key)
+    ///     .project("foo", "bar")
     ///     .build();
     /// ```
     pub fn builder() -> AirbrakeConfigBuilder {
         AirbrakeConfigBuilder::new()
     }
 
-    pub fn new(project_id: String, project_key: String) -> Result<AirbrakeConfig, AirbrakeConfigError> {
+    pub fn new(project_id: &str, project_key: &str) -> Result<AirbrakeConfig, AirbrakeConfigError> {
         AirbrakeConfig::builder()
             .project_id(project_id)
             .project_key(project_key)
@@ -354,11 +348,9 @@ mod tests {
 
     #[test]
     fn endpoint_defaults_to_airbrake_server() {
-        let project_id = "foo".to_owned();
-        let project_key = "bar".to_owned();
         let config = AirbrakeConfig::builder()
-            .project_id(project_id)
-            .project_key(project_key)
+            .project_id("foo")
+            .project_key("bar")
             .build();
         assert_eq!(
             "https://airbrake.io/api/v3/projects/foo/notices?key=bar",
@@ -368,10 +360,10 @@ mod tests {
 
     #[test]
     fn project_sets_both_id_and_key() {
-        let project_id = "foo".to_owned();
-        let project_key = "bar".to_owned();
+        let project_id = "foo";
+        let project_key = "bar";
         let config1 = AirbrakeConfig::builder()
-            .project(project_id.clone(), project_key.clone())
+            .project(project_id, project_key)
             .build();
         let config2 = AirbrakeConfig::builder()
             .project_id(project_id)
@@ -387,8 +379,8 @@ mod tests {
     #[test]
     fn config_build_fails_on_empty_project_id() {
         let config = AirbrakeConfig::builder()
-            .project_id("".to_owned())
-            .project_key("bar".to_owned())
+            .project_id("")
+            .project_key("bar")
             .build();
         assert_eq!(config, Err(AirbrakeConfigError::EmptyProjectId))
     }
@@ -396,8 +388,8 @@ mod tests {
     #[test]
     fn config_build_fails_on_empty_project_key() {
         let config = AirbrakeConfig::builder()
-            .project_id("foo".to_owned())
-            .project_key("".to_owned())
+            .project_id("foo")
+            .project_key("")
             .build();
         assert_eq!(config, Err(AirbrakeConfigError::EmptyProjectKey))
     }
@@ -411,7 +403,7 @@ mod tests {
     #[test]
     fn config_build_fails_on_missing_project_id() {
         let config = AirbrakeConfig::builder()
-            .project_key("bar".to_owned())
+            .project_key("bar")
             .build();
         assert_eq!(config, Err(AirbrakeConfigError::MissingProjectId))
     }
@@ -419,7 +411,7 @@ mod tests {
     #[test]
     fn config_build_fails_on_missing_project_key() {
         let config = AirbrakeConfig::builder()
-            .project_id("foo".to_owned())
+            .project_id("foo")
             .build();
         assert_eq!(config, Err(AirbrakeConfigError::MissingProjectKey))
     }

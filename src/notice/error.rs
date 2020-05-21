@@ -19,8 +19,8 @@ impl NoticeErrorBuilder {
         }
     }
 
-    pub fn message(mut self, message: String) -> NoticeErrorBuilder {
-        self.message = Some(message);
+    pub fn message(mut self, message: &str) -> NoticeErrorBuilder {
+        self.message = Some(message.to_string());
         self
     }
 
@@ -36,7 +36,7 @@ impl NoticeErrorBuilder {
     }
 
     pub fn build(self) -> NoticeError {
-        NoticeError::new(self.name, self.message, self.backtrace)
+        NoticeError::new(&self.name, self.message, self.backtrace)
     }
 }
 
@@ -53,9 +53,9 @@ pub struct NoticeError {
 }
 
 impl NoticeError {
-    pub fn new(name: String, message: Option<String>, backtrace: Option<NoticeTrace>) -> NoticeError {
+    pub fn new(name: &str, message: Option<String>, backtrace: Option<NoticeTrace>) -> NoticeError {
         NoticeError {
-            name: name,
+            name: name.to_string(),
             message: message,
             backtrace: backtrace
         }
@@ -70,11 +70,11 @@ impl NoticeError {
         // here, but for now we'll just deal with `payload()`
         let message: String = panic_info.payload()
             .downcast_ref::<String>()
-            .and_then(|s| Some( s.to_owned() ))
-            .or_else(|| Some( "None".to_owned() ))
+            .and_then(|s| Some( s.to_string() ))
+            .or_else(|| Some( "None".to_string() ))
             .unwrap();
         NoticeError::builder("panic")
-            .message(message)
+            .message(&message)
             .raw_backtrace(backtrace)
             .build()
     }
@@ -82,10 +82,10 @@ impl NoticeError {
 
 impl<'a, E: Error> From<E> for NoticeError {
     fn from(error: E) -> NoticeError {
-        let name = format!("{:?}", error).split_whitespace().next().unwrap().to_owned();
+        let name = format!("{:?}", error).split_whitespace().next().unwrap().to_string();
         let message = Some(format!("{}", error));
         let backtrace = None;
 
-        NoticeError::new(name, message, backtrace)
+        NoticeError::new(&name, message, backtrace)
     }
 }
