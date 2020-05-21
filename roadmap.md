@@ -52,21 +52,25 @@ Git flow, as described here typically has a `develop` and a `master` branch, tho
 ## Timelines and Milestones
 
 - Sprint 1: Ergonomic Changes
-  - [ ] Public interfaces
-  - [ ] Builder pattern
-  - [ ] Config validation
+  - [x] Public interfaces
+  - [x] Builder pattern
+  - [x] Config validation
+  - [ ] More detailed error handling around sending notifications
 
 - Sprint 2: Notifier client expansion
   - [ ] `add_filter`
   - [ ] `keys_blacklist`
-  - [ ] Proxy authentication
-  - [ ] Circuit breaker
+  - [ ] Proxy authentication (not supported at all right now)
+  - [x] ~~Circuit breaker~~ defer implementation to users
 
 - Sprint 3: Notify features
-  - [ ] Feature parity with [official API](https://airbrake.io/docs/api/#create-notice-v3)
-  - [ ] Notify on panic
-  - [ ] Support [custom parameters](https://github.com/airbrake/pybrake#adding-custom-params)
-  - [ ] Severity
+  - [ ] Feature parity with [official API](https://airbrake.io/docs/api/#create-notice-v3) (super close to done, just need to verify I haven't missed anything)
+  - [x] Notify on panic (Technically done and working, but could use some additional cleanup)
+  - [x] Support [custom parameters](https://github.com/airbrake/pybrake#adding-custom-params)
+  - [x] Severity
+
+- Pre-release work
+  - [ ] Clean up documentation
 
 - Possible 0.3.0 release candidate
 
