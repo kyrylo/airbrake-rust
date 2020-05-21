@@ -1,14 +1,17 @@
 
+use std::panic::PanicInfo;
+use std::marker::{Send, Sync};
 use std::time::Instant;
 use log::warn;
 use reqwest::blocking::Client;
 use serde::Serialize;
 
 use crate::Notice;
+use crate::NoticeError;
 use crate::NoticeBuilder;
 use crate::AirbrakeConfig;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AirbrakeClient {
     client: Client,
     config: AirbrakeConfig
@@ -60,6 +63,21 @@ impl AirbrakeClient {
         notice.context = notice.context.or_else(|| {self.config.context.clone()});
         let endpoint = self.config.endpoint_uri();
         self.send_request(&endpoint, &notice)
+    }
+
+    /// This function returns a closure that can be passed to the `panic::set_hook`
+    /// function. Only a single panic hook can be set at once, so exposing functinality
+    /// this way forces you to manage your panic hooks yourself.
+    pub fn panic_hook(self) -> Box<dyn Fn(&PanicInfo<'_>) + Send + Sync + 'static> {
+        let airbrake_client = self.clone();
+        Box::new(move |panic_info: &PanicInfo<'_>| {
+            let panic_backtrace = backtrace::Backtrace::new();
+            let notice_error = NoticeError::from_panic_backtrace(panic_info, &panic_backtrace);
+            airbrake_client.new_notice_builder()
+                .add_notice(notice_error)
+                .build()
+                .send();
+        })
     }
 }
 

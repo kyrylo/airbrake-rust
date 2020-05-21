@@ -64,7 +64,7 @@
 //! use airbrake::backtrace::Backtrace;
 //!
 //! let notice_error = NoticeError::builder("foo")
-//!     .raw_backtrace(Backtrace::new())
+//!     .raw_backtrace(&Backtrace::new())
 //!     .build();
 //! let notice = Notice::builder()
 //!     .add_notice(notice_error)

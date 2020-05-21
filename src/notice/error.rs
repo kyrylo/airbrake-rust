@@ -1,5 +1,6 @@
 
 use std::error::Error;
+use std::panic::PanicInfo;
 use super::NoticeTrace;
 use crate::backtrace::Backtrace;
 
@@ -23,12 +24,13 @@ impl NoticeErrorBuilder {
         self
     }
 
+    // TODO: Maybe this should be renamed to `trace` and the `raw_backtrace` renamed to `backetrace`?
     pub fn backtrace(mut self, backtrace: NoticeTrace) -> NoticeErrorBuilder {
         self.backtrace = Some(backtrace);
         self
     }
 
-    pub fn raw_backtrace(mut self, backtrace: Backtrace) -> NoticeErrorBuilder {
+    pub fn raw_backtrace(mut self, backtrace: &Backtrace) -> NoticeErrorBuilder {
         self.backtrace = Some(NoticeTrace::from(backtrace));
         self
     }
@@ -61,6 +63,20 @@ impl NoticeError {
 
     pub fn builder(name: &str) -> NoticeErrorBuilder {
         NoticeErrorBuilder::new(name)
+    }
+
+    pub fn from_panic_backtrace(panic_info: &PanicInfo, backtrace: &Backtrace) -> NoticeError {
+        // TODO: PanicInfo has a `message()` on nightly which might be easier to work with
+        // here, but for now we'll just deal with `payload()`
+        let message: String = panic_info.payload()
+            .downcast_ref::<String>()
+            .and_then(|s| Some( s.to_owned() ))
+            .or_else(|| Some( "None".to_owned() ))
+            .unwrap();
+        NoticeError::builder("panic")
+            .message(message)
+            .raw_backtrace(backtrace)
+            .build()
     }
 }
 

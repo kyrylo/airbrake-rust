@@ -71,7 +71,7 @@ impl<'a> NoticeBuilder<'a> {
 
     pub fn add_error_with_backtrace<E: Error>(self, error: E, backtrace: Backtrace) -> NoticeBuilder<'a> {
         let mut notice_error = NoticeError::from(error);
-        notice_error.backtrace = Some(NoticeTrace::from(backtrace));
+        notice_error.backtrace = Some(NoticeTrace::from(&backtrace));
         self.add_notice(notice_error.into())
     }
 

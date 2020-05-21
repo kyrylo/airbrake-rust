@@ -21,8 +21,8 @@ impl NoticeTrace {
     }
 }
 
-impl From<Backtrace> for NoticeTrace {
-    fn from(backtrace: Backtrace) -> NoticeTrace {
+impl From<&Backtrace> for NoticeTrace {
+    fn from(backtrace: &Backtrace) -> NoticeTrace {
         let mut frames: Vec<NoticeFrame> = vec![];
         for f in backtrace.frames() {
             frames.append(
@@ -108,7 +108,7 @@ mod tests {
         // the current function exists somewhere in the resulting
         // list of frames.
         let backtrace = Backtrace::new();
-        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(backtrace)
+        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(&backtrace)
             .frames()
             .into_iter()
             .filter(|f| {
@@ -127,7 +127,7 @@ mod tests {
         // that the backtraces creates a single frame with two symboles
         let fn_backtrace = || { (|| { Backtrace::new() })() };
         let backtrace = fn_backtrace();
-        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(backtrace)
+        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(&backtrace)
             .frames()
             .into_iter()
             .filter(|f| {
@@ -146,7 +146,7 @@ mod tests {
         use serde_json::{self, Value};
 
         let backtrace = Backtrace::new();
-        let notice_backtrace = NoticeTrace::from(backtrace);
+        let notice_backtrace = NoticeTrace::from(&backtrace);
         let json_backtrace = Value::from(notice_backtrace);
 
         assert_matches!(json_backtrace, Value::Array(_));

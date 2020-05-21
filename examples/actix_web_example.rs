@@ -23,26 +23,15 @@ fn main() -> () {
     env_logger::init();
 
     // Set up the client
-    let airbarke_project_id = "your-project-id".to_string();
-    let airbrake_project_key = "your-project-key".to_string();
     let config = AirbrakeConfig::builder()
-        .project_id(airbarke_project_id)
-        .project_key(airbrake_project_key)
+        .project_id_from_env().expect("Missing AIRBRAKE_PROJECT_ID")
+        .project_key_from_env().expect("Missing AIRBRAKE_API_KEY")
+        .environment("development".to_string())
         .build()
         .expect("Failed to build config");
-    let airbrake_client = AirbrakeClient::new(config);
 
-    // Configure the hook
-    panic::set_hook(Box::new(move |panic_info| {
-        let panic_backtrace = backtrace::Backtrace::new();
-        let notice_error = NoticeError::builder("foo")
-            .raw_backtrace(panic_backtrace)
-            .build();
-        airbrake_client.new_notice_builder()
-            .add_notice(notice_error)
-            .build()
-            .send();
-    }));
-
+    panic::set_hook(
+        AirbrakeClient::new(config).panic_hook()
+    );
     actix_main();
 }
