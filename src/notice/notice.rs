@@ -1,11 +1,4 @@
 
-use super::{
-    Context,
-    ContextUser,
-    ContextBuilder,
-    NoticeError,
-    NoticeTrace
-};
 
 use serde_json::{self, Value};
 
@@ -13,8 +6,17 @@ use log::debug;
 use std::error::Error;
 use std::collections::HashMap;
 use std::string::ToString;
-use crate::AirbrakeClient;
-use crate::backtrace::Backtrace;
+use crate::{
+    AirbrakeClient,
+    backtrace::Backtrace,
+    Context,
+    ContextBuilder,
+    ContextUser,
+};
+use super::{
+    NoticeError,
+    NoticeTrace
+};
 
 pub struct NoticeBuilder<'a> {
     pub client: Option<&'a AirbrakeClient>,

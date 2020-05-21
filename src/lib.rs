@@ -267,9 +267,16 @@ extern crate matches;
 
 mod client;
 mod notice;
+mod context;
 
 pub use client::{AirbrakeClient, AirbrakeClientBuilder};
 pub use notice::*;
+pub use context::{
+    Context,
+    ContextBuilder,
+    ContextUser,
+    CONTEXT_NOTIFIER
+};
 pub use backtrace;
 
 /// Configures an Airbrake notifier.

@@ -132,7 +132,6 @@
 //! ```
 //!
 
-mod context;
 mod error;
 mod notice_backtrace;
 mod notice;
@@ -140,12 +139,6 @@ mod notice;
 pub use notice::{
     Notice,
     NoticeBuilder
-};
-pub use context::{
-    Context,
-    ContextBuilder,
-    ContextUser,
-    CONTEXT_NOTIFIER
 };
 pub use error::{
     NoticeError,
