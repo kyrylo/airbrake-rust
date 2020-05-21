@@ -12,10 +12,10 @@ use crate::NoticeError;
 use crate::NoticeBuilder;
 use crate::{Context, ContextBuilder, ContextUser};
 
-const DEFAULT_HOSTNAME: &'static str = "https://airbrake.io";
-const ENV_VAR_PROJECT_ID: &'static str = "AIRBRAKE_PROJECT_ID";
-const ENV_VAR_PROJECT_KEY: &'static str = "AIRBRAKE_API_KEY";
-const ENV_VAR_HOST: &'static str = "AIRBRAKE_HOST";
+const DEFAULT_HOSTNAME: &str = "https://airbrake.io";
+const ENV_VAR_PROJECT_ID: &str = "AIRBRAKE_PROJECT_ID";
+const ENV_VAR_PROJECT_KEY: &str = "AIRBRAKE_API_KEY";
+const ENV_VAR_HOST: &str = "AIRBRAKE_HOST";
 
 #[derive(Debug, PartialEq)]
 pub enum AirbrakeClientBuilderError {
@@ -25,6 +25,7 @@ pub enum AirbrakeClientBuilderError {
     EmptyProjectKey
 }
 
+#[derive(Default)]
 pub struct AirbrakeClientBuilder {
     pub project_id: Option<String>,
     pub project_key: Option<String>,
@@ -35,13 +36,7 @@ pub struct AirbrakeClientBuilder {
 
 impl AirbrakeClientBuilder {
     pub fn new() -> AirbrakeClientBuilder {
-        AirbrakeClientBuilder {
-            project_id: None,
-            project_key: None,
-            host: None,
-            proxy: None,
-            context: None,
-        }
+        AirbrakeClientBuilder::default()
     }
 
     pub fn configure<F>(&mut self, builder_callback: F) -> &mut AirbrakeClientBuilder
@@ -99,7 +94,7 @@ impl AirbrakeClientBuilder {
     /// let config = client_builder.build().unwrap();
     /// ```
     ///
-    pub fn project_id_from_env<'a>(&'a mut self) -> Result<&'a mut AirbrakeClientBuilder, env::VarError> {
+    pub fn project_id_from_env(&mut self) -> Result<&'_ mut AirbrakeClientBuilder, env::VarError> {
         match env::var(ENV_VAR_PROJECT_ID) {
             Ok(val) => {
                 self.project_id = Some(val);
@@ -109,7 +104,7 @@ impl AirbrakeClientBuilder {
         }
     }
 
-    pub fn project_key_from_env<'a>(&'a mut self) -> Result<&'a mut AirbrakeClientBuilder, env::VarError> {
+    pub fn project_key_from_env(&mut self) -> Result<&'_ mut AirbrakeClientBuilder, env::VarError> {
         match env::var(ENV_VAR_PROJECT_KEY) {
             Ok(val) => {
                 self.project_key = Some(val);
@@ -119,12 +114,12 @@ impl AirbrakeClientBuilder {
         }
     }
 
-    pub fn project_key<'a>(&'a mut self, project_key: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn project_key(&mut self, project_key: &str) -> &'_ mut AirbrakeClientBuilder {
         self.project_key = Some(project_key.to_string());
         self
     }
 
-    pub fn host_from_env<'a>(&'a mut self) -> Result<&'a mut AirbrakeClientBuilder, env::VarError> {
+    pub fn host_from_env(&mut self) -> Result<&'_ mut AirbrakeClientBuilder, env::VarError> {
         match env::var(ENV_VAR_HOST) {
             Ok(val) => {
                 self.host = Some(val);
@@ -134,24 +129,24 @@ impl AirbrakeClientBuilder {
         }
     }
 
-    pub fn host<'a>(&'a mut self, host: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn host(&mut self, host: &str) -> &'_ mut AirbrakeClientBuilder {
         self.host = Some(host.to_string());
         self
     }
 
-    pub fn proxy<'a>(&'a mut self, proxy: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn proxy(&mut self, proxy: &str) -> &'_ mut AirbrakeClientBuilder {
         self.proxy = Some(proxy.to_string());
         self
     }
 
     // Sets the configurations context to an existing context builder
-    pub fn context<'a>(&'a mut self, context: ContextBuilder) -> &'a mut AirbrakeClientBuilder {
+    pub fn context(&mut self, context: ContextBuilder) -> &'_ mut AirbrakeClientBuilder {
         self.context = Some(context);
         self
     }
 
     /// Set the operating_system on the configurations context
-    pub fn operating_system<'a>(&'a mut self, os: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn operating_system(&mut self, os: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -163,7 +158,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the hostname on the configurations context
-    pub fn hostname<'a>(&'a mut self, hostname: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn hostname(&mut self, hostname: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -175,7 +170,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the language on the configurations context
-    pub fn language<'a>(&'a mut self, language: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn language(&mut self, language: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -187,7 +182,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the environment on the configurations context
-    pub fn environment<'a>(&'a mut self, environment: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn environment(&mut self, environment: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -199,7 +194,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the severity on the configurations context
-    pub fn severity<'a>(&'a mut self, severity: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn severity(&mut self, severity: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -211,7 +206,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the version on the configurations context
-    pub fn version<'a>(&'a mut self, version: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn version(&mut self, version: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -223,7 +218,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the url on the configurations context
-    pub fn url<'a>(&'a mut self, url: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn url(&mut self, url: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -235,7 +230,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the root_directory on the configurations context
-    pub fn root_directory<'a>(&'a mut self, root_directory: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn root_directory(&mut self, root_directory: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -247,7 +242,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the user on the configurations context
-    pub fn user<'a>(&'a mut self, user: ContextUser) -> &'a mut AirbrakeClientBuilder {
+    pub fn user(&mut self, user: ContextUser) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -259,7 +254,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the route on the configurations context
-    pub fn route<'a>(&'a mut self, route: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn route(&mut self, route: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -271,7 +266,7 @@ impl AirbrakeClientBuilder {
     }
 
     /// Set the http_method on the configurations context
-    pub fn http_method<'a>(&'a mut self, http_method: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn http_method(&mut self, http_method: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self.context
             .clone()
             .or_else(|| Some(Context::builder()))
@@ -297,15 +292,15 @@ impl AirbrakeClientBuilder {
         if project_key.is_empty() {
             return Err( AirbrakeClientBuilderError::EmptyProjectKey )
         }
-        let context = self.context.clone().and_then(|c| Some(c.build()));
+        let context = self.context.clone().map(|c| c.build());
 
         Ok(AirbrakeClient {
             client: Client::new(),
             project_id: project_id.to_string(),
             project_key: project_key.to_string(),
-            host: self.host.clone().unwrap_or(DEFAULT_HOSTNAME.to_owned()),
+            host: self.host.clone().unwrap_or_else(|| DEFAULT_HOSTNAME.to_owned()),
             proxy: self.proxy.clone(),
-            context: context
+            context
         })
     }
 }
@@ -342,7 +337,7 @@ impl AirbrakeClient {
         )
     }
 
-    fn send_request<T>(&self, uri: &str, payload: &T) -> ()
+    fn send_request<T>(&self, uri: &str, payload: &T)
     where T: Serialize
     {
         // Prepare a duration timer to track how long it takes to send the request.
@@ -385,7 +380,7 @@ impl AirbrakeClient {
     /// This function returns a closure that can be passed to the `panic::set_hook`
     /// function. Only a single panic hook can be set at once, so exposing functinality
     /// this way forces you to manage your panic hooks yourself.
-    pub fn panic_hook(self) -> Box<dyn Fn(&PanicInfo<'_>) + Send + Sync + 'static> {
+    pub fn panic_hook(&self) -> Box<dyn Fn(&PanicInfo<'_>) + Send + Sync + 'static> {
         let airbrake_client = self.clone();
         Box::new(move |panic_info: &PanicInfo<'_>| {
             let panic_backtrace = backtrace::Backtrace::new();

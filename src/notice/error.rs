@@ -56,8 +56,8 @@ impl NoticeError {
     pub fn new(name: &str, message: Option<String>, backtrace: Option<NoticeTrace>) -> NoticeError {
         NoticeError {
             name: name.to_string(),
-            message: message,
-            backtrace: backtrace
+            message,
+            backtrace
         }
     }
 
@@ -70,7 +70,7 @@ impl NoticeError {
         // here, but for now we'll just deal with `payload()`
         let message: String = panic_info.payload()
             .downcast_ref::<String>()
-            .and_then(|s| Some( s.to_string() ))
+            .map(|s| s.to_string())
             .or_else(|| Some( "None".to_string() ))
             .unwrap();
         NoticeError::builder("panic")

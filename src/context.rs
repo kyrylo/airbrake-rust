@@ -1,7 +1,7 @@
 
 use super::{Notice, NoticeBuilder};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ContextBuilder {
     pub operating_system: Option<String>,
     pub hostname: Option<String>,
@@ -18,83 +18,71 @@ pub struct ContextBuilder {
 
 impl ContextBuilder {
     pub fn new() -> ContextBuilder {
-        ContextBuilder {
-            operating_system: None,
-            hostname: None,
-            language: None,
-            environment: None,
-            severity: None,
-            version: None,
-            url: None,
-            root_directory: None,
-            user: None,
-            route: None,
-            http_method: None
-        }
+        ContextBuilder::default()
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn operating_system<'a>(&'a mut self, os: &str) -> &'a mut ContextBuilder {
+    pub fn operating_system(&mut self, os: &str) -> &'_ mut ContextBuilder {
         self.operating_system = Some(os.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn hostname<'a>(&'a mut self, hostname: &str) -> &'a mut ContextBuilder {
+    pub fn hostname(&mut self, hostname: &str) -> &'_ mut ContextBuilder {
         self.hostname = Some(hostname.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn language<'a>(&'a mut self, language: &str) -> &'a mut ContextBuilder {
+    pub fn language(&mut self, language: &str) -> &'_ mut ContextBuilder {
         self.language = Some(language.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn environment<'a>(&'a mut self, environment: &str) -> &'a mut ContextBuilder {
+    pub fn environment(&mut self, environment: &str) -> &'_ mut ContextBuilder {
         self.environment = Some(environment.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn severity<'a>(&'a mut self, severity: &str) -> &'a mut ContextBuilder {
+    pub fn severity(&mut self, severity: &str) -> &'_ mut ContextBuilder {
         self.severity = Some(severity.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn version<'a>(&'a mut self, version: &str) -> &'a mut ContextBuilder {
+    pub fn version(&mut self, version: &str) -> &'_ mut ContextBuilder {
         self.version = Some(version.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn url<'a>(&'a mut self, url: &str) -> &'a mut ContextBuilder {
+    pub fn url(&mut self, url: &str) -> &'_ mut ContextBuilder {
         self.url = Some(url.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn root_directory<'a>(&'a mut self, root_directory: &str) -> &'a mut ContextBuilder {
+    pub fn root_directory(&mut self, root_directory: &str) -> &'_ mut ContextBuilder {
         self.root_directory = Some(root_directory.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn user<'a>(&'a mut self, user: ContextUser) -> &'a mut ContextBuilder {
+    pub fn user(&mut self, user: ContextUser) -> &'_ mut ContextBuilder {
         self.user = Some(user);
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn route<'a>(&'a mut self, route: &str) -> &'a mut ContextBuilder {
+    pub fn route(&mut self, route: &str) -> &'_ mut ContextBuilder {
         self.route = Some(route.to_string());
         self
     }
 
     /// Set the operating system on the ContextBuilder
-    pub fn http_method<'a>(&'a mut self, http_method: &str) -> &'a mut ContextBuilder {
+    pub fn http_method(&mut self, http_method: &str) -> &'_ mut ContextBuilder {
         self.http_method = Some(http_method.to_string());
         self
     }
@@ -196,9 +184,9 @@ pub struct ContextNotifier {
     url: &'static str,
 }
 
-const NOTIFIER_NAME: &'static str = "airbrake-rust";
-const NOTIFIER_URL: &'static str = "https://github.com/airbrake/airbrake-rust";
-const NOTIFIER_VERSION: &'static str = "0.2.0";
+const NOTIFIER_NAME: &str = "airbrake-rust";
+const NOTIFIER_URL: &str = "https://github.com/airbrake/airbrake-rust";
+const NOTIFIER_VERSION: &str = "0.2.0";
 
 pub const CONTEXT_NOTIFIER: ContextNotifier = ContextNotifier {
     name: NOTIFIER_NAME,

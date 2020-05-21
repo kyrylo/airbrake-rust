@@ -21,11 +21,7 @@
 //! project:
 //!
 //! ```
-//! extern crate airbrake;
-//!
-//! use std::num::ParseIntError;
-//!
-//! fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
+//! fn double_number(number_str: &str) -> Result<i32, std::num::ParseIntError> {
 //!    number_str.parse::<i32>().map(|n| 2 * n)
 //! }
 //!

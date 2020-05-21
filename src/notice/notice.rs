@@ -18,6 +18,7 @@ use super::{
     NoticeTrace
 };
 
+#[derive(Default)]
 pub struct NoticeBuilder<'a> {
     pub client: Option<&'a AirbrakeClient>,
     pub errors: Vec<NoticeError>,
@@ -30,14 +31,7 @@ pub struct NoticeBuilder<'a> {
 impl<'a> NoticeBuilder<'a> {
     /// Set the environment on the NoticeBuilder
     pub fn new() -> NoticeBuilder<'a> {
-        NoticeBuilder {
-            client: None,
-            errors: vec![],
-            context: None,
-            environment: None,
-            session: None,
-            params: None
-        }
+        NoticeBuilder::default()
     }
 
     pub fn set_client(mut self, client: &'a AirbrakeClient) -> NoticeBuilder<'a> {
@@ -59,22 +53,20 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Add multiple Errors from an iterator
     pub fn add_errors<T: Iterator<Item = E>, E: Error>(self, errors: T) -> NoticeBuilder<'a> {
-        let notice_errors = errors
-            .into_iter()
-            .map(|x| x.into());
+        let notice_errors = errors.map(|x| x.into());
         self.add_notices(notice_errors)
     }
 
     /// Add a single Error
     pub fn add_error<E: Error>(self, error: E) -> NoticeBuilder<'a> {
         let notice_error = NoticeError::from(error);
-        self.add_notice(notice_error.into())
+        self.add_notice(notice_error)
     }
 
     pub fn add_error_with_backtrace<E: Error>(self, error: E, backtrace: Backtrace) -> NoticeBuilder<'a> {
         let mut notice_error = NoticeError::from(error);
         notice_error.backtrace = Some(NoticeTrace::from(&backtrace));
-        self.add_notice(notice_error.into())
+        self.add_notice(notice_error)
     }
 
     /// Set the context on the NoticeBuilder
@@ -290,11 +282,11 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Executes the command as a child process, which is returned.
     pub fn build(self) -> Notice<'a> {
-        let context = self.context.clone().and_then(|c| Some(c.build()));
+        let context = self.context.clone().map(|c| c.build());
         Notice {
             client: self.client,
             errors: self.errors,
-            context: context,
+            context,
             environment: self.environment,
             session: self.session,
             params: self.params

@@ -12,7 +12,7 @@ pub struct NoticeTrace {
 impl NoticeTrace {
     fn new(frames: Vec<NoticeFrame>) -> NoticeTrace {
         NoticeTrace {
-            frames: frames
+            frames
         }
     }
 
@@ -30,7 +30,7 @@ impl From<&Backtrace> for NoticeTrace {
             );
         }
         NoticeTrace {
-            frames: frames
+            frames
         }
     }
 }
