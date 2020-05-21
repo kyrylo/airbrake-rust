@@ -401,9 +401,8 @@ impl AirbrakeClient {
 #[cfg(test)]
 mod context_passthrough_tests {
     use std::str::FromStr;
-    use std::collections::HashMap;
     use serde_json::{self, Value};
-    use crate::{AirbrakeClient, NoticeError};
+    use crate::AirbrakeClient;
 
     #[test]
     fn client_with_context_included_in_notices() {

@@ -98,7 +98,7 @@ impl From<&BacktraceSymbol> for NoticeFrame {
 #[cfg(test)]
 mod tests {
     use std::convert::From;
-    use crate::backtrace::{Backtrace, BacktraceFrame};
+    use crate::backtrace::Backtrace;
     use super::{NoticeTrace, NoticeFrame};
 
     #[test]
@@ -141,8 +141,6 @@ mod tests {
 
     #[test]
     fn json_backtrace_is_array_of_objects() {
-        use std::str::FromStr;
-        use std::collections::HashMap;
         use serde_json::{self, Value};
 
         let backtrace = Backtrace::new();

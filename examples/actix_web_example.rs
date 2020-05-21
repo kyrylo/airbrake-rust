@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate log;
 
 use std::panic;
@@ -33,5 +32,5 @@ fn main() -> () {
     panic::set_hook(
         airbrake.panic_hook()
     );
-    actix_main();
+    let _ = actix_main();
 }

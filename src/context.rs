@@ -250,9 +250,8 @@ impl ContextUser {
 #[cfg(test)]
 mod context_user_tests {
     use std::str::FromStr;
-    use std::collections::HashMap;
     use serde_json::{self, Value};
-    use super::{Context, ContextUser};
+    use super::ContextUser;
 
     #[test]
     fn context_user_default() {
@@ -331,7 +330,6 @@ mod context_user_tests {
 #[cfg(test)]
 mod context_tests {
     use std::str::FromStr;
-    use std::collections::HashMap;
     use serde_json::{self, Value};
     use super::{Context, ContextUser};
 
