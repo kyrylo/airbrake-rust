@@ -38,7 +38,7 @@
 //!             let notice = airbrake::Notice::builder()
 //!                 .add_error(err)
 //!                 .build();
-//!             airbrake.notify(notice)
+//!             airbrake.notify(notice).unwrap()
 //!         }
 //!     }
 //! }
@@ -208,7 +208,7 @@
 //!     .build();
 //! ```
 //!
-//! Airbreak supports multiple errors being logged in a single notification,
+//! Airbrake supports multiple errors being logged in a single notification,
 //! so using `.add_error` and `.add_notice` will append to the list of errors
 //! that contained. If you have multiple errors ready, you can add them all
 //! at once using `.add_errors` or `.add_notices`, which accept iterators.
@@ -263,7 +263,11 @@ mod client;
 mod notice;
 mod context;
 
-pub use client::{AirbrakeClient, AirbrakeClientBuilder};
+pub use client::{
+    AirbrakeClient,
+    AirbrakeClientBuilder,
+    AirbrakeClientError
+};
 pub use notice::*;
 pub use context::{
     Context,

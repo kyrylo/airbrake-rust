@@ -305,10 +305,21 @@ impl AirbrakeClientBuilder {
     }
 }
 
+#[derive(Debug)]
+pub enum AirbrakeClientError {
+    ReqwestError(reqwest::Error),
+    NoticeClientNotSet
+}
+
+impl From<reqwest::Error> for AirbrakeClientError {
+    fn from(err: reqwest::Error) -> AirbrakeClientError {
+        AirbrakeClientError::ReqwestError(err)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct AirbrakeClient {
     client: Client,
-
     project_id: String,
     project_key: String,
     host: String,
@@ -317,13 +328,6 @@ pub struct AirbrakeClient {
 }
 
 impl AirbrakeClient {
-    // pub fn new(config: AirbrakeConfig) -> AirbrakeClient {
-    //     AirbrakeClient {
-    //         client: Client::new(),
-    //         config: config
-    //     }
-    // }
-
     pub fn builder() -> AirbrakeClientBuilder {
         AirbrakeClientBuilder::new()
     }
@@ -337,7 +341,7 @@ impl AirbrakeClient {
         )
     }
 
-    fn send_request<T>(&self, uri: &str, payload: &T)
+    fn send_request<T>(&self, uri: &str, payload: &T) -> Result<(), AirbrakeClientError>
     where T: Serialize
     {
         // Prepare a duration timer to track how long it takes to send the request.
@@ -352,11 +356,12 @@ impl AirbrakeClient {
         let duration = start_time.elapsed();
         debug!("Airbrake notify request took: {:?}", duration);
 
-        // Now handle the response
-        match response {
-            Ok ( _ ) => (),
-            Err ( _ ) => warn!("notification failed")
-        }
+        // Return the response, ignoring the content if it's successful
+        response.map(|_| ())
+            .map_err(|e| {
+                warn!("Airbrake notification failed");
+                AirbrakeClientError::from(e)
+            })
     }
 
     pub fn new_notice_builder(&self) -> NoticeBuilder {
@@ -367,7 +372,7 @@ impl AirbrakeClient {
         notice_builder.set_client(&self)
     }
 
-    pub fn notify(&self, mut notice: Notice) {
+    pub fn notify(&self, mut notice: Notice) -> Result<(), AirbrakeClientError>{
         // TODO: This is a codesmell- the notify function shouldn't be
         // mutating the notice. Testing this is very difficult. Too
         // difficult for me to bother figuring out, which means this is
@@ -378,14 +383,14 @@ impl AirbrakeClient {
     }
 
     /// This function returns a closure that can be passed to the `panic::set_hook`
-    /// function. Only a single panic hook can be set at once, so exposing functinality
+    /// function. Only a single panic hook can be set at once, so exposing functionality
     /// this way forces you to manage your panic hooks yourself.
     pub fn panic_hook(&self) -> Box<dyn Fn(&PanicInfo<'_>) + Send + Sync + 'static> {
         let airbrake_client = self.clone();
         Box::new(move |panic_info: &PanicInfo<'_>| {
             let panic_backtrace = backtrace::Backtrace::new();
             let notice_error = NoticeError::from_panic_backtrace(panic_info, &panic_backtrace);
-            airbrake_client.new_notice_builder()
+            let _ = airbrake_client.new_notice_builder()
                 .add_notice(notice_error)
                 .build()
                 .send();

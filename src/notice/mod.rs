@@ -96,7 +96,7 @@
 //!     .build();
 //! ```
 //!
-//! Airbreak supports multiple errors being logged in a single notification,
+//! Airbrake supports multiple errors being logged in a single notification,
 //! so using `.add_error` and `.add_notice` will append to the list of errors
 //! that contained. If you have multiple errors ready, you can add them all
 //! at once using `.add_errors` or `.add_notices`, which accept iterators.

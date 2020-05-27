@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::string::ToString;
 use crate::{
     AirbrakeClient,
+    AirbrakeClientError,
     backtrace::Backtrace,
     Context,
     ContextBuilder,
@@ -352,12 +353,14 @@ impl<'a> Notice<'a> {
         NoticeBuilder::new()
     }
 
-    pub fn send(self) {
-        self.client.and_then(|c| {
-            debug!("Sending via notice client");
-            c.notify(self);
-            Some(c)
-        });
+    pub fn send(self) -> Result<(), AirbrakeClientError> {
+        match self.client {
+            Some( c ) => {
+                debug!("Sending via notice client");
+                c.notify(self)
+            }
+            None => Err( AirbrakeClientError::NoticeClientNotSet )
+        }
     }
 }
 
