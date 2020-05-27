@@ -113,7 +113,7 @@ mod tests {
     #[test]
     fn backtrace_unrolls_multiple_symboles() {
         let function_name: String = "backtrace_unrolls_multiple_symboles".to_string();
-        let nested_frame_line: u32 = 128;
+        let nested_frame_line: u32 = 119;
         // This backtrace is generated from within a nested enclosure so
         // that the backtraces creates a single frame with two symboles
         let fn_backtrace = || (|| Backtrace::new())();
