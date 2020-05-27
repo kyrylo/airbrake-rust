@@ -35,10 +35,10 @@
 //!         Ok(n) => assert_eq!(n, 20),
 //!         // Asynchronously sends the error to the dashboard.
 //!         Err(err) => {
-//!             let notice = airbrake::Notice::builder()
+//!             airbrake.new_notice_builder()
 //!                 .add_error(err)
-//!                 .build();
-//!             airbrake.notify(notice).unwrap()
+//!                 .build()
+//!                 .send();
 //!         }
 //!     }
 //! }

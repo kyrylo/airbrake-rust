@@ -55,7 +55,7 @@ Git flow, as described here typically has a `develop` and a `master` branch, tho
   - [x] Public interfaces
   - [x] Builder pattern
   - [x] Config validation
-  - [ ] More detailed error handling around sending notifications
+  - [x] More detailed error handling around sending notifications
 
 - Sprint 2: Notifier client expansion
   - [ ] `add_filter`

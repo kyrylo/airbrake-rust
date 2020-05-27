@@ -4,7 +4,7 @@ Airbrake Rust
 [![Build Status](https://travis-ci.org/kyrylo/airbrake-rust.svg?branch=master)](https://travis-ci.org/kyrylo/airbrake-rust)
 
 **The project is in the alpha stage and I don't recommend using it in
-production until it hits v1.0.0**
+production until it hits v1.0.0**. See the [v0.2.0 tag](https://github.com/kyrylo/airbrake-rust/tree/422147119de3ba16ca8915fef2ac8f50b74526bf) for documentation for the current latest release of this project.
 
 * [Airbrake Rust README](https://github.com/kyrylo/airbrake-rust)
 
@@ -20,13 +20,13 @@ Key features
 
 * Uses the new Airbrake JSON API (v3)<sup>[[link][notice-v3]]</sup>
 * Simple, consistent and easy-to-use library API<sup>[[link](#api)]</sup>
-* Awesome performance (check out our benchmarks)<sup>[[link](#running-benchmarks)
+* Awesome performance (check out our benchmarks)<sup>[[link](#running-benchmarks)]</sup>
 * Asynchronous error reporting<sup>[[link](#asynchronous-airbrake-options)]</sup>
 * Logging support via env_logger<sup>[[link][env_logger]]</sup>
-* Support for proxying<sup>[[link](#proxy)]</sup>
+* Support for proxying (WIP)<sup>[[link](#proxy)]</sup>
 * Support for environments<sup>[[link](#environment)]</sup>
-* Filters support (filter out sensitive or unwanted data that shouldn't be sent)<sup>[[link](#airbrakeadd_filter)]</sup>
-* Ability to ignore errors based on any condition<sup>[[link](#airbrakeadd_filter)]</sup>
+* Filters support (filter out sensitive or unwanted data that shouldn't be sent) (WIP)<sup>[[link](#airbrakeadd_filter)]</sup>
+* Ability to ignore errors based on any condition (WIP)<sup>[[link](#airbrakeadd_filter)]</sup>
 * SSL support (all communication with Airbrake is encrypted by default)
 
 Installation
@@ -54,24 +54,26 @@ extern crate airbrake;
 
 use std::num::ParseIntError;
 
-fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
+fn double_number(number_str: &str) -> Result<i32, std::num::ParseIntError> {
    number_str.parse::<i32>().map(|n| 2 * n)
 }
 
 fn main() {
     let mut airbrake = airbrake::configure(|config| {
-        config.project_id = "113743".to_owned();
-        config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
+        config.project_id("113743");
+        config.project_key("81bbff95d52f8856c770bb39e827f3f6");
     });
 
     match double_number("NOT A NUMBER") {
         Ok(n) => assert_eq!(n, 20),
         // Asynchronously sends the error to the dashboard.
-        Err(err) => airbrake.notify(err),
+        Err(err) => {
+            airbrake.new_notice_builder()
+                .add_error(err)
+                .build()
+                .send();
+        }
     }
-
-    // Joins worker threads.
-    airbrake.close();
 }
 ```
 
@@ -89,8 +91,8 @@ Settings_ and copy the values from the right sidebar.
 
 ```rust
 let mut airbrake = airbrake::configure(|config| {
-    config.project_id = "113743".to_owned();
-    config.project_key = "81bbff95d52f8856c770bb39e827f3f6".to_owned();
+    config.project_id("113743");
+    config.project_key("81bbff95d52f8856c770bb39e827f3f6");
 });
 ```
 
@@ -102,17 +104,7 @@ port (80 will be assumed).
 
 ```rust
 let mut airbrake = airbrake::configure(|config| {
-    config.host = "http://localhost:8080".to_owned();
-});
-```
-
-### workers
-
-The number of threads that handle notice sending. The default value is 1.
-
-```rust
-let mut airbrake = airbrake::configure(|config| {
-    config.workers = 5;
+    config.host("http://localhost:8080");
 });
 ```
 
@@ -124,7 +116,7 @@ authentication is not supported yet.
 
 ```rust
 let mut airbrake = airbrake::configure(|config| {
-    config.proxy = "127.0.0.1:8080".to_owned();
+    config.proxy("127.0.0.1:8080");
 });
 ```
 
@@ -135,7 +127,7 @@ between multiple versions. It's not set by default.
 
 ```rust
 let mut airbrake = airbrake::configure(|config| {
-    config.app_version = "1.0.0".to_owned();
+    config.version("1.0.0")
 });
 ```
 
@@ -156,22 +148,6 @@ let mut airbrake = airbrake::configure(|config| {
 });
 
 airbrake.notify(std::io::Error::last_os_error());
-```
-
-#### airbrake.notify_sync
-
-Sends an error to Airbrake *synchronously*. `error` must implement the
-[`std::error::Error`][stderror] trait. Returns
-[`rustc_serialize::json::Json`][json-object]. Accepts the same
-parameters as [`Airbrake.notify`](#airbrakenotify).
-
-```rust
-let mut airbrake = airbrake::configure(|config| {
-    config.project_id = "123".to_owned();
-    config.project_key = "321".to_owned();
-});
-
-airbrake.notify_sync(std::io::Error::last_os_error());
 ```
 
 [airbrake.io]: https://airbrake.io
