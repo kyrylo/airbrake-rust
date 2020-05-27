@@ -1,23 +1,13 @@
-
-
 use serde_json::{self, Value};
 
-use log::debug;
-use std::error::Error;
-use std::collections::HashMap;
-use std::string::ToString;
+use super::{NoticeError, NoticeTrace};
 use crate::{
-    AirbrakeClient,
-    AirbrakeClientError,
-    backtrace::Backtrace,
-    Context,
-    ContextBuilder,
-    ContextUser,
+    backtrace::Backtrace, AirbrakeClient, AirbrakeClientError, Context, ContextBuilder, ContextUser,
 };
-use super::{
-    NoticeError,
-    NoticeTrace
-};
+use log::debug;
+use std::collections::HashMap;
+use std::error::Error;
+use std::string::ToString;
 
 #[derive(Default)]
 pub struct NoticeBuilder<'a> {
@@ -26,7 +16,7 @@ pub struct NoticeBuilder<'a> {
     pub context: Option<ContextBuilder>,
     pub environment: Option<HashMap<String, String>>,
     pub session: Option<HashMap<String, String>>,
-    pub params: Option<HashMap<String, String>>
+    pub params: Option<HashMap<String, String>>,
 }
 
 impl<'a> NoticeBuilder<'a> {
@@ -41,7 +31,10 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Add multiple NoticeErrors from an iterator
-    pub fn add_notices<T: Iterator<Item = NoticeError>>(mut self, notice_errors: T) -> NoticeBuilder<'a> {
+    pub fn add_notices<T: Iterator<Item = NoticeError>>(
+        mut self,
+        notice_errors: T,
+    ) -> NoticeBuilder<'a> {
         self.errors.extend(notice_errors);
         self
     }
@@ -64,7 +57,11 @@ impl<'a> NoticeBuilder<'a> {
         self.add_notice(notice_error)
     }
 
-    pub fn add_error_with_backtrace<E: Error>(self, error: E, backtrace: Backtrace) -> NoticeBuilder<'a> {
+    pub fn add_error_with_backtrace<E: Error>(
+        self,
+        error: E,
+        backtrace: Backtrace,
+    ) -> NoticeBuilder<'a> {
         let mut notice_error = NoticeError::from(error);
         notice_error.backtrace = Some(NoticeTrace::from(&backtrace));
         self.add_notice(notice_error)
@@ -78,7 +75,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the operating_system on the configurations context
     pub fn operating_system(mut self, os: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -90,7 +88,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the hostname on the configurations context
     pub fn hostname(mut self, hostname: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -102,7 +101,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the language on the configurations context
     pub fn language(mut self, language: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -114,7 +114,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the environment on the configurations context
     pub fn context_environment(mut self, environment: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -126,7 +127,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the severity on the configurations context
     pub fn severity(mut self, severity: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -138,7 +140,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the version on the configurations context
     pub fn version(mut self, version: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -150,7 +153,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the url on the configurations context
     pub fn url(mut self, url: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -162,7 +166,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the root_directory on the configurations context
     pub fn root_directory(mut self, root_directory: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -174,7 +179,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the user on the configurations context
     pub fn user(mut self, user: ContextUser) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -186,7 +192,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the route on the configurations context
     pub fn route(mut self, route: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -198,7 +205,8 @@ impl<'a> NoticeBuilder<'a> {
 
     /// Set the http_method on the configurations context
     pub fn http_method(mut self, http_method: &str) -> NoticeBuilder<'a> {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -223,7 +231,8 @@ impl<'a> NoticeBuilder<'a> {
     ///     .build();
     /// ```
     pub fn add_environment(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
-        self.environment = self.environment
+        self.environment = self
+            .environment
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -247,7 +256,8 @@ impl<'a> NoticeBuilder<'a> {
     ///     .build();
     /// ```
     pub fn add_session(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
-        self.session = self.session
+        self.session = self
+            .session
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -272,7 +282,8 @@ impl<'a> NoticeBuilder<'a> {
     ///     .build();
     /// ```
     pub fn add_param(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
-        self.params = self.params
+        self.params = self
+            .params
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -290,7 +301,7 @@ impl<'a> NoticeBuilder<'a> {
             context,
             environment: self.environment,
             session: self.session,
-            params: self.params
+            params: self.params,
         }
     }
 }
@@ -335,7 +346,7 @@ pub struct Notice<'a> {
     pub session: Option<HashMap<String, String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub params: Option<HashMap<String, String>>
+    pub params: Option<HashMap<String, String>>,
 }
 
 impl<'a> Notice<'a> {
@@ -355,11 +366,11 @@ impl<'a> Notice<'a> {
 
     pub fn send(self) -> Result<(), AirbrakeClientError> {
         match self.client {
-            Some( c ) => {
+            Some(c) => {
                 debug!("Sending via notice client");
                 c.notify(self)
             }
-            None => Err( AirbrakeClientError::NoticeClientNotSet )
+            None => Err(AirbrakeClientError::NoticeClientNotSet),
         }
     }
 }
@@ -372,10 +383,10 @@ impl<'a> From<Notice<'a>> for Value {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
-    use std::collections::HashMap;
+    use super::{Context, Notice};
     use serde_json::{self, Value};
-    use super::{Notice, Context};
+    use std::collections::HashMap;
+    use std::str::FromStr;
 
     #[test]
     fn notice_default() {
@@ -385,17 +396,12 @@ mod tests {
             "errors": []
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 
     #[test]
     fn notice_with_add_environment() {
-        let notice = Notice::builder()
-            .add_environment("foo", "bar")
-            .build();
+        let notice = Notice::builder().add_environment("foo", "bar").build();
         let expected_json = r#"
         {
             "errors": [],
@@ -404,19 +410,14 @@ mod tests {
             }
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 
     #[test]
     fn notice_with_set_environment() {
         let mut hashmap = HashMap::new();
         hashmap.insert("foo".to_string(), "bar".to_string());
-        let notice = Notice::builder()
-            .environment(hashmap)
-            .build();
+        let notice = Notice::builder().environment(hashmap).build();
         let expected_json = r#"
         {
             "errors": [],
@@ -425,17 +426,12 @@ mod tests {
             }
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 
     #[test]
     fn notice_with_add_session() {
-        let notice = Notice::builder()
-            .add_session("foo", "bar")
-            .build();
+        let notice = Notice::builder().add_session("foo", "bar").build();
         let expected_json = r#"
         {
             "errors": [],
@@ -444,19 +440,14 @@ mod tests {
             }
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 
     #[test]
     fn notice_with_set_session() {
         let mut hashmap = HashMap::new();
         hashmap.insert("foo".to_string(), "bar".to_string());
-        let notice = Notice::builder()
-            .session(hashmap)
-            .build();
+        let notice = Notice::builder().session(hashmap).build();
         let expected_json = r#"
         {
             "errors": [],
@@ -465,17 +456,12 @@ mod tests {
             }
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 
     #[test]
     fn notice_with_add_param() {
-        let notice = Notice::builder()
-            .add_param("foo", "bar")
-            .build();
+        let notice = Notice::builder().add_param("foo", "bar").build();
         let expected_json = r#"
         {
             "errors": [],
@@ -484,19 +470,14 @@ mod tests {
             }
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 
     #[test]
     fn notice_with_set_params() {
         let mut hashmap = HashMap::new();
         hashmap.insert("foo".to_string(), "bar".to_string());
-        let notice = Notice::builder()
-            .params(hashmap)
-            .build();
+        let notice = Notice::builder().params(hashmap).build();
         let expected_json = r#"
         {
             "errors": [],
@@ -505,18 +486,13 @@ mod tests {
             }
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 
     #[test]
     fn notice_context_default() {
         let context = Context::builder();
-        let notice = Notice::builder()
-            .context(context)
-            .build();
+        let notice = Notice::builder().context(context).build();
         let expected_json = r#"
         {
             "errors": [],
@@ -529,9 +505,6 @@ mod tests {
             }
         }
         "#;
-        assert_eq!(
-            Value::from_str(expected_json).unwrap(),
-            Value::from(notice)
-        );
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
     }
 }

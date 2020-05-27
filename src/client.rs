@@ -1,15 +1,14 @@
-
-use std::env;
-use std::panic::PanicInfo;
-use std::marker::{Send, Sync};
-use std::time::Instant;
 use log::warn;
 use reqwest::blocking::Client;
 use serde::Serialize;
+use std::env;
+use std::marker::{Send, Sync};
+use std::panic::PanicInfo;
+use std::time::Instant;
 
 use crate::Notice;
-use crate::NoticeError;
 use crate::NoticeBuilder;
+use crate::NoticeError;
 use crate::{Context, ContextBuilder, ContextUser};
 
 const DEFAULT_HOSTNAME: &str = "https://airbrake.io";
@@ -22,7 +21,7 @@ pub enum AirbrakeClientBuilderError {
     MissingProjectId,
     MissingProjectKey,
     EmptyProjectId,
-    EmptyProjectKey
+    EmptyProjectKey,
 }
 
 #[derive(Default)]
@@ -40,15 +39,19 @@ impl AirbrakeClientBuilder {
     }
 
     pub fn configure<F>(&mut self, builder_callback: F) -> &mut AirbrakeClientBuilder
-    where F: Fn(&mut AirbrakeClientBuilder)
+    where
+        F: Fn(&mut AirbrakeClientBuilder),
     {
         builder_callback(self);
         self
     }
 
-    pub fn project<'a>(&'a mut self, project_id: &str, project_key: &str) -> &'a mut AirbrakeClientBuilder {
-        self.project_id(project_id)
-            .project_key(project_key)
+    pub fn project<'a>(
+        &'a mut self,
+        project_id: &str,
+        project_key: &str,
+    ) -> &'a mut AirbrakeClientBuilder {
+        self.project_id(project_id).project_key(project_key)
     }
 
     pub fn project_id<'a>(&'a mut self, project_id: &str) -> &'a mut AirbrakeClientBuilder {
@@ -99,7 +102,7 @@ impl AirbrakeClientBuilder {
             Ok(val) => {
                 self.project_id = Some(val);
                 Ok(self)
-            },
+            }
             Err(e) => Err(e),
         }
     }
@@ -109,7 +112,7 @@ impl AirbrakeClientBuilder {
             Ok(val) => {
                 self.project_key = Some(val);
                 Ok(self)
-            },
+            }
             Err(e) => Err(e),
         }
     }
@@ -124,7 +127,7 @@ impl AirbrakeClientBuilder {
             Ok(val) => {
                 self.host = Some(val);
                 Ok(self)
-            },
+            }
             Err(e) => Err(e),
         }
     }
@@ -147,7 +150,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the operating_system on the configurations context
     pub fn operating_system(&mut self, os: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -159,7 +163,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the hostname on the configurations context
     pub fn hostname(&mut self, hostname: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -171,7 +176,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the language on the configurations context
     pub fn language(&mut self, language: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -183,7 +189,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the environment on the configurations context
     pub fn environment(&mut self, environment: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -195,7 +202,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the severity on the configurations context
     pub fn severity(&mut self, severity: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -207,7 +215,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the version on the configurations context
     pub fn version(&mut self, version: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -219,7 +228,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the url on the configurations context
     pub fn url(&mut self, url: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -231,7 +241,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the root_directory on the configurations context
     pub fn root_directory(&mut self, root_directory: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -243,7 +254,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the user on the configurations context
     pub fn user(&mut self, user: ContextUser) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -255,7 +267,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the route on the configurations context
     pub fn route(&mut self, route: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -267,7 +280,8 @@ impl AirbrakeClientBuilder {
 
     /// Set the http_method on the configurations context
     pub fn http_method(&mut self, http_method: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self.context
+        self.context = self
+            .context
             .clone()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
@@ -279,18 +293,18 @@ impl AirbrakeClientBuilder {
 
     pub fn build(&self) -> Result<AirbrakeClient, AirbrakeClientBuilderError> {
         let project_id = match &self.project_id {
-            Some( id ) => id,
-            None => return Err( AirbrakeClientBuilderError::MissingProjectId )
+            Some(id) => id,
+            None => return Err(AirbrakeClientBuilderError::MissingProjectId),
         };
         let project_key = match &self.project_key {
-            Some( key ) => key,
-            None => return Err( AirbrakeClientBuilderError::MissingProjectKey )
+            Some(key) => key,
+            None => return Err(AirbrakeClientBuilderError::MissingProjectKey),
         };
         if project_id.is_empty() {
-            return Err( AirbrakeClientBuilderError::EmptyProjectId )
+            return Err(AirbrakeClientBuilderError::EmptyProjectId);
         }
         if project_key.is_empty() {
-            return Err( AirbrakeClientBuilderError::EmptyProjectKey )
+            return Err(AirbrakeClientBuilderError::EmptyProjectKey);
         }
         let context = self.context.clone().map(|c| c.build());
 
@@ -298,9 +312,12 @@ impl AirbrakeClientBuilder {
             client: Client::new(),
             project_id: project_id.to_string(),
             project_key: project_key.to_string(),
-            host: self.host.clone().unwrap_or_else(|| DEFAULT_HOSTNAME.to_owned()),
+            host: self
+                .host
+                .clone()
+                .unwrap_or_else(|| DEFAULT_HOSTNAME.to_owned()),
             proxy: self.proxy.clone(),
-            context
+            context,
         })
     }
 }
@@ -308,7 +325,7 @@ impl AirbrakeClientBuilder {
 #[derive(Debug)]
 pub enum AirbrakeClientError {
     ReqwestError(reqwest::Error),
-    NoticeClientNotSet
+    NoticeClientNotSet,
 }
 
 impl From<reqwest::Error> for AirbrakeClientError {
@@ -324,7 +341,7 @@ pub struct AirbrakeClient {
     project_key: String,
     host: String,
     proxy: Option<String>,
-    context: Option<Context>
+    context: Option<Context>,
 }
 
 impl AirbrakeClient {
@@ -335,49 +352,45 @@ impl AirbrakeClient {
     fn endpoint_uri(&self) -> String {
         format!(
             "{}/api/v3/projects/{}/notices?key={}",
-            self.host,
-            self.project_id,
-            self.project_key,
+            self.host, self.project_id, self.project_key,
         )
     }
 
     fn send_request<T>(&self, uri: &str, payload: &T) -> Result<(), AirbrakeClientError>
-    where T: Serialize
+    where
+        T: Serialize,
     {
         // Prepare a duration timer to track how long it takes to send the request.
         let start_time = Instant::now();
 
         // Now send the request to the airbrake server
-        let response = self.client.post(uri)
-            .json(payload)
-            .send();
+        let response = self.client.post(uri).json(payload).send();
 
         // Calculate send duration and print it to debug
         let duration = start_time.elapsed();
         debug!("Airbrake notify request took: {:?}", duration);
 
         // Return the response, ignoring the content if it's successful
-        response.map(|_| ())
-            .map_err(|e| {
-                warn!("Airbrake notification failed");
-                AirbrakeClientError::from(e)
-            })
+        response.map(|_| ()).map_err(|e| {
+            warn!("Airbrake notification failed");
+            AirbrakeClientError::from(e)
+        })
     }
 
     pub fn new_notice_builder(&self) -> NoticeBuilder {
         let notice_builder = match &self.context {
-            Some( context ) => context.new_notice_builder(),
-            None => Notice::builder()
+            Some(context) => context.new_notice_builder(),
+            None => Notice::builder(),
         };
         notice_builder.set_client(&self)
     }
 
-    pub fn notify(&self, mut notice: Notice) -> Result<(), AirbrakeClientError>{
+    pub fn notify(&self, mut notice: Notice) -> Result<(), AirbrakeClientError> {
         // TODO: This is a codesmell- the notify function shouldn't be
         // mutating the notice. Testing this is very difficult. Too
         // difficult for me to bother figuring out, which means this is
         // poorly designed
-        notice.context = notice.context.or_else(|| {self.context.clone()});
+        notice.context = notice.context.or_else(|| self.context.clone());
         let endpoint = self.endpoint_uri();
         self.send_request(&endpoint, &notice)
     }
@@ -390,7 +403,8 @@ impl AirbrakeClient {
         Box::new(move |panic_info: &PanicInfo<'_>| {
             let panic_backtrace = backtrace::Backtrace::new();
             let notice_error = NoticeError::from_panic_backtrace(panic_info, &panic_backtrace);
-            let _ = airbrake_client.new_notice_builder()
+            let _ = airbrake_client
+                .new_notice_builder()
                 .add_notice(notice_error)
                 .build()
                 .send();
@@ -400,9 +414,9 @@ impl AirbrakeClient {
 
 #[cfg(test)]
 mod context_passthrough_tests {
-    use std::str::FromStr;
-    use serde_json::{self, Value};
     use crate::AirbrakeClient;
+    use serde_json::{self, Value};
+    use std::str::FromStr;
 
     #[test]
     fn client_with_context_included_in_notices() {
@@ -446,9 +460,7 @@ mod context_passthrough_tests {
             .version("0.0.0")
             .build()
             .unwrap();
-        let notice = client.new_notice_builder()
-            .severity("warning")
-            .build();
+        let notice = client.new_notice_builder().severity("warning").build();
 
         let expected_json = r#"
         {
@@ -517,7 +529,10 @@ mod builder_tests {
             .project_key("bar")
             .build();
         assert!(client.is_err());
-        assert_eq!(client.unwrap_err(), AirbrakeClientBuilderError::EmptyProjectId)
+        assert_eq!(
+            client.unwrap_err(),
+            AirbrakeClientBuilderError::EmptyProjectId
+        )
     }
 
     #[test]
@@ -527,31 +542,39 @@ mod builder_tests {
             .project_key("")
             .build();
         assert!(client.is_err());
-        assert_eq!(client.unwrap_err(), AirbrakeClientBuilderError::EmptyProjectKey)
+        assert_eq!(
+            client.unwrap_err(),
+            AirbrakeClientBuilderError::EmptyProjectKey
+        )
     }
 
     #[test]
     fn default_builder_fails_build() {
         let client = AirbrakeClient::builder().build();
         assert!(client.is_err());
-        assert_eq!(client.unwrap_err(), AirbrakeClientBuilderError::MissingProjectId)
+        assert_eq!(
+            client.unwrap_err(),
+            AirbrakeClientBuilderError::MissingProjectId
+        )
     }
 
     #[test]
     fn client_build_fails_on_missing_project_id() {
-        let client = AirbrakeClient::builder()
-            .project_key("bar")
-            .build();
+        let client = AirbrakeClient::builder().project_key("bar").build();
         assert!(client.is_err());
-        assert_eq!(client.unwrap_err(), AirbrakeClientBuilderError::MissingProjectId)
+        assert_eq!(
+            client.unwrap_err(),
+            AirbrakeClientBuilderError::MissingProjectId
+        )
     }
 
     #[test]
     fn client_build_fails_on_missing_project_key() {
-        let client = AirbrakeClient::builder()
-            .project_id("foo")
-            .build();
+        let client = AirbrakeClient::builder().project_id("foo").build();
         assert!(client.is_err());
-        assert_eq!(client.unwrap_err(), AirbrakeClientBuilderError::MissingProjectKey)
+        assert_eq!(
+            client.unwrap_err(),
+            AirbrakeClientBuilderError::MissingProjectKey
+        )
     }
 }

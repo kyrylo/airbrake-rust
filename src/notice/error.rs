@@ -1,13 +1,12 @@
-
-use std::error::Error;
-use std::panic::PanicInfo;
 use super::NoticeTrace;
 use crate::backtrace::Backtrace;
+use std::error::Error;
+use std::panic::PanicInfo;
 
 pub struct NoticeErrorBuilder {
     pub name: String,
     pub message: Option<String>,
-    pub backtrace: Option<NoticeTrace>
+    pub backtrace: Option<NoticeTrace>,
 }
 
 impl NoticeErrorBuilder {
@@ -15,7 +14,7 @@ impl NoticeErrorBuilder {
         NoticeErrorBuilder {
             name: name.to_string(),
             message: None,
-            backtrace: None
+            backtrace: None,
         }
     }
 
@@ -42,14 +41,14 @@ impl NoticeErrorBuilder {
 
 #[derive(Debug, Serialize)]
 pub struct NoticeError {
-    #[serde(rename="type")]
+    #[serde(rename = "type")]
     pub name: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub backtrace: Option<NoticeTrace>
+    pub backtrace: Option<NoticeTrace>,
 }
 
 impl NoticeError {
@@ -57,7 +56,7 @@ impl NoticeError {
         NoticeError {
             name: name.to_string(),
             message,
-            backtrace
+            backtrace,
         }
     }
 
@@ -68,10 +67,11 @@ impl NoticeError {
     pub fn from_panic_backtrace(panic_info: &PanicInfo, backtrace: &Backtrace) -> NoticeError {
         // TODO: PanicInfo has a `message()` on nightly which might be easier to work with
         // here, but for now we'll just deal with `payload()`
-        let message: String = panic_info.payload()
+        let message: String = panic_info
+            .payload()
             .downcast_ref::<String>()
             .map(|s| s.to_string())
-            .or_else(|| Some( "None".to_string() ))
+            .or_else(|| Some("None".to_string()))
             .unwrap();
         NoticeError::builder("panic")
             .message(&message)
@@ -82,7 +82,11 @@ impl NoticeError {
 
 impl<'a, E: Error> From<E> for NoticeError {
     fn from(error: E) -> NoticeError {
-        let name = format!("{:?}", error).split_whitespace().next().unwrap().to_string();
+        let name = format!("{:?}", error)
+            .split_whitespace()
+            .next()
+            .unwrap()
+            .to_string();
         let message = Some(format!("{}", error));
         let backtrace = None;
 

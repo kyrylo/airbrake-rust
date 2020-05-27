@@ -1,4 +1,3 @@
-
 use super::{Notice, NoticeBuilder};
 
 #[derive(Debug, Clone, Default)]
@@ -100,10 +99,9 @@ impl ContextBuilder {
             root_directory: self.root_directory.clone(),
             user: self.user.clone(),
             route: self.route.clone(),
-            http_method: self.http_method.clone()
+            http_method: self.http_method.clone(),
         }
     }
-
 }
 
 impl From<&Context> for ContextBuilder {
@@ -119,7 +117,7 @@ impl From<&Context> for ContextBuilder {
             root_directory: context.root_directory.clone(),
             user: context.user.clone(),
             route: context.route.clone(),
-            http_method: context.http_method.clone()
+            http_method: context.http_method.clone(),
         }
     }
 }
@@ -130,7 +128,7 @@ pub struct Context {
     pub notifier: &'static ContextNotifier,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(rename="os")]
+    #[serde(rename = "os")]
     pub operating_system: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -151,7 +149,7 @@ pub struct Context {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 
-    #[serde(rename="rootDirectory")]
+    #[serde(rename = "rootDirectory")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub root_directory: Option<String>,
 
@@ -161,9 +159,9 @@ pub struct Context {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
 
-    #[serde(rename="httpMethod")]
+    #[serde(rename = "httpMethod")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub http_method: Option<String>
+    pub http_method: Option<String>,
 }
 
 impl Context {
@@ -191,7 +189,7 @@ const NOTIFIER_VERSION: &str = "0.2.0";
 pub const CONTEXT_NOTIFIER: ContextNotifier = ContextNotifier {
     name: NOTIFIER_NAME,
     version: NOTIFIER_VERSION,
-    url: NOTIFIER_URL
+    url: NOTIFIER_URL,
 };
 
 #[derive(Debug, Serialize, Clone, PartialEq)]
@@ -203,7 +201,7 @@ pub struct ContextUser {
     name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    email: Option<String>
+    email: Option<String>,
 }
 
 impl ContextUser {
@@ -212,7 +210,7 @@ impl ContextUser {
         ContextUser {
             id: None,
             name: None,
-            email: None
+            email: None,
         }
     }
 
@@ -237,9 +235,9 @@ impl ContextUser {
 
 #[cfg(test)]
 mod context_user_tests {
-    use std::str::FromStr;
-    use serde_json::{self, Value};
     use super::ContextUser;
+    use serde_json::{self, Value};
+    use std::str::FromStr;
 
     #[test]
     fn context_user_default() {
@@ -297,10 +295,7 @@ mod context_user_tests {
 
     #[test]
     fn context_user_with_all_fields() {
-        let context = ContextUser::empty()
-            .id("foo")
-            .email("bar")
-            .name("baz");
+        let context = ContextUser::empty().id("foo").email("bar").name("baz");
         let expected_json = r#"
         {
             "id": "foo",
@@ -317,9 +312,9 @@ mod context_user_tests {
 
 #[cfg(test)]
 mod context_tests {
-    use std::str::FromStr;
-    use serde_json::{self, Value};
     use super::{Context, ContextUser};
+    use serde_json::{self, Value};
+    use std::str::FromStr;
 
     #[test]
     fn context_default_has_notifier() {
@@ -341,9 +336,7 @@ mod context_tests {
 
     #[test]
     fn context_operating_system() {
-        let context = Context::builder()
-            .operating_system("SolarOS")
-            .build();
+        let context = Context::builder().operating_system("SolarOS").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -362,9 +355,7 @@ mod context_tests {
 
     #[test]
     fn context_hostname() {
-        let context = Context::builder()
-            .hostname("usw2.swa.foobar.com")
-            .build();
+        let context = Context::builder().hostname("usw2.swa.foobar.com").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -383,9 +374,7 @@ mod context_tests {
 
     #[test]
     fn context_language() {
-        let context = Context::builder()
-            .language("klingon")
-            .build();
+        let context = Context::builder().language("klingon").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -404,9 +393,7 @@ mod context_tests {
 
     #[test]
     fn context_environment() {
-        let context = Context::builder()
-            .environment("production")
-            .build();
+        let context = Context::builder().environment("production").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -425,9 +412,7 @@ mod context_tests {
 
     #[test]
     fn context_severity() {
-        let context = Context::builder()
-            .severity("critical")
-            .build();
+        let context = Context::builder().severity("critical").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -446,9 +431,7 @@ mod context_tests {
 
     #[test]
     fn context_version() {
-        let context = Context::builder()
-            .version("9000.0.1")
-            .build();
+        let context = Context::builder().version("9000.0.1").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -467,9 +450,7 @@ mod context_tests {
 
     #[test]
     fn context_url() {
-        let context = Context::builder()
-            .url("http://localhost/my/foobar")
-            .build();
+        let context = Context::builder().url("http://localhost/my/foobar").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -488,9 +469,7 @@ mod context_tests {
 
     #[test]
     fn context_root_directory() {
-        let context = Context::builder()
-            .root_directory("/dev/null")
-            .build();
+        let context = Context::builder().root_directory("/dev/null").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -509,13 +488,8 @@ mod context_tests {
 
     #[test]
     fn context_user() {
-        let context_user = ContextUser::empty()
-            .id("foo")
-            .email("bar")
-            .name("baz");
-        let context = Context::builder()
-            .user(context_user)
-            .build();
+        let context_user = ContextUser::empty().id("foo").email("bar").name("baz");
+        let context = Context::builder().user(context_user).build();
         let expected_json = r#"
         {
             "notifier": {
@@ -538,9 +512,7 @@ mod context_tests {
 
     #[test]
     fn context_route() {
-        let context = Context::builder()
-            .route("/foo/bar/baz")
-            .build();
+        let context = Context::builder().route("/foo/bar/baz").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -559,9 +531,7 @@ mod context_tests {
 
     #[test]
     fn context_http_method() {
-        let context = Context::builder()
-            .http_method("post")
-            .build();
+        let context = Context::builder().http_method("post").build();
         let expected_json = r#"
         {
             "notifier": {
@@ -578,4 +548,3 @@ mod context_tests {
         );
     }
 }
-

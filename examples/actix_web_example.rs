@@ -1,8 +1,8 @@
 extern crate log;
 
-use std::panic;
 use actix_web::{get, web, App, HttpServer, Responder};
 use airbrake::*;
+use std::panic;
 
 #[get("/divide/{numerator}/{denominator}")]
 async fn divider(info: web::Path<(u32, u32)>) -> impl Responder {
@@ -23,14 +23,14 @@ fn main() -> () {
 
     // Set up the client
     let airbrake: AirbrakeClient = AirbrakeClient::builder()
-        .project_id_from_env().expect("Missing AIRBRAKE_PROJECT_ID")
-        .project_key_from_env().expect("Missing AIRBRAKE_API_KEY")
+        .project_id_from_env()
+        .expect("Missing AIRBRAKE_PROJECT_ID")
+        .project_key_from_env()
+        .expect("Missing AIRBRAKE_API_KEY")
         .environment("development")
         .build()
         .expect("Failed to build config");
 
-    panic::set_hook(
-        airbrake.panic_hook()
-    );
+    panic::set_hook(airbrake.panic_hook());
     let _ = actix_main();
 }

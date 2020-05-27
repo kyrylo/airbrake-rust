@@ -1,19 +1,16 @@
-
-use std::collections::HashMap;
-use serde::ser::{Serialize, Serializer, SerializeSeq};
-use serde_json::{self, Value};
 use crate::backtrace::{Backtrace, BacktraceFrame, BacktraceSymbol};
+use serde::ser::{Serialize, SerializeSeq, Serializer};
+use serde_json::{self, Value};
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct NoticeTrace {
-    frames: Vec<NoticeFrame>
+    frames: Vec<NoticeFrame>,
 }
 
 impl NoticeTrace {
     fn new(frames: Vec<NoticeFrame>) -> NoticeTrace {
-        NoticeTrace {
-            frames
-        }
+        NoticeTrace { frames }
     }
 
     pub fn frames(&self) -> Vec<NoticeFrame> {
@@ -25,13 +22,9 @@ impl From<&Backtrace> for NoticeTrace {
     fn from(backtrace: &Backtrace) -> NoticeTrace {
         let mut frames: Vec<NoticeFrame> = vec![];
         for f in backtrace.frames() {
-            frames.append(
-                &mut NoticeFrame::unroll_frame_symbols(&f)
-            );
+            frames.append(&mut NoticeFrame::unroll_frame_symbols(&f));
         }
-        NoticeTrace {
-            frames
-        }
+        NoticeTrace { frames }
     }
 }
 
@@ -63,7 +56,7 @@ pub struct NoticeFrame {
     pub line: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub code: Option<HashMap<i32, String>>
+    pub code: Option<HashMap<i32, String>>,
 }
 
 impl NoticeFrame {
@@ -75,14 +68,14 @@ impl NoticeFrame {
 impl From<&BacktraceSymbol> for NoticeFrame {
     fn from(symbol: &BacktraceSymbol) -> NoticeFrame {
         let filename = match symbol.filename() {
-            Some( f ) => {
-                f.to_str()
+            Some(f) => f
+                .to_str()
                 .expect("Backtrace frame's filename was not valid unicode")
-                .to_string()
-            },
-            None => "(anonymous)".to_string()
+                .to_string(),
+            None => "(anonymous)".to_string(),
         };
-        let function_name = symbol.name()
+        let function_name = symbol
+            .name()
             .expect("Backtrace frame doesn't have a function name")
             .to_string();
 
@@ -90,16 +83,16 @@ impl From<&BacktraceSymbol> for NoticeFrame {
             file: filename,
             line: symbol.lineno(),
             function: function_name,
-            code: None
+            code: None,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::convert::From;
+    use super::{NoticeFrame, NoticeTrace};
     use crate::backtrace::Backtrace;
-    use super::{NoticeTrace, NoticeFrame};
+    use std::convert::From;
 
     #[test]
     fn backtrace_contains_current_function_frame() {
@@ -111,9 +104,7 @@ mod tests {
         let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(&backtrace)
             .frames()
             .into_iter()
-            .filter(|f| {
-                f.function.contains(&function_name)
-            })
+            .filter(|f| f.function.contains(&function_name))
             .collect();
 
         assert_gt!(selected_frames.len(), 0);
@@ -125,15 +116,12 @@ mod tests {
         let nested_frame_line: u32 = 128;
         // This backtrace is generated from within a nested enclosure so
         // that the backtraces creates a single frame with two symboles
-        let fn_backtrace = || { (|| { Backtrace::new() })() };
+        let fn_backtrace = || (|| Backtrace::new())();
         let backtrace = fn_backtrace();
         let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(&backtrace)
             .frames()
             .into_iter()
-            .filter(|f| {
-                f.function.contains(&function_name) &&
-                f.line == Some(nested_frame_line)
-            })
+            .filter(|f| f.function.contains(&function_name) && f.line == Some(nested_frame_line))
             .collect();
 
         assert_gt!(selected_frames.len(), 1);

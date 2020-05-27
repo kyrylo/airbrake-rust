@@ -1,4 +1,3 @@
-
 //! The Notice module contains the various structs that make up an Airbrake
 //! Notice. A Notice is primarily contains a vector of NoticeErrors, which
 //! is the structure that represents the error itself. Other parts of the of
@@ -133,15 +132,9 @@
 //!
 
 mod error;
-mod notice_backtrace;
 mod notice;
+mod notice_backtrace;
 
-pub use notice::{
-    Notice,
-    NoticeBuilder
-};
-pub use error::{
-    NoticeError,
-    NoticeErrorBuilder
-};
-pub use notice_backtrace::{NoticeTrace, NoticeFrame};
+pub use error::{NoticeError, NoticeErrorBuilder};
+pub use notice::{Notice, NoticeBuilder};
+pub use notice_backtrace::{NoticeFrame, NoticeTrace};

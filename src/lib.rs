@@ -260,22 +260,13 @@ extern crate more_asserts;
 extern crate matches;
 
 mod client;
-mod notice;
 mod context;
+mod notice;
 
-pub use client::{
-    AirbrakeClient,
-    AirbrakeClientBuilder,
-    AirbrakeClientError
-};
-pub use notice::*;
-pub use context::{
-    Context,
-    ContextBuilder,
-    ContextUser,
-    CONTEXT_NOTIFIER
-};
 pub use backtrace;
+pub use client::{AirbrakeClient, AirbrakeClientBuilder, AirbrakeClientError};
+pub use context::{Context, ContextBuilder, ContextUser, CONTEXT_NOTIFIER};
+pub use notice::*;
 
 /// Configures an Airbrake notifier.
 ///
@@ -288,7 +279,8 @@ pub use backtrace;
 /// });
 /// ```
 pub fn configure<F>(builder_callback: F) -> AirbrakeClient
-    where F: Fn(&mut AirbrakeClientBuilder)
+where
+    F: Fn(&mut AirbrakeClientBuilder),
 {
     AirbrakeClient::builder()
         .configure(builder_callback)
