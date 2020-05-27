@@ -6,6 +6,10 @@ pub struct Config {
     pub workers: i32,
     pub proxy: String,
     pub app_version: String,
+    pub environment: Option<String>,
+    pub component: Option<String>,
+    pub os: Option<String>,
+    pub hostname: Option<String>,
 }
 
 impl Config {
@@ -17,6 +21,10 @@ impl Config {
             workers: 1,
             proxy: String::new(),
             app_version: String::new(),
+            environment: None,
+            component: None,
+            os: None,
+            hostname: None,
         }
     }
 
