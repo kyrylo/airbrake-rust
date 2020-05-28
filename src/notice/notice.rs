@@ -2,7 +2,8 @@ use serde_json::{self, Value};
 
 use super::{NoticeError, NoticeTrace};
 use crate::{
-    backtrace::Backtrace, AirbrakeClient, AirbrakeClientError, Context, ContextBuilder, ContextProperties,
+    backtrace::Backtrace, AirbrakeClient, AirbrakeClientError, Context, ContextBuilder,
+    ContextProperties,
 };
 use log::debug;
 use std::collections::HashMap;
@@ -46,7 +47,10 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Add multiple Errors from an iterator
-    pub fn add_errors<T: Iterator<Item = E>, E: Error>(&mut self, errors: T) -> &'_ mut NoticeBuilder<'a> {
+    pub fn add_errors<T: Iterator<Item = E>, E: Error>(
+        &mut self,
+        errors: T,
+    ) -> &'_ mut NoticeBuilder<'a> {
         let notice_errors = errors.map(|x| x.into());
         self.add_notices(notice_errors)
     }
@@ -74,7 +78,10 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn environment(&mut self, environment: HashMap<String, String>) -> &'_ mut NoticeBuilder<'a> {
+    pub fn environment(
+        &mut self,
+        environment: HashMap<String, String>,
+    ) -> &'_ mut NoticeBuilder<'a> {
         self.environment = Some(environment);
         self
     }
@@ -89,7 +96,8 @@ impl<'a> NoticeBuilder<'a> {
     /// ```
     pub fn add_environment(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
         self.environment = self
-            .environment.clone()
+            .environment
+            .clone()
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -114,7 +122,8 @@ impl<'a> NoticeBuilder<'a> {
     /// ```
     pub fn add_session(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
         self.session = self
-            .session.clone()
+            .session
+            .clone()
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -140,7 +149,8 @@ impl<'a> NoticeBuilder<'a> {
     /// ```
     pub fn add_param(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
         self.params = self
-            .params.clone()
+            .params
+            .clone()
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -257,10 +267,10 @@ impl<'a> From<Notice<'a>> for Value {
 #[cfg(test)]
 mod tests {
     use super::{Context, Notice};
+    use crate::ContextProperties;
     use serde_json::{self, Value};
     use std::collections::HashMap;
     use std::str::FromStr;
-    use crate::ContextProperties;
 
     #[test]
     fn notice_default() {

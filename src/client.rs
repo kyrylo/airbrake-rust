@@ -283,9 +283,9 @@ impl AirbrakeClient {
 #[cfg(test)]
 mod context_passthrough_tests {
     use crate::AirbrakeClient;
+    use crate::ContextProperties;
     use serde_json::{self, Value};
     use std::str::FromStr;
-    use crate::ContextProperties;
 
     #[test]
     fn client_with_context_included_in_notices() {

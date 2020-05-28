@@ -164,7 +164,8 @@ pub trait ContextProperties {
     fn set_context(&mut self, context: ContextBuilder) -> &mut Self;
 
     fn operating_system(&mut self, os: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._operating_system = Some(os.to_string());
@@ -175,7 +176,8 @@ pub trait ContextProperties {
     }
 
     fn hostname(&mut self, hostname: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._hostname = Some(hostname.to_string());
@@ -186,7 +188,8 @@ pub trait ContextProperties {
     }
 
     fn language(&mut self, language: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._language = Some(language.to_string());
@@ -197,7 +200,8 @@ pub trait ContextProperties {
     }
 
     fn environment(&mut self, environment: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._environment = Some(environment.to_string());
@@ -208,7 +212,8 @@ pub trait ContextProperties {
     }
 
     fn severity(&mut self, severity: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._severity = Some(severity.to_string());
@@ -219,7 +224,8 @@ pub trait ContextProperties {
     }
 
     fn component(&mut self, component: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._component = Some(component.to_string());
@@ -230,7 +236,8 @@ pub trait ContextProperties {
     }
 
     fn action(&mut self, action: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._action = Some(action.to_string());
@@ -241,7 +248,8 @@ pub trait ContextProperties {
     }
 
     fn user_agent(&mut self, user_agent: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._user_agent = Some(user_agent.to_string());
@@ -252,7 +260,8 @@ pub trait ContextProperties {
     }
 
     fn user_addr(&mut self, user_addr: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._user_addr = Some(user_addr.to_string());
@@ -263,7 +272,8 @@ pub trait ContextProperties {
     }
 
     fn remote_addr(&mut self, remote_addr: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._remote_addr = Some(remote_addr.to_string());
@@ -274,7 +284,8 @@ pub trait ContextProperties {
     }
 
     fn version(&mut self, version: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._version = Some(version.to_string());
@@ -285,7 +296,8 @@ pub trait ContextProperties {
     }
 
     fn url(&mut self, url: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._url = Some(url.to_string());
@@ -296,7 +308,8 @@ pub trait ContextProperties {
     }
 
     fn root_directory(&mut self, root_directory: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._root_directory = Some(root_directory.to_string());
@@ -307,7 +320,8 @@ pub trait ContextProperties {
     }
 
     fn user(&mut self, user: ContextUser) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._user = Some(user);
@@ -318,7 +332,8 @@ pub trait ContextProperties {
     }
 
     fn route(&mut self, route: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._route = Some(route.to_string());
@@ -329,7 +344,8 @@ pub trait ContextProperties {
     }
 
     fn http_method(&mut self, http_method: &str) -> &'_ mut Self {
-        let updated_context = self.get_context()
+        let updated_context = self
+            .get_context()
             .or_else(|| Some(Context::builder()))
             .and_then(|mut c| {
                 c._http_method = Some(http_method.to_string());
@@ -478,7 +494,7 @@ mod context_user_tests {
 
 #[cfg(test)]
 mod context_tests {
-    use super::{Context, ContextUser, ContextProperties};
+    use super::{Context, ContextProperties, ContextUser};
     use serde_json::{self, Value};
     use std::str::FromStr;
 

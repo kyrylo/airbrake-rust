@@ -265,7 +265,7 @@ mod notice;
 
 pub use backtrace;
 pub use client::{AirbrakeClient, AirbrakeClientBuilder, AirbrakeClientError};
-pub use context::{Context, ContextBuilder, ContextUser, ContextProperties, CONTEXT_NOTIFIER};
+pub use context::{Context, ContextBuilder, ContextProperties, ContextUser, CONTEXT_NOTIFIER};
 pub use notice::*;
 
 /// Configures an Airbrake notifier.
