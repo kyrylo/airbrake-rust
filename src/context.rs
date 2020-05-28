@@ -7,6 +7,11 @@ pub struct ContextBuilder {
     pub language: Option<String>,
     pub environment: Option<String>,
     pub severity: Option<String>,
+    pub component: Option<String>,
+    pub action: Option<String>,
+    pub user_agent: Option<String>,
+    pub user_addr: Option<String>,
+    pub remote_addr: Option<String>,
     pub version: Option<String>,
     pub url: Option<String>,
     pub root_directory: Option<String>,
@@ -45,8 +50,40 @@ impl ContextBuilder {
     }
 
     /// Set the operating system on the ContextBuilder
+    // TODO: Should be enum of: debug, info, notice, warning, error,
+    // critical, alert, emergency, invalid
     pub fn severity(&mut self, severity: &str) -> &'_ mut ContextBuilder {
         self.severity = Some(severity.to_string());
+        self
+    }
+
+    /// Set the component on the ContextBuilder
+    pub fn component(&mut self, component: &str) -> &'_ mut ContextBuilder {
+        self.component = Some(component.to_string());
+        self
+    }
+
+    /// Set the action on the ContextBuilder
+    pub fn action(&mut self, action: &str) -> &'_ mut ContextBuilder {
+        self.action = Some(action.to_string());
+        self
+    }
+
+    /// Set the user_agent on the ContextBuilder
+    pub fn user_agent(&mut self, user_agent: &str) -> &'_ mut ContextBuilder {
+        self.user_agent = Some(user_agent.to_string());
+        self
+    }
+
+    /// Set the user_addr on the ContextBuilder
+    pub fn user_addr(&mut self, user_addr: &str) -> &'_ mut ContextBuilder {
+        self.user_addr = Some(user_addr.to_string());
+        self
+    }
+
+    /// Set the remote_addr on the ContextBuilder
+    pub fn remote_addr(&mut self, remote_addr: &str) -> &'_ mut ContextBuilder {
+        self.remote_addr = Some(remote_addr.to_string());
         self
     }
 
@@ -94,6 +131,11 @@ impl ContextBuilder {
             language: self.language.clone(),
             environment: self.environment.clone(),
             severity: self.severity.clone(),
+            component: self.component.clone(),
+            action: self.action.clone(),
+            user_agent: self.user_agent.clone(),
+            user_addr: self.user_addr.clone(),
+            remote_addr: self.remote_addr.clone(),
             version: self.version.clone(),
             url: self.url.clone(),
             root_directory: self.root_directory.clone(),
@@ -112,6 +154,11 @@ impl From<&Context> for ContextBuilder {
             language: context.language.clone(),
             environment: context.environment.clone(),
             severity: context.severity.clone(),
+            component: context.component.clone(),
+            action: context.action.clone(),
+            user_agent: context.user_agent.clone(),
+            user_addr: context.user_addr.clone(),
+            remote_addr: context.remote_addr.clone(),
             version: context.version.clone(),
             url: context.url.clone(),
             root_directory: context.root_directory.clone(),
@@ -142,6 +189,24 @@ pub struct Context {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub component: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action: Option<String>,
+
+    #[serde(rename = "userAgent")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+
+    #[serde(rename = "userAddr")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_addr: Option<String>,
+
+    #[serde(rename = "remoteAddr")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub remote_addr: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
@@ -421,6 +486,101 @@ mod context_tests {
                 "url": "https://github.com/airbrake/airbrake-rust"
             },
             "severity": "critical"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_component() {
+        let context = Context::builder().component("foobar").build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "component": "foobar"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_action() {
+        let context = Context::builder().action("jump").build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "action": "jump"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_user_agent() {
+        let context = Context::builder().user_agent("geko").build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "userAgent": "geko"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_user_addr() {
+        let context = Context::builder().user_addr("0.0.0.0").build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "userAddr": "0.0.0.0"
+        }
+        "#;
+        assert_eq!(
+            Value::from_str(expected_json).unwrap(),
+            serde_json::json!(context)
+        );
+    }
+
+    #[test]
+    fn context_remote_addr() {
+        let context = Context::builder().remote_addr("10.0.0.0").build();
+        let expected_json = r#"
+        {
+            "notifier": {
+                "name": "airbrake-rust",
+                "version": "0.2.0",
+                "url": "https://github.com/airbrake/airbrake-rust"
+            },
+            "remoteAddr": "10.0.0.0"
         }
         "#;
         assert_eq!(

@@ -213,6 +213,58 @@ impl AirbrakeClientBuilder {
         self
     }
 
+    /// Set the component on the configurations context
+    pub fn component(&mut self, component: &str) -> &'_ mut AirbrakeClientBuilder {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.component(component);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the action on the configurations context
+    pub fn action(&mut self, action: &str) -> &'_ mut AirbrakeClientBuilder {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.action(action);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the user_agent on the configurations context
+    pub fn user_agent(&mut self, user_agent: &str) -> &'_ mut AirbrakeClientBuilder {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.user_agent(user_agent);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the remote_addr on the configurations context
+    pub fn remote_addr(&mut self, remote_addr: &str) -> &'_ mut AirbrakeClientBuilder {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.remote_addr(remote_addr);
+                Some(c)
+            });
+        self
+    }
+
     /// Set the version on the configurations context
     pub fn version(&mut self, version: &str) -> &'_ mut AirbrakeClientBuilder {
         self.context = self
@@ -458,6 +510,7 @@ mod context_passthrough_tests {
             .project_key("bar")
             .operating_system("SolarOS")
             .version("0.0.0")
+            .component("controller")
             .build()
             .unwrap();
         let notice = client.new_notice_builder().severity("warning").build();
@@ -473,7 +526,8 @@ mod context_passthrough_tests {
                 },
                 "os": "SolarOS",
                 "version": "0.0.0",
-                "severity": "warning"
+                "severity": "warning",
+                "component": "controller"
             }
         }
         "#;

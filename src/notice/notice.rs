@@ -138,6 +138,58 @@ impl<'a> NoticeBuilder<'a> {
         self
     }
 
+    /// Set the component on the configurations context
+    pub fn component(mut self, component: &str) -> NoticeBuilder<'a> {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.component(component);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the action on the configurations context
+    pub fn action(mut self, action: &str) -> NoticeBuilder<'a> {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.action(action);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the user_agent on the configurations context
+    pub fn user_agent(mut self, user_agent: &str) -> NoticeBuilder<'a> {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.user_agent(user_agent);
+                Some(c)
+            });
+        self
+    }
+
+    /// Set the remote_addr on the configurations context
+    pub fn remote_addr(mut self, remote_addr: &str) -> NoticeBuilder<'a> {
+        self.context = self
+            .context
+            .clone()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c.remote_addr(remote_addr);
+                Some(c)
+            });
+        self
+    }
+
     /// Set the version on the configurations context
     pub fn version(mut self, version: &str) -> NoticeBuilder<'a> {
         self.context = self
@@ -502,6 +554,25 @@ mod tests {
                     "version": "0.2.0",
                     "url": "https://github.com/airbrake/airbrake-rust"
                 }
+            }
+        }
+        "#;
+        assert_eq!(Value::from_str(expected_json).unwrap(), Value::from(notice));
+    }
+
+    #[test]
+    fn notice_context_from_component() {
+        let notice = Notice::builder().component("foobar").build();
+        let expected_json = r#"
+        {
+            "errors": [],
+            "context": {
+                "notifier": {
+                    "name": "airbrake-rust",
+                    "version": "0.2.0",
+                    "url": "https://github.com/airbrake/airbrake-rust"
+                },
+                "component": "foobar"
             }
         }
         "#;
