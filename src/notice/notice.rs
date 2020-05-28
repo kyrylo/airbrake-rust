@@ -2,14 +2,14 @@ use serde_json::{self, Value};
 
 use super::{NoticeError, NoticeTrace};
 use crate::{
-    backtrace::Backtrace, AirbrakeClient, AirbrakeClientError, Context, ContextBuilder, ContextUser,
+    backtrace::Backtrace, AirbrakeClient, AirbrakeClientError, Context, ContextBuilder, ContextProperties,
 };
 use log::debug;
 use std::collections::HashMap;
 use std::error::Error;
 use std::string::ToString;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct NoticeBuilder<'a> {
     pub client: Option<&'a AirbrakeClient>,
     pub errors: Vec<NoticeError>,
@@ -25,251 +25,56 @@ impl<'a> NoticeBuilder<'a> {
         NoticeBuilder::default()
     }
 
-    pub fn set_client(mut self, client: &'a AirbrakeClient) -> NoticeBuilder<'a> {
+    pub fn set_client(&mut self, client: &'a AirbrakeClient) -> &'_ mut NoticeBuilder<'a> {
         self.client = Some(client);
         self
     }
 
     /// Add multiple NoticeErrors from an iterator
     pub fn add_notices<T: Iterator<Item = NoticeError>>(
-        mut self,
+        &mut self,
         notice_errors: T,
-    ) -> NoticeBuilder<'a> {
+    ) -> &'_ mut NoticeBuilder<'a> {
         self.errors.extend(notice_errors);
         self
     }
 
     /// Add a single NoticeError
-    pub fn add_notice(mut self, notice_error: NoticeError) -> NoticeBuilder<'a> {
+    pub fn add_notice(&mut self, notice_error: NoticeError) -> &'_ mut NoticeBuilder<'a> {
         self.errors.push(notice_error);
         self
     }
 
     /// Add multiple Errors from an iterator
-    pub fn add_errors<T: Iterator<Item = E>, E: Error>(self, errors: T) -> NoticeBuilder<'a> {
+    pub fn add_errors<T: Iterator<Item = E>, E: Error>(&mut self, errors: T) -> &'_ mut NoticeBuilder<'a> {
         let notice_errors = errors.map(|x| x.into());
         self.add_notices(notice_errors)
     }
 
     /// Add a single Error
-    pub fn add_error<E: Error>(self, error: E) -> NoticeBuilder<'a> {
+    pub fn add_error<E: Error>(&mut self, error: E) -> &'_ mut NoticeBuilder<'a> {
         let notice_error = NoticeError::from(error);
         self.add_notice(notice_error)
     }
 
     pub fn add_error_with_backtrace<E: Error>(
-        self,
+        &mut self,
         error: E,
         backtrace: Backtrace,
-    ) -> NoticeBuilder<'a> {
+    ) -> &'_ mut NoticeBuilder<'a> {
         let mut notice_error = NoticeError::from(error);
         notice_error.backtrace = Some(NoticeTrace::from(&backtrace));
         self.add_notice(notice_error)
     }
 
     /// Set the context on the NoticeBuilder
-    pub fn context(mut self, context: ContextBuilder) -> NoticeBuilder<'a> {
-        self.context = Some(context);
-        self
-    }
-
-    /// Set the operating_system on the configurations context
-    pub fn operating_system(mut self, os: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.operating_system(os);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the hostname on the configurations context
-    pub fn hostname(mut self, hostname: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.hostname(hostname);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the language on the configurations context
-    pub fn language(mut self, language: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.language(language);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the environment on the configurations context
-    pub fn context_environment(mut self, environment: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.environment(environment);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the severity on the configurations context
-    pub fn severity(mut self, severity: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.severity(severity);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the component on the configurations context
-    pub fn component(mut self, component: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.component(component);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the action on the configurations context
-    pub fn action(mut self, action: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.action(action);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the user_agent on the configurations context
-    pub fn user_agent(mut self, user_agent: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.user_agent(user_agent);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the remote_addr on the configurations context
-    pub fn remote_addr(mut self, remote_addr: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.remote_addr(remote_addr);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the version on the configurations context
-    pub fn version(mut self, version: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.version(version);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the url on the configurations context
-    pub fn url(mut self, url: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.url(url);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the root_directory on the configurations context
-    pub fn root_directory(mut self, root_directory: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.root_directory(root_directory);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the user on the configurations context
-    pub fn user(mut self, user: ContextUser) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.user(user);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the route on the configurations context
-    pub fn route(mut self, route: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.route(route);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the http_method on the configurations context
-    pub fn http_method(mut self, http_method: &str) -> NoticeBuilder<'a> {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.http_method(http_method);
-                Some(c)
-            });
+    pub fn context(&mut self, context: &ContextBuilder) -> &'_ mut NoticeBuilder<'a> {
+        self.context = Some(context.clone());
         self
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn environment(mut self, environment: HashMap<String, String>) -> NoticeBuilder<'a> {
+    pub fn environment(&mut self, environment: HashMap<String, String>) -> &'_ mut NoticeBuilder<'a> {
         self.environment = Some(environment);
         self
     }
@@ -282,9 +87,9 @@ impl<'a> NoticeBuilder<'a> {
     ///     .add_environment("CODE_NAME", "gorilla")
     ///     .build();
     /// ```
-    pub fn add_environment(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
+    pub fn add_environment(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
         self.environment = self
-            .environment
+            .environment.clone()
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -294,7 +99,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn session(mut self, session: HashMap<String, String>) -> NoticeBuilder<'a> {
+    pub fn session(&mut self, session: HashMap<String, String>) -> &'_ mut NoticeBuilder<'a> {
         self.session = Some(session);
         self
     }
@@ -307,9 +112,9 @@ impl<'a> NoticeBuilder<'a> {
     ///     .add_session("userId", "456")
     ///     .build();
     /// ```
-    pub fn add_session(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
+    pub fn add_session(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
         self.session = self
-            .session
+            .session.clone()
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -319,7 +124,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn params(mut self, params: HashMap<String, String>) -> NoticeBuilder<'a> {
+    pub fn params(&mut self, params: HashMap<String, String>) -> &'_ mut NoticeBuilder<'a> {
         self.params = Some(params);
         self
     }
@@ -333,9 +138,9 @@ impl<'a> NoticeBuilder<'a> {
     ///     .add_param("direction", "asc")
     ///     .build();
     /// ```
-    pub fn add_param(mut self, key: &str, value: &str) -> NoticeBuilder<'a> {
+    pub fn add_param(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
         self.params = self
-            .params
+            .params.clone()
             .or_else(|| Some(HashMap::new()))
             .and_then(|mut h| {
                 h.insert(key.to_string(), value.to_string());
@@ -345,16 +150,28 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Executes the command as a child process, which is returned.
-    pub fn build(self) -> Notice<'a> {
+    pub fn build(&self) -> Notice<'a> {
         let context = self.context.clone().map(|c| c.build());
         Notice {
             client: self.client,
-            errors: self.errors,
+            errors: self.errors.clone(),
             context,
-            environment: self.environment,
-            session: self.session,
-            params: self.params,
+            environment: self.environment.clone(),
+            session: self.session.clone(),
+            params: self.params.clone(),
         }
+    }
+}
+
+impl<'a> ContextProperties for NoticeBuilder<'a> {
+    fn get_context(&self) -> Option<ContextBuilder> {
+        self.context.clone()
+    }
+
+    fn set_context(&mut self, context: ContextBuilder) -> &'_ mut Self {
+        // self.context(context);
+        self.context = Some(context);
+        self
     }
 }
 
@@ -371,13 +188,17 @@ impl<'a> NoticeBuilder<'a> {
 /// ```
 impl<'a> From<&ContextBuilder> for NoticeBuilder<'a> {
     fn from(context: &ContextBuilder) -> NoticeBuilder<'a> {
-        NoticeBuilder::new().context(context.clone())
+        let mut notice = NoticeBuilder::new();
+        notice.context(context);
+        notice
     }
 }
 
 impl<'a, E: Error> From<E> for NoticeBuilder<'a> {
     fn from(error: E) -> NoticeBuilder<'a> {
-        NoticeBuilder::new().add_error(error)
+        let mut notice = NoticeBuilder::new();
+        notice.add_error(error);
+        notice
     }
 }
 
@@ -409,7 +230,7 @@ impl<'a> Notice<'a> {
     ///
     /// let context = Context::builder();
     /// let notice = Notice::builder()
-    ///     .context(context)
+    ///     .context(&context)
     ///     .build();
     /// ```
     pub fn builder() -> NoticeBuilder<'a> {
@@ -439,6 +260,7 @@ mod tests {
     use serde_json::{self, Value};
     use std::collections::HashMap;
     use std::str::FromStr;
+    use crate::ContextProperties;
 
     #[test]
     fn notice_default() {
@@ -544,7 +366,7 @@ mod tests {
     #[test]
     fn notice_context_default() {
         let context = Context::builder();
-        let notice = Notice::builder().context(context).build();
+        let notice = Notice::builder().context(&context).build();
         let expected_json = r#"
         {
             "errors": [],

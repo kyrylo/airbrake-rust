@@ -9,7 +9,7 @@ use std::time::Instant;
 use crate::Notice;
 use crate::NoticeBuilder;
 use crate::NoticeError;
-use crate::{Context, ContextBuilder, ContextUser};
+use crate::{Context, ContextBuilder, ContextProperties};
 
 const DEFAULT_HOSTNAME: &str = "https://airbrake.io";
 const ENV_VAR_PROJECT_ID: &str = "AIRBRAKE_PROJECT_ID";
@@ -148,201 +148,6 @@ impl AirbrakeClientBuilder {
         self
     }
 
-    /// Set the operating_system on the configurations context
-    pub fn operating_system(&mut self, os: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.operating_system(os);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the hostname on the configurations context
-    pub fn hostname(&mut self, hostname: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.hostname(hostname);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the language on the configurations context
-    pub fn language(&mut self, language: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.language(language);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the environment on the configurations context
-    pub fn environment(&mut self, environment: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.environment(environment);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the severity on the configurations context
-    pub fn severity(&mut self, severity: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.severity(severity);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the component on the configurations context
-    pub fn component(&mut self, component: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.component(component);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the action on the configurations context
-    pub fn action(&mut self, action: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.action(action);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the user_agent on the configurations context
-    pub fn user_agent(&mut self, user_agent: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.user_agent(user_agent);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the remote_addr on the configurations context
-    pub fn remote_addr(&mut self, remote_addr: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.remote_addr(remote_addr);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the version on the configurations context
-    pub fn version(&mut self, version: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.version(version);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the url on the configurations context
-    pub fn url(&mut self, url: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.url(url);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the root_directory on the configurations context
-    pub fn root_directory(&mut self, root_directory: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.root_directory(root_directory);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the user on the configurations context
-    pub fn user(&mut self, user: ContextUser) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.user(user);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the route on the configurations context
-    pub fn route(&mut self, route: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.route(route);
-                Some(c)
-            });
-        self
-    }
-
-    /// Set the http_method on the configurations context
-    pub fn http_method(&mut self, http_method: &str) -> &'_ mut AirbrakeClientBuilder {
-        self.context = self
-            .context
-            .clone()
-            .or_else(|| Some(Context::builder()))
-            .and_then(|mut c| {
-                c.http_method(http_method);
-                Some(c)
-            });
-        self
-    }
-
     pub fn build(&self) -> Result<AirbrakeClient, AirbrakeClientBuilderError> {
         let project_id = match &self.project_id {
             Some(id) => id,
@@ -371,6 +176,16 @@ impl AirbrakeClientBuilder {
             proxy: self.proxy.clone(),
             context,
         })
+    }
+}
+
+impl ContextProperties for AirbrakeClientBuilder {
+    fn get_context(&self) -> Option<ContextBuilder> {
+        self.context.clone()
+    }
+
+    fn set_context(&mut self, context: ContextBuilder) -> &'_ mut Self {
+        self.context(context)
     }
 }
 
@@ -430,11 +245,12 @@ impl AirbrakeClient {
     }
 
     pub fn new_notice_builder(&self) -> NoticeBuilder {
-        let notice_builder = match &self.context {
+        let mut notice_builder = match &self.context {
             Some(context) => context.new_notice_builder(),
             None => Notice::builder(),
         };
-        notice_builder.set_client(&self)
+        notice_builder.set_client(&self);
+        notice_builder
     }
 
     pub fn notify(&self, mut notice: Notice) -> Result<(), AirbrakeClientError> {
@@ -469,6 +285,7 @@ mod context_passthrough_tests {
     use crate::AirbrakeClient;
     use serde_json::{self, Value};
     use std::str::FromStr;
+    use crate::ContextProperties;
 
     #[test]
     fn client_with_context_included_in_notices() {

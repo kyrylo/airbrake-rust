@@ -3,7 +3,7 @@ use serde::ser::{Serialize, SerializeSeq, Serializer};
 use serde_json::{self, Value};
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct NoticeTrace {
     frames: Vec<NoticeFrame>,
 }

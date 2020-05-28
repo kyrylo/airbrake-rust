@@ -3,6 +3,7 @@ use crate::backtrace::Backtrace;
 use std::error::Error;
 use std::panic::PanicInfo;
 
+#[derive(Default, Clone)]
 pub struct NoticeErrorBuilder {
     pub name: String,
     pub message: Option<String>,
@@ -39,7 +40,7 @@ impl NoticeErrorBuilder {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct NoticeError {
     #[serde(rename = "type")]
     pub name: String,

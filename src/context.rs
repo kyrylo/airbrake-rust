@@ -2,146 +2,52 @@ use super::{Notice, NoticeBuilder};
 
 #[derive(Debug, Clone, Default)]
 pub struct ContextBuilder {
-    pub operating_system: Option<String>,
-    pub hostname: Option<String>,
-    pub language: Option<String>,
-    pub environment: Option<String>,
-    pub severity: Option<String>,
-    pub component: Option<String>,
-    pub action: Option<String>,
-    pub user_agent: Option<String>,
-    pub user_addr: Option<String>,
-    pub remote_addr: Option<String>,
-    pub version: Option<String>,
-    pub url: Option<String>,
-    pub root_directory: Option<String>,
-    pub user: Option<ContextUser>,
-    pub route: Option<String>,
-    pub http_method: Option<String>,
+    _operating_system: Option<String>,
+    _hostname: Option<String>,
+    _language: Option<String>,
+    _environment: Option<String>,
+    _severity: Option<String>,
+    _component: Option<String>,
+    _action: Option<String>,
+    _user_agent: Option<String>,
+    _user_addr: Option<String>,
+    _remote_addr: Option<String>,
+    _version: Option<String>,
+    _url: Option<String>,
+    _root_directory: Option<String>,
+    _user: Option<ContextUser>,
+    _route: Option<String>,
+    _http_method: Option<String>,
 }
 
+/// The methods for modifying the ContextBuilder properties are all delegated
+/// to the default implementations in the ContextProperties trait. Though the
+/// ContextProperty trait was intended for other structs, it can also be reused
+/// here to reduce code duplication
 impl ContextBuilder {
     pub fn new() -> ContextBuilder {
         ContextBuilder::default()
     }
 
-    /// Set the operating system on the ContextBuilder
-    pub fn operating_system(&mut self, os: &str) -> &'_ mut ContextBuilder {
-        self.operating_system = Some(os.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn hostname(&mut self, hostname: &str) -> &'_ mut ContextBuilder {
-        self.hostname = Some(hostname.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn language(&mut self, language: &str) -> &'_ mut ContextBuilder {
-        self.language = Some(language.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn environment(&mut self, environment: &str) -> &'_ mut ContextBuilder {
-        self.environment = Some(environment.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    // TODO: Should be enum of: debug, info, notice, warning, error,
-    // critical, alert, emergency, invalid
-    pub fn severity(&mut self, severity: &str) -> &'_ mut ContextBuilder {
-        self.severity = Some(severity.to_string());
-        self
-    }
-
-    /// Set the component on the ContextBuilder
-    pub fn component(&mut self, component: &str) -> &'_ mut ContextBuilder {
-        self.component = Some(component.to_string());
-        self
-    }
-
-    /// Set the action on the ContextBuilder
-    pub fn action(&mut self, action: &str) -> &'_ mut ContextBuilder {
-        self.action = Some(action.to_string());
-        self
-    }
-
-    /// Set the user_agent on the ContextBuilder
-    pub fn user_agent(&mut self, user_agent: &str) -> &'_ mut ContextBuilder {
-        self.user_agent = Some(user_agent.to_string());
-        self
-    }
-
-    /// Set the user_addr on the ContextBuilder
-    pub fn user_addr(&mut self, user_addr: &str) -> &'_ mut ContextBuilder {
-        self.user_addr = Some(user_addr.to_string());
-        self
-    }
-
-    /// Set the remote_addr on the ContextBuilder
-    pub fn remote_addr(&mut self, remote_addr: &str) -> &'_ mut ContextBuilder {
-        self.remote_addr = Some(remote_addr.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn version(&mut self, version: &str) -> &'_ mut ContextBuilder {
-        self.version = Some(version.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn url(&mut self, url: &str) -> &'_ mut ContextBuilder {
-        self.url = Some(url.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn root_directory(&mut self, root_directory: &str) -> &'_ mut ContextBuilder {
-        self.root_directory = Some(root_directory.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn user(&mut self, user: ContextUser) -> &'_ mut ContextBuilder {
-        self.user = Some(user);
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn route(&mut self, route: &str) -> &'_ mut ContextBuilder {
-        self.route = Some(route.to_string());
-        self
-    }
-
-    /// Set the operating system on the ContextBuilder
-    pub fn http_method(&mut self, http_method: &str) -> &'_ mut ContextBuilder {
-        self.http_method = Some(http_method.to_string());
-        self
-    }
-
     pub fn build(&self) -> Context {
         Context {
             notifier: &CONTEXT_NOTIFIER,
-            operating_system: self.operating_system.clone(),
-            hostname: self.hostname.clone(),
-            language: self.language.clone(),
-            environment: self.environment.clone(),
-            severity: self.severity.clone(),
-            component: self.component.clone(),
-            action: self.action.clone(),
-            user_agent: self.user_agent.clone(),
-            user_addr: self.user_addr.clone(),
-            remote_addr: self.remote_addr.clone(),
-            version: self.version.clone(),
-            url: self.url.clone(),
-            root_directory: self.root_directory.clone(),
-            user: self.user.clone(),
-            route: self.route.clone(),
-            http_method: self.http_method.clone(),
+            operating_system: self._operating_system.clone(),
+            hostname: self._hostname.clone(),
+            language: self._language.clone(),
+            environment: self._environment.clone(),
+            severity: self._severity.clone(),
+            component: self._component.clone(),
+            action: self._action.clone(),
+            user_agent: self._user_agent.clone(),
+            user_addr: self._user_addr.clone(),
+            remote_addr: self._remote_addr.clone(),
+            version: self._version.clone(),
+            url: self._url.clone(),
+            root_directory: self._root_directory.clone(),
+            user: self._user.clone(),
+            route: self._route.clone(),
+            http_method: self._http_method.clone(),
         }
     }
 }
@@ -149,23 +55,34 @@ impl ContextBuilder {
 impl From<&Context> for ContextBuilder {
     fn from(context: &Context) -> ContextBuilder {
         ContextBuilder {
-            operating_system: context.operating_system.clone(),
-            hostname: context.hostname.clone(),
-            language: context.language.clone(),
-            environment: context.environment.clone(),
-            severity: context.severity.clone(),
-            component: context.component.clone(),
-            action: context.action.clone(),
-            user_agent: context.user_agent.clone(),
-            user_addr: context.user_addr.clone(),
-            remote_addr: context.remote_addr.clone(),
-            version: context.version.clone(),
-            url: context.url.clone(),
-            root_directory: context.root_directory.clone(),
-            user: context.user.clone(),
-            route: context.route.clone(),
-            http_method: context.http_method.clone(),
+            _operating_system: context.operating_system.clone(),
+            _hostname: context.hostname.clone(),
+            _language: context.language.clone(),
+            _environment: context.environment.clone(),
+            _severity: context.severity.clone(),
+            _component: context.component.clone(),
+            _action: context.action.clone(),
+            _user_agent: context.user_agent.clone(),
+            _user_addr: context.user_addr.clone(),
+            _remote_addr: context.remote_addr.clone(),
+            _version: context.version.clone(),
+            _url: context.url.clone(),
+            _root_directory: context.root_directory.clone(),
+            _user: context.user.clone(),
+            _route: context.route.clone(),
+            _http_method: context.http_method.clone(),
         }
+    }
+}
+
+impl ContextProperties for ContextBuilder {
+    fn get_context(&self) -> Option<ContextBuilder> {
+        Some(self.clone())
+    }
+
+    fn set_context(&mut self, context: ContextBuilder) -> &'_ mut Self {
+        *self = context.clone();
+        self
     }
 }
 
@@ -235,7 +152,191 @@ impl Context {
     }
 
     pub fn new_notice_builder(&self) -> NoticeBuilder {
-        Notice::builder().context(self.into())
+        let mut notice = Notice::builder();
+        notice.context(&self.into());
+        notice
+    }
+}
+
+pub trait ContextProperties {
+    fn get_context(&self) -> Option<ContextBuilder>;
+
+    fn set_context(&mut self, context: ContextBuilder) -> &mut Self;
+
+    fn operating_system(&mut self, os: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._operating_system = Some(os.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn hostname(&mut self, hostname: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._hostname = Some(hostname.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn language(&mut self, language: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._language = Some(language.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn environment(&mut self, environment: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._environment = Some(environment.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn severity(&mut self, severity: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._severity = Some(severity.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn component(&mut self, component: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._component = Some(component.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn action(&mut self, action: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._action = Some(action.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn user_agent(&mut self, user_agent: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._user_agent = Some(user_agent.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn user_addr(&mut self, user_addr: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._user_addr = Some(user_addr.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn remote_addr(&mut self, remote_addr: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._remote_addr = Some(remote_addr.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn version(&mut self, version: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._version = Some(version.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn url(&mut self, url: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._url = Some(url.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn root_directory(&mut self, root_directory: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._root_directory = Some(root_directory.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn user(&mut self, user: ContextUser) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._user = Some(user);
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn route(&mut self, route: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._route = Some(route.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
+    }
+
+    fn http_method(&mut self, http_method: &str) -> &'_ mut Self {
+        let updated_context = self.get_context()
+            .or_else(|| Some(Context::builder()))
+            .and_then(|mut c| {
+                c._http_method = Some(http_method.to_string());
+                Some(c)
+            })
+            .unwrap();
+        self.set_context(updated_context)
     }
 }
 
@@ -377,7 +478,7 @@ mod context_user_tests {
 
 #[cfg(test)]
 mod context_tests {
-    use super::{Context, ContextUser};
+    use super::{Context, ContextUser, ContextProperties};
     use serde_json::{self, Value};
     use std::str::FromStr;
 
