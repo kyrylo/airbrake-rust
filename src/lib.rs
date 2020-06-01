@@ -274,7 +274,6 @@ extern crate log;
 extern crate more_asserts;
 
 #[cfg(test)]
-#[macro_use]
 extern crate matches;
 
 mod client;

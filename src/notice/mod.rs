@@ -137,4 +137,4 @@ mod notice_backtrace;
 
 pub use error::{NoticeError, NoticeErrorBuilder};
 pub use notice::{Notice, NoticeBuilder};
-pub use notice_backtrace::{NoticeFrame, NoticeTrace};
+pub use notice_backtrace::NoticeFrame;

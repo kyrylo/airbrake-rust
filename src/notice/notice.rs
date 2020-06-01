@@ -1,6 +1,6 @@
 use serde_json::{self, Value};
 
-use super::{NoticeError, NoticeTrace};
+use super::{NoticeError, NoticeFrame};
 use crate::{
     backtrace::Backtrace, AirbrakeClient, AirbrakeClientError, Context, ContextBuilder,
     ContextProperties,
@@ -67,7 +67,7 @@ impl<'a> NoticeBuilder<'a> {
         backtrace: Backtrace,
     ) -> &mut NoticeBuilder<'a> {
         let mut notice_error = NoticeError::from(error);
-        notice_error.backtrace = Some(NoticeTrace::from(&backtrace));
+        notice_error.backtrace_frames = Some(NoticeFrame::from_backtrace(&backtrace));
         self.add_notice(notice_error)
     }
 
@@ -78,10 +78,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn environment(
-        &mut self,
-        environment: HashMap<String, String>,
-    ) -> &mut NoticeBuilder<'a> {
+    pub fn environment(&mut self, environment: HashMap<String, String>) -> &mut NoticeBuilder<'a> {
         self.environment = Some(environment);
         self
     }

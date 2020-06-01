@@ -1,51 +1,7 @@
 use crate::backtrace::{Backtrace, BacktraceFrame, BacktraceSymbol};
-use serde::ser::{Serialize, SerializeSeq, Serializer};
-use serde_json::{self, Value};
+// use serde::ser::{Serialize, SerializeSeq, Serializer};
+// use serde_json;
 use std::collections::HashMap;
-
-#[derive(Debug, Clone)]
-pub struct NoticeTrace {
-    frames: Vec<NoticeFrame>,
-}
-
-impl NoticeTrace {
-    fn new(frames: Vec<NoticeFrame>) -> NoticeTrace {
-        NoticeTrace { frames }
-    }
-
-    pub fn frames(&self) -> Vec<NoticeFrame> {
-        self.frames.clone()
-    }
-}
-
-impl From<&Backtrace> for NoticeTrace {
-    fn from(backtrace: &Backtrace) -> NoticeTrace {
-        let mut frames: Vec<NoticeFrame> = vec![];
-        for f in backtrace.frames() {
-            frames.append(&mut NoticeFrame::unroll_frame_symbols(&f));
-        }
-        NoticeTrace { frames }
-    }
-}
-
-impl Serialize for NoticeTrace {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut seq = serializer.serialize_seq(Some(self.frames.len()))?;
-        for element in self.frames() {
-            seq.serialize_element(&element)?;
-        }
-        seq.end()
-    }
-}
-
-impl From<NoticeTrace> for Value {
-    fn from(notice_backtrace: NoticeTrace) -> Value {
-        serde_json::json!(notice_backtrace)
-    }
-}
 
 #[derive(Debug, Serialize, Clone)]
 pub struct NoticeFrame {
@@ -66,6 +22,14 @@ impl NoticeFrame {
     /// is 1-to-1 between a Backtrace Symbols (not Backtrace Frame) and a Airbrake Frame.
     fn unroll_frame_symbols(frame: &BacktraceFrame) -> Vec<NoticeFrame> {
         frame.symbols().iter().map(NoticeFrame::from).collect()
+    }
+
+    pub fn from_backtrace(backtrace: &Backtrace) -> Vec<NoticeFrame> {
+        let mut frames: Vec<NoticeFrame> = vec![];
+        for f in backtrace.frames() {
+            frames.append(&mut NoticeFrame::unroll_frame_symbols(&f));
+        }
+        frames
     }
 }
 
@@ -94,9 +58,8 @@ impl From<&BacktraceSymbol> for NoticeFrame {
 
 #[cfg(test)]
 mod tests {
-    use super::{NoticeFrame, NoticeTrace};
+    use super::NoticeFrame;
     use crate::backtrace::Backtrace;
-    use std::convert::From;
 
     #[test]
     fn backtrace_contains_current_function_frame() {
@@ -105,8 +68,7 @@ mod tests {
         // the current function exists somewhere in the resulting
         // list of frames.
         let backtrace = Backtrace::new();
-        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(&backtrace)
-            .frames()
+        let selected_frames: Vec<NoticeFrame> = NoticeFrame::from_backtrace(&backtrace)
             .into_iter()
             .filter(|f| f.function.contains(&function_name))
             .collect();
@@ -117,29 +79,16 @@ mod tests {
     #[test]
     fn backtrace_unrolls_multiple_symboles() {
         let function_name: String = "backtrace_unrolls_multiple_symboles".to_string();
-        let nested_frame_line: u32 = 119;
+        let nested_frame_line: u32 = 85;
         // This backtrace is generated from within a nested enclosure so
         // that the backtraces creates a single frame with two symboles
         let fn_backtrace = || (|| Backtrace::new())();
         let backtrace = fn_backtrace();
-        let selected_frames: Vec<NoticeFrame> = NoticeTrace::from(&backtrace)
-            .frames()
+        let selected_frames: Vec<NoticeFrame> = NoticeFrame::from_backtrace(&backtrace)
             .into_iter()
             .filter(|f| f.function.contains(&function_name) && f.line == Some(nested_frame_line))
             .collect();
 
         assert_gt!(selected_frames.len(), 1);
-    }
-
-    #[test]
-    fn json_backtrace_is_array_of_objects() {
-        use serde_json::{self, Value};
-
-        let backtrace = Backtrace::new();
-        let notice_backtrace = NoticeTrace::from(&backtrace);
-        let json_backtrace = Value::from(notice_backtrace);
-
-        assert_matches!(json_backtrace, Value::Array(_));
-        assert_matches!(json_backtrace[0], Value::Object(_));
     }
 }

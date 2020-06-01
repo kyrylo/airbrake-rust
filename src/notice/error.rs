@@ -1,4 +1,4 @@
-use super::NoticeTrace;
+use super::NoticeFrame;
 use crate::backtrace::Backtrace;
 use std::error::Error;
 use std::panic::PanicInfo;
@@ -7,7 +7,7 @@ use std::panic::PanicInfo;
 pub struct NoticeErrorBuilder {
     pub name: String,
     pub message: Option<String>,
-    pub backtrace: Option<NoticeTrace>,
+    pub backtrace: Option<Vec<NoticeFrame>>,
 }
 
 impl NoticeErrorBuilder {
@@ -25,13 +25,13 @@ impl NoticeErrorBuilder {
     }
 
     // TODO: Maybe this should be renamed to `trace` and the `raw_backtrace` renamed to `backetrace`?
-    pub fn backtrace(&mut self, backtrace: NoticeTrace) -> &mut NoticeErrorBuilder {
+    pub fn backtrace(&mut self, backtrace: Vec<NoticeFrame>) -> &mut NoticeErrorBuilder {
         self.backtrace = Some(backtrace);
         self
     }
 
     pub fn raw_backtrace(&mut self, backtrace: &Backtrace) -> &mut NoticeErrorBuilder {
-        self.backtrace = Some(NoticeTrace::from(backtrace));
+        self.backtrace = Some(NoticeFrame::from_backtrace(backtrace));
         self
     }
 
@@ -49,15 +49,19 @@ pub struct NoticeError {
     pub message: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub backtrace: Option<NoticeTrace>,
+    pub backtrace_frames: Option<Vec<NoticeFrame>>,
 }
 
 impl NoticeError {
-    pub fn new(name: &str, message: Option<String>, backtrace: Option<NoticeTrace>) -> NoticeError {
+    pub fn new(
+        name: &str,
+        message: Option<String>,
+        backtrace_frames: Option<Vec<NoticeFrame>>,
+    ) -> NoticeError {
         NoticeError {
             name: name.to_string(),
             message,
-            backtrace,
+            backtrace_frames,
         }
     }
 
