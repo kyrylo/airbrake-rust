@@ -273,9 +273,6 @@ extern crate log;
 #[macro_use]
 extern crate more_asserts;
 
-#[cfg(test)]
-extern crate matches;
-
 mod client;
 mod context;
 mod notice;

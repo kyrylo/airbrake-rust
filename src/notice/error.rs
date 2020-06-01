@@ -72,11 +72,11 @@ impl NoticeError {
     pub fn from_panic_backtrace(panic_info: &PanicInfo, backtrace: &Backtrace) -> NoticeError {
         // TODO: PanicInfo has a `message()` on nightly which might be easier to work with
         // here, but for now we'll just deal with `payload()`
-        let message: Option<&str> = panic_info.payload().downcast_ref::<&str>().map(|s| *s);
+        let opt_message: Option<&str> = panic_info.payload().downcast_ref::<&str>().copied();
         let mut builder = NoticeError::builder("panic");
         builder.raw_backtrace(&backtrace);
-        if message.is_some() {
-            builder.message(message.unwrap());
+        if let Some(message) = opt_message {
+            builder.message(message);
         }
         builder.build()
     }
