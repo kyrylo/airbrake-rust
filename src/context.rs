@@ -80,7 +80,7 @@ impl ContextProperties for ContextBuilder {
         Some(self.clone())
     }
 
-    fn set_context(&mut self, context: ContextBuilder) -> &'_ mut Self {
+    fn set_context(&mut self, context: ContextBuilder) -> &mut Self {
         *self = context.clone();
         self
     }
@@ -163,7 +163,7 @@ pub trait ContextProperties {
 
     fn set_context(&mut self, context: ContextBuilder) -> &mut Self;
 
-    fn operating_system(&mut self, os: &str) -> &'_ mut Self {
+    fn operating_system(&mut self, os: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -175,7 +175,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn hostname(&mut self, hostname: &str) -> &'_ mut Self {
+    fn hostname(&mut self, hostname: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -187,7 +187,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn language(&mut self, language: &str) -> &'_ mut Self {
+    fn language(&mut self, language: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -199,7 +199,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn environment(&mut self, environment: &str) -> &'_ mut Self {
+    fn environment(&mut self, environment: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -211,7 +211,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn severity(&mut self, severity: &str) -> &'_ mut Self {
+    fn severity(&mut self, severity: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -223,7 +223,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn component(&mut self, component: &str) -> &'_ mut Self {
+    fn component(&mut self, component: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -235,7 +235,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn action(&mut self, action: &str) -> &'_ mut Self {
+    fn action(&mut self, action: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -247,7 +247,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn user_agent(&mut self, user_agent: &str) -> &'_ mut Self {
+    fn user_agent(&mut self, user_agent: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -259,7 +259,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn user_addr(&mut self, user_addr: &str) -> &'_ mut Self {
+    fn user_addr(&mut self, user_addr: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -271,7 +271,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn remote_addr(&mut self, remote_addr: &str) -> &'_ mut Self {
+    fn remote_addr(&mut self, remote_addr: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -283,7 +283,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn version(&mut self, version: &str) -> &'_ mut Self {
+    fn version(&mut self, version: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -295,7 +295,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn url(&mut self, url: &str) -> &'_ mut Self {
+    fn url(&mut self, url: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -307,7 +307,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn root_directory(&mut self, root_directory: &str) -> &'_ mut Self {
+    fn root_directory(&mut self, root_directory: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -319,7 +319,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn user(&mut self, user: ContextUser) -> &'_ mut Self {
+    fn user(&mut self, user: ContextUser) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -331,7 +331,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn route(&mut self, route: &str) -> &'_ mut Self {
+    fn route(&mut self, route: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))
@@ -343,7 +343,7 @@ pub trait ContextProperties {
         self.set_context(updated_context)
     }
 
-    fn http_method(&mut self, http_method: &str) -> &'_ mut Self {
+    fn http_method(&mut self, http_method: &str) -> &mut Self {
         let updated_context = self
             .get_context()
             .or_else(|| Some(Context::builder()))

@@ -19,24 +19,24 @@ impl NoticeErrorBuilder {
         }
     }
 
-    pub fn message(mut self, message: &str) -> NoticeErrorBuilder {
+    pub fn message(&mut self, message: &str) -> &mut NoticeErrorBuilder {
         self.message = Some(message.to_string());
         self
     }
 
     // TODO: Maybe this should be renamed to `trace` and the `raw_backtrace` renamed to `backetrace`?
-    pub fn backtrace(mut self, backtrace: NoticeTrace) -> NoticeErrorBuilder {
+    pub fn backtrace(&mut self, backtrace: NoticeTrace) -> &mut NoticeErrorBuilder {
         self.backtrace = Some(backtrace);
         self
     }
 
-    pub fn raw_backtrace(mut self, backtrace: &Backtrace) -> NoticeErrorBuilder {
+    pub fn raw_backtrace(&mut self, backtrace: &Backtrace) -> &mut NoticeErrorBuilder {
         self.backtrace = Some(NoticeTrace::from(backtrace));
         self
     }
 
-    pub fn build(self) -> NoticeError {
-        NoticeError::new(&self.name, self.message, self.backtrace)
+    pub fn build(&self) -> NoticeError {
+        NoticeError::new(&self.name, self.message.clone(), self.backtrace.clone())
     }
 }
 
@@ -76,7 +76,7 @@ impl NoticeError {
             .unwrap();
         NoticeError::builder("panic")
             .message(&message)
-            .raw_backtrace(backtrace)
+            .raw_backtrace(&backtrace)
             .build()
     }
 }

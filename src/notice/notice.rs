@@ -26,7 +26,7 @@ impl<'a> NoticeBuilder<'a> {
         NoticeBuilder::default()
     }
 
-    pub fn set_client(&mut self, client: &'a AirbrakeClient) -> &'_ mut NoticeBuilder<'a> {
+    pub fn set_client(&mut self, client: &'a AirbrakeClient) -> &mut NoticeBuilder<'a> {
         self.client = Some(client);
         self
     }
@@ -35,13 +35,13 @@ impl<'a> NoticeBuilder<'a> {
     pub fn add_notices<T: Iterator<Item = NoticeError>>(
         &mut self,
         notice_errors: T,
-    ) -> &'_ mut NoticeBuilder<'a> {
+    ) -> &mut NoticeBuilder<'a> {
         self.errors.extend(notice_errors);
         self
     }
 
     /// Add a single NoticeError
-    pub fn add_notice(&mut self, notice_error: NoticeError) -> &'_ mut NoticeBuilder<'a> {
+    pub fn add_notice(&mut self, notice_error: NoticeError) -> &mut NoticeBuilder<'a> {
         self.errors.push(notice_error);
         self
     }
@@ -50,13 +50,13 @@ impl<'a> NoticeBuilder<'a> {
     pub fn add_errors<T: Iterator<Item = E>, E: Error>(
         &mut self,
         errors: T,
-    ) -> &'_ mut NoticeBuilder<'a> {
+    ) -> &mut NoticeBuilder<'a> {
         let notice_errors = errors.map(|x| x.into());
         self.add_notices(notice_errors)
     }
 
     /// Add a single Error
-    pub fn add_error<E: Error>(&mut self, error: E) -> &'_ mut NoticeBuilder<'a> {
+    pub fn add_error<E: Error>(&mut self, error: E) -> &mut NoticeBuilder<'a> {
         let notice_error = NoticeError::from(error);
         self.add_notice(notice_error)
     }
@@ -65,14 +65,14 @@ impl<'a> NoticeBuilder<'a> {
         &mut self,
         error: E,
         backtrace: Backtrace,
-    ) -> &'_ mut NoticeBuilder<'a> {
+    ) -> &mut NoticeBuilder<'a> {
         let mut notice_error = NoticeError::from(error);
         notice_error.backtrace = Some(NoticeTrace::from(&backtrace));
         self.add_notice(notice_error)
     }
 
     /// Set the context on the NoticeBuilder
-    pub fn context(&mut self, context: &ContextBuilder) -> &'_ mut NoticeBuilder<'a> {
+    pub fn context(&mut self, context: &ContextBuilder) -> &mut NoticeBuilder<'a> {
         self.context = Some(context.clone());
         self
     }
@@ -81,7 +81,7 @@ impl<'a> NoticeBuilder<'a> {
     pub fn environment(
         &mut self,
         environment: HashMap<String, String>,
-    ) -> &'_ mut NoticeBuilder<'a> {
+    ) -> &mut NoticeBuilder<'a> {
         self.environment = Some(environment);
         self
     }
@@ -94,7 +94,7 @@ impl<'a> NoticeBuilder<'a> {
     ///     .add_environment("CODE_NAME", "gorilla")
     ///     .build();
     /// ```
-    pub fn add_environment(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
+    pub fn add_environment(&mut self, key: &str, value: &str) -> &mut NoticeBuilder<'a> {
         self.environment = self
             .environment
             .clone()
@@ -107,7 +107,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn session(&mut self, session: HashMap<String, String>) -> &'_ mut NoticeBuilder<'a> {
+    pub fn session(&mut self, session: HashMap<String, String>) -> &mut NoticeBuilder<'a> {
         self.session = Some(session);
         self
     }
@@ -120,7 +120,7 @@ impl<'a> NoticeBuilder<'a> {
     ///     .add_session("userId", "456")
     ///     .build();
     /// ```
-    pub fn add_session(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
+    pub fn add_session(&mut self, key: &str, value: &str) -> &mut NoticeBuilder<'a> {
         self.session = self
             .session
             .clone()
@@ -133,7 +133,7 @@ impl<'a> NoticeBuilder<'a> {
     }
 
     /// Set the environment on the NoticeBuilder
-    pub fn params(&mut self, params: HashMap<String, String>) -> &'_ mut NoticeBuilder<'a> {
+    pub fn params(&mut self, params: HashMap<String, String>) -> &mut NoticeBuilder<'a> {
         self.params = Some(params);
         self
     }
@@ -147,7 +147,7 @@ impl<'a> NoticeBuilder<'a> {
     ///     .add_param("direction", "asc")
     ///     .build();
     /// ```
-    pub fn add_param(&mut self, key: &str, value: &str) -> &'_ mut NoticeBuilder<'a> {
+    pub fn add_param(&mut self, key: &str, value: &str) -> &mut NoticeBuilder<'a> {
         self.params = self
             .params
             .clone()
@@ -178,8 +178,7 @@ impl<'a> ContextProperties for NoticeBuilder<'a> {
         self.context.clone()
     }
 
-    fn set_context(&mut self, context: ContextBuilder) -> &'_ mut Self {
-        // self.context(context);
+    fn set_context(&mut self, context: ContextBuilder) -> &mut Self {
         self.context = Some(context);
         self
     }

@@ -54,7 +54,7 @@ impl AirbrakeClientBuilder {
         self.project_id(project_id).project_key(project_key)
     }
 
-    pub fn project_id<'a>(&'a mut self, project_id: &str) -> &'a mut AirbrakeClientBuilder {
+    pub fn project_id(&mut self, project_id: &str) -> &mut AirbrakeClientBuilder {
         self.project_id = Some(project_id.to_string());
         self
     }
@@ -97,7 +97,7 @@ impl AirbrakeClientBuilder {
     /// let config = client_builder.build().unwrap();
     /// ```
     ///
-    pub fn project_id_from_env(&mut self) -> Result<&'_ mut AirbrakeClientBuilder, env::VarError> {
+    pub fn project_id_from_env(&mut self) -> Result<&mut AirbrakeClientBuilder, env::VarError> {
         match env::var(ENV_VAR_PROJECT_ID) {
             Ok(val) => {
                 self.project_id = Some(val);
@@ -107,7 +107,7 @@ impl AirbrakeClientBuilder {
         }
     }
 
-    pub fn project_key_from_env(&mut self) -> Result<&'_ mut AirbrakeClientBuilder, env::VarError> {
+    pub fn project_key_from_env(&mut self) -> Result<&mut AirbrakeClientBuilder, env::VarError> {
         match env::var(ENV_VAR_PROJECT_KEY) {
             Ok(val) => {
                 self.project_key = Some(val);
@@ -117,12 +117,12 @@ impl AirbrakeClientBuilder {
         }
     }
 
-    pub fn project_key(&mut self, project_key: &str) -> &'_ mut AirbrakeClientBuilder {
+    pub fn project_key(&mut self, project_key: &str) -> &mut AirbrakeClientBuilder {
         self.project_key = Some(project_key.to_string());
         self
     }
 
-    pub fn host_from_env(&mut self) -> Result<&'_ mut AirbrakeClientBuilder, env::VarError> {
+    pub fn host_from_env(&mut self) -> Result<&mut AirbrakeClientBuilder, env::VarError> {
         match env::var(ENV_VAR_HOST) {
             Ok(val) => {
                 self.host = Some(val);
@@ -132,18 +132,18 @@ impl AirbrakeClientBuilder {
         }
     }
 
-    pub fn host(&mut self, host: &str) -> &'_ mut AirbrakeClientBuilder {
+    pub fn host(&mut self, host: &str) -> &mut AirbrakeClientBuilder {
         self.host = Some(host.to_string());
         self
     }
 
-    pub fn proxy(&mut self, proxy: &str) -> &'_ mut AirbrakeClientBuilder {
+    pub fn proxy(&mut self, proxy: &str) -> &mut AirbrakeClientBuilder {
         self.proxy = Some(proxy.to_string());
         self
     }
 
     // Sets the configurations context to an existing context builder
-    pub fn context(&mut self, context: ContextBuilder) -> &'_ mut AirbrakeClientBuilder {
+    pub fn context(&mut self, context: ContextBuilder) -> &mut AirbrakeClientBuilder {
         self.context = Some(context);
         self
     }
@@ -184,7 +184,7 @@ impl ContextProperties for AirbrakeClientBuilder {
         self.context.clone()
     }
 
-    fn set_context(&mut self, context: ContextBuilder) -> &'_ mut Self {
+    fn set_context(&mut self, context: ContextBuilder) -> &mut Self {
         self.context(context)
     }
 }
