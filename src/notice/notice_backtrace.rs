@@ -60,6 +60,10 @@ pub struct NoticeFrame {
 }
 
 impl NoticeFrame {
+    /// A single BacktraceFrame can contain multiple "symbols" which are effectively
+    /// different scopes. The frame is a context of a single line, but that
+    /// single line may have multiple scopes. The Backtrace/Airbrake relationship
+    /// is 1-to-1 between a Backtrace Symbols (not Backtrace Frame) and a Airbrake Frame.
     fn unroll_frame_symbols(frame: &BacktraceFrame) -> Vec<NoticeFrame> {
         frame.symbols().iter().map(NoticeFrame::from).collect()
     }

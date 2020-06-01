@@ -21,7 +21,9 @@
 //! project:
 //!
 //! ```
-//! fn double_number(number_str: &str) -> Result<i32, std::num::ParseIntError> {
+//! use std::num::ParseIntError;
+//!
+//! fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
 //!    number_str.parse::<i32>().map(|n| 2 * n)
 //! }
 //!
@@ -95,6 +97,22 @@
 //! });
 //! ```
 //!
+//! ### app_version
+//!
+//! The version of your application that you can pass to differentiate errors
+//! between multiple versions. It's not set by default.
+//!
+//! ```
+//! use crate::airbrake::ContextProperties;
+//! let mut airbrake = airbrake::configure(|config| {
+//!     // Project ID & Key are required
+//!     config.project_id("113743");
+//!     config.project_key("81bbff95d52f8856c770bb39e827f3f6");
+//!     // Project the version number for your project
+//!     config.version("1.0.0");
+//! });
+//! ```
+//!
 //! API
 //! ---
 //!
@@ -152,12 +170,33 @@
 //!
 //!
 //! The Notice module contains the various structs that make up an Airbrake
-//! Notice. A Notice is primarily contains a vector of NoticeErrors, which
-//! is the structure that represents the error itself. Other parts of the of
-//! Notice are Context, Environment, Session and Parameters.
+//! Notice. A Notice primarily contains NoticeErrors, which represents the error
+//! itself. Other parts of the of Notice are Context, Environment, Session and
+//! Parameters.
 //!
-//! At simplest, a Notice can be constructed using the notice builder,
-//! allowing you to set context and errors as needed.
+//! Typically you won't need to work with the NoticeError directly, since you
+//! can add errors to a Notice using the `.add_error` function.
+//!
+//! ```
+//! use std::error::Error;
+//! use std::fmt::{Display, Formatter, Result};
+//! use airbrake::{Notice, NoticeError};
+//!
+//! #[derive(Debug)]
+//! struct MyError;
+//! impl Error for MyError {}
+//! impl Display for MyError {
+//!     fn fmt(&self, f: &mut Formatter<'_>) -> Result { write!(f, "") }
+//! }
+//! let my_error = MyError {};
+//!
+//! let notice = Notice::builder()
+//!     .add_error(my_error)
+//!     .build();
+//! ```
+
+//! If you are specially crafting your airbrake notice, you can add a NoticeError
+//! instance to the notice builder using the `add_notice` method
 //!
 //! ```
 //! use airbrake::{Notice, NoticeError};
@@ -185,27 +224,6 @@
 //! let my_error = MyError {};
 //!
 //! let ne: NoticeError = my_error.into();
-//! ```
-//!
-//! Typically you won't need to work with the NoticeError directly, since you
-//! can add errors to a Notice using the `.add_error` function.
-//!
-//! ```
-//! use std::error::Error;
-//! use std::fmt::{Display, Formatter, Result};
-//! use airbrake::{Notice, NoticeError};
-//!
-//! #[derive(Debug)]
-//! struct MyError;
-//! impl Error for MyError {}
-//! impl Display for MyError {
-//!     fn fmt(&self, f: &mut Formatter<'_>) -> Result { write!(f, "") }
-//! }
-//! let my_error = MyError {};
-//!
-//! let notice = Notice::builder()
-//!     .add_error(my_error)
-//!     .build();
 //! ```
 //!
 //! Airbrake supports multiple errors being logged in a single notification,

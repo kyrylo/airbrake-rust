@@ -1,7 +1,7 @@
 //! The Notice module contains the various structs that make up an Airbrake
-//! Notice. A Notice is primarily contains a vector of NoticeErrors, which
-//! is the structure that represents the error itself. Other parts of the of
-//! Notice are Context, Environment, Session and Parameters.
+//! Notice. A Notice primarily contains NoticeErrors, which represents the error
+//! itself. Other parts of the of Notice are Context, Environment, Session and
+//! Parameters.
 //!
 //! At simplest, a Notice can be constructed using the notice builder,
 //! allowing you to set context and errors as needed.
