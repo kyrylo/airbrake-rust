@@ -80,7 +80,7 @@ impl ContextProperties for ContextBuilder {
         Some(self.clone())
     }
 
-    fn set_context(&mut self, context: ContextBuilder) -> &mut Self {
+    fn set_context(&mut self, context: &ContextBuilder) -> &mut Self {
         *self = context.clone();
         self
     }
@@ -161,7 +161,7 @@ impl Context {
 pub trait ContextProperties {
     fn get_context(&self) -> Option<ContextBuilder>;
 
-    fn set_context(&mut self, context: ContextBuilder) -> &mut Self;
+    fn set_context(&mut self, context: &ContextBuilder) -> &mut Self;
 
     fn operating_system(&mut self, os: &str) -> &mut Self {
         let updated_context = self
@@ -172,7 +172,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn hostname(&mut self, hostname: &str) -> &mut Self {
@@ -184,7 +184,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn language(&mut self, language: &str) -> &mut Self {
@@ -196,7 +196,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn environment(&mut self, environment: &str) -> &mut Self {
@@ -208,7 +208,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn severity(&mut self, severity: &str) -> &mut Self {
@@ -220,7 +220,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn component(&mut self, component: &str) -> &mut Self {
@@ -232,7 +232,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn action(&mut self, action: &str) -> &mut Self {
@@ -244,7 +244,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn user_agent(&mut self, user_agent: &str) -> &mut Self {
@@ -256,7 +256,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn user_addr(&mut self, user_addr: &str) -> &mut Self {
@@ -268,7 +268,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn remote_addr(&mut self, remote_addr: &str) -> &mut Self {
@@ -280,7 +280,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn version(&mut self, version: &str) -> &mut Self {
@@ -292,7 +292,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn url(&mut self, url: &str) -> &mut Self {
@@ -304,7 +304,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn root_directory(&mut self, root_directory: &str) -> &mut Self {
@@ -316,7 +316,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn user(&mut self, user: ContextUser) -> &mut Self {
@@ -328,7 +328,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn route(&mut self, route: &str) -> &mut Self {
@@ -340,7 +340,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 
     fn http_method(&mut self, http_method: &str) -> &mut Self {
@@ -352,7 +352,7 @@ pub trait ContextProperties {
                 Some(c)
             })
             .unwrap();
-        self.set_context(updated_context)
+        self.set_context(&updated_context)
     }
 }
 

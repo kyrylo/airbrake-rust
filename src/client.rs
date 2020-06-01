@@ -184,8 +184,8 @@ impl ContextProperties for AirbrakeClientBuilder {
         self.context.clone()
     }
 
-    fn set_context(&mut self, context: ContextBuilder) -> &mut Self {
-        self.context(context)
+    fn set_context(&mut self, context: &ContextBuilder) -> &mut Self {
+        self.context(context.clone())
     }
 }
 

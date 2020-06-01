@@ -175,8 +175,8 @@ impl<'a> ContextProperties for NoticeBuilder<'a> {
         self.context.clone()
     }
 
-    fn set_context(&mut self, context: ContextBuilder) -> &mut Self {
-        self.context = Some(context);
+    fn set_context(&mut self, context: &ContextBuilder) -> &mut Self {
+        self.context = Some(context.clone());
         self
     }
 }
