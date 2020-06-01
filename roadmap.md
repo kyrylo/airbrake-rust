@@ -44,26 +44,33 @@ Along with these concrete features are some more abiguous developer oriented erg
 
 This repo will move forward with a partial [git flow](https://nvie.com/posts/a-successful-git-branching-model/#the-main-branches) branching strategy, reducing complexity in releasing future bug and security fixes.
 
-Git flow, as described here typically has a `develop` and a `master` branch, though in our case there is little to be gained from a `master` as described in the document. I propose the existing `master` branch serve as the `develop` branch described by Git Flow, and each feature branch will be branched off master when appropriet, and not be merged into anything.
+Git flow, as described here typically has a `develop` and a `master` branch, though in our case there is little to be gained from a `master` as described in the document. I propose the following strategy:
+- The existing `master` branch serve as the `develop` branch as described by Git Flow.
+- Feature branches will branch to and from `master`.
+- Release branch will be branched off `master` when appropriate, and not be merged back into any other branches.
 
 ## Timelines and Milestones
 
 - Sprint 1: Ergonomic Changes
-  - [ ] Public interfaces
-  - [ ] Builder pattern
-  - [ ] Config validation
+  - [x] Public interfaces
+  - [x] Builder pattern
+  - [x] Config validation
+  - [x] More detailed error handling around sending notifications
 
 - Sprint 2: Notifier client expansion
   - [ ] `add_filter`
   - [ ] `keys_blacklist`
-  - [ ] Proxy authentication
-  - [ ] Circuit breaker
+  - [ ] Proxy authentication (not supported at all right now)
+  - [x] ~~Circuit breaker~~ defer implementation to users
 
 - Sprint 3: Notify features
-  - [ ] Feature parity with [official API](https://airbrake.io/docs/api/#create-notice-v3)
-  - [ ] Notify on panic
-  - [ ] Support [custom parameters](https://github.com/airbrake/pybrake#adding-custom-params)
-  - [ ] Severity
+  - [ ] Feature parity with [official API](https://airbrake.io/docs/api/#create-notice-v3) (super close to done, just need to verify I haven't missed anything)
+  - [x] Notify on panic (Technically done and working, but could use some additional cleanup)
+  - [x] Support [custom parameters](https://github.com/airbrake/pybrake#adding-custom-params)
+  - [x] Severity
+
+- Pre-release work
+  - [ ] Clean up documentation
 
 - Possible 0.3.0 release candidate
 
