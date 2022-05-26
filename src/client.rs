@@ -11,7 +11,7 @@ use crate::NoticeBuilder;
 use crate::NoticeError;
 use crate::{Context, ContextBuilder, ContextProperties};
 
-const DEFAULT_HOSTNAME: &str = "https://airbrake.io";
+const DEFAULT_HOSTNAME: &str = "https://app.airbrake.io";
 const ENV_VAR_PROJECT_ID: &str = "AIRBRAKE_PROJECT_ID";
 const ENV_VAR_PROJECT_KEY: &str = "AIRBRAKE_API_KEY";
 const ENV_VAR_HOST: &str = "AIRBRAKE_HOST";
@@ -367,7 +367,7 @@ mod builder_tests {
             .project_key("bar")
             .build();
         assert_eq!(
-            "https://airbrake.io/api/v3/projects/foo/notices?key=bar",
+            "https://app.airbrake.io/api/v3/projects/foo/notices?key=bar",
             client.unwrap().endpoint_uri()
         );
     }
@@ -384,11 +384,11 @@ mod builder_tests {
             .project_key(project_key)
             .build();
         assert_eq!(
-            "https://airbrake.io/api/v3/projects/foo/notices?key=bar",
+            "https://app.airbrake.io/api/v3/projects/foo/notices?key=bar",
             client1.unwrap().endpoint_uri()
         );
         assert_eq!(
-            "https://airbrake.io/api/v3/projects/foo/notices?key=bar",
+            "https://app.airbrake.io/api/v3/projects/foo/notices?key=bar",
             client2.unwrap().endpoint_uri()
         );
     }
