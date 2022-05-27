@@ -67,7 +67,7 @@
 //!
 //! ### host
 //!
-//! By default, it is set to `https://airbrake.io`. A `host` is a web address
+//! By default, it is set to `https://app.airbrake.io`. A `host` is a web address
 //! containing a scheme ("http" or "https"), a host and a port. You can omit the
 //! port (80 will be assumed).
 //!
@@ -160,7 +160,7 @@
 //! ```
 //!
 //! [airbrake.io]: https://airbrake.io
-//! [notice-v3]: https://airbrake.io/docs/#create-notice-v3
+//! [notice-v3]: https://docs.airbrake.io/docs/#create-notice-v3
 //! [env_logger]: https://crates.io/crates/env_logger
 //! [project-idkey]: https://s3.amazonaws.com/airbrake-github-assets/airbrake-ruby/project-id-key.png
 //! [stderror]: https://doc.rust-lang.org/std/error

@@ -64,7 +64,7 @@ Git flow, as described here typically has a `develop` and a `master` branch, tho
   - [x] ~~Circuit breaker~~ defer implementation to users
 
 - Sprint 3: Notify features
-  - [ ] Feature parity with [official API](https://airbrake.io/docs/api/#create-notice-v3) (super close to done, just need to verify I haven't missed anything)
+  - [ ] Feature parity with [official API](https://docs.airbrake.io/docs/api/#create-notice-v3) (super close to done, just need to verify I haven't missed anything)
   - [x] Notify on panic (Technically done and working, but could use some additional cleanup)
   - [x] Support [custom parameters](https://github.com/airbrake/pybrake#adding-custom-params)
   - [x] Severity
@@ -77,9 +77,9 @@ Git flow, as described here typically has a `develop` and a `master` branch, tho
 - Update roadmap
 
 - Sprint 4: Performance Monitoring
-  - [ ] [Route Performance](https://airbrake.io/docs/api/#route-performance-endpoint)
-  - [ ] [Routes Breakdown](https://airbrake.io/docs/api/#routes-breakdown-endpoint)
-  - [ ] [Database Query Stats](https://airbrake.io/docs/api/#database-query-stats)
+  - [ ] [Route Performance](https://docs.airbrake.io/docs/api/#route-performance-endpoint)
+  - [ ] [Routes Breakdown](https://docs.airbrake.io/docs/api/#routes-breakdown-endpoint)
+  - [ ] [Database Query Stats](https://docs.airbrake.io/docs/api/#database-query-stats)
 
 - Possible 0.4.0 release candidate
 
